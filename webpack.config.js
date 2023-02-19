@@ -27,7 +27,7 @@ module.exports = (env) => {
             rules: [
                 {
                     test: /\.js$/i,
-                    use: ['clearPrint'],
+                    use: ['clear-print'],
                 },
             ],
         },
