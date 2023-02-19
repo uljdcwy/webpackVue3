@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "VUE打包",
   "scripts": {
-    "dev": "webpack ./webpack.config.js --env development",
-    "build": "webpack ./webpack.config.js --env production"
+    "dev": "webpack --env development webpack.config.js",
+    "build": "webpack --env production webpack.config.js"
   },
   "author": "",
   "license": "ISC",
