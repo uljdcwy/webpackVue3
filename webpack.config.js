@@ -34,7 +34,13 @@ pages.then(function(res){
 let concurrencyArr =  [{
     id: 'js',
     threads: 4,
-    loaders: [ 'babel-loader' ]
+    loaders: [ {
+        loader: 'babel-loader',
+        options: {
+            presets: ['@babel/preset-env'],
+            plugins: ['@babel/plugin-proposal-object-rest-spread']
+        }
+    } ]
 }];
 
 concurrencyArr.map(function(el){
