@@ -5,7 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
 const HappyPack = require('happypack');
-
+const {VueLoaderPlugin} = require('vue-loader');
+const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = (env) => {
 // 命名用promise 调多页
@@ -44,9 +45,6 @@ module.exports = (env) => {
                 plugins: ['@babel/plugin-proposal-object-rest-spread']
             }
         }]
-    },{
-        id: 'scss',
-        use:[env.production ? MiniCssExtractPlugin.loader : 'style-loader','css-loader' ,'sass-loader','postcss-loader']
     }];
 
     concurrencyArr.map(function (el) {
@@ -58,13 +56,16 @@ module.exports = (env) => {
         filename: './css/[name].css',
     }));
 
+    // VUE加载插件
+    PLUS.push(new VueLoaderPlugin());
+
     let webpackObj = {
         // 构建为web应用
         target: 'web',
         // 配置静态引用
         externals: {
             // vue 为模块名  $vue 为引入全局变量
-            vue: "$vue"
+            'vue$': 'vue/dist/vue.esm.js',
         },
         resolve: {
             // 依次尝试调用
@@ -85,6 +86,11 @@ module.exports = (env) => {
         },
         module: {
             rules: [
+                // 加载 .vue 文件
+                {
+                    test: /\.vue$/,
+                    loader: 'vue-loader',
+                },
                 {
                     // JS加载
                     test: /\.js$/i,
@@ -98,22 +104,45 @@ module.exports = (env) => {
                 },
                 {
                     // scss加载
-                    test: /\.s?css$/i,
-                    use: "happypack/loader?id=scss",// 'clear-print',
+                    test: /\.(sc|c|sa|)ss$/i,
+                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader','css-loader' ,'sass-loader','postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
-                        path.resolve(__dirname, 'src'),
-                        path.resolve(__dirname, 'public')
+                        path.resolve(__dirname, 'src')
                     ]
                 },
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: "happypack/loader?id=less",// 'clear-print',
+                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader','css-loader' ,'less-loader','postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
                     ]
+                },
+                {
+                    test: /\.(png|svg|jpg|jpeg|gif)$/i,
+                    type: 'asset',
+                    parser: {
+                        dataUrlCondition: {
+                            maxSize: 16 * 1024, // 4kb
+                        },
+                    },
+                    generator: {
+                        filename: 'images/[hash][ext][query]',
+                    },
+                },
+                {
+                    test: /\.(woff|woff2|eot|ttf|otf)$/i,
+                    type: 'asset',
+                    parser: {
+                        dataUrlCondition: {
+                            maxSize: 16 * 1024, // 4kb
+                        },
+                    },
+                    generator: {
+                        filename: 'font/[hash][ext][query]',
+                    },
                 },
             ],
         },
@@ -138,6 +167,8 @@ module.exports = (env) => {
         Object.assign(webpackObj, {
             mode: "production",
             optimization: {
+                minimize: true,
+                minimizer: [new TerserPlugin()],
                 splitChunks: {
                     chunks: 'all', // 表示要分割的chunk类型：initial只处理同步的; async只处理异步的；all都处理
                     // 缓存分组

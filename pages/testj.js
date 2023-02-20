@@ -1,13 +1,12 @@
-console.log(456);
-alert(456);
-async  function test(){
-    await new Promise(function(su,fa){
-        setTimeout(su,300)
-    });
-};
 
-import testscss from "./../public/test.scss";
-console.log(testscss,"testscss")
+import { createApp, h} from "vue$"
+import appContent from "@/app.vue"
 
+const app = createApp(appContent);
 
-test();
+document.body.onload = function() {
+    let div = document.createElement('div');
+    div.id = "app";
+    document.body.appendChild(div);
+    app.mount(div)
+}
