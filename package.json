@@ -31,6 +31,7 @@
     "speed-measure-webpack-plugin": "^1.5.0"
   },
   "dependencies": {
+    "cache-loader": "^4.1.0",
     "vue": "^3.2.47"
   }
 }

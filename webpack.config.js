@@ -5,10 +5,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
 const HappyPack = require('happypack');
-const { VueLoaderPlugin } = require('vue-loader');
+const {VueLoaderPlugin} = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
-const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
-const smp = new SpeedMeasurePlugin()
 
 module.exports = (env) => {
 // 命名用promise 调多页
@@ -37,10 +35,12 @@ module.exports = (env) => {
         });
     })
 
-// 并发插件数组
+    // 并发插件数组
+    // 通过环境充量提升一秒
     let concurrencyArr = [{
         id: 'js',
-        use: [{
+        threads: 4,
+        use: env.production ? ['cache-loader', {
             loader: 'clear-print'
         }, {
             loader: 'babel-loader',
@@ -48,7 +48,7 @@ module.exports = (env) => {
                 presets: ['@babel/preset-env'],
                 plugins: ['@babel/plugin-proposal-object-rest-spread']
             }
-        }]
+        }] : ['cache-loader']
     }];
 
     concurrencyArr.map(function (el) {
@@ -66,14 +66,14 @@ module.exports = (env) => {
     let webpackObj = {
         // 构建为web应用
         target: 'web',
+        cache: {
+            type: 'filesystem',
+            allowCollectingMemory: true,
+        },
         // 配置静态引用
         externals: {
             // vue 为模块名  $vue 为引入全局变量
             'vue$': 'vue/dist/vue.esm.js',
-        },
-        // 启用缓存在初次构建时较慢之后会以较快的速度运行
-        cache: {
-            type: 'filesystem'
         },
         resolve: {
             // 依次尝试调用
@@ -97,7 +97,7 @@ module.exports = (env) => {
                 // 加载 .vue 文件
                 {
                     test: /\.vue$/,
-                    loader: 'vue-loader',
+                    use: ['cache-loader', 'vue-loader'],
                 },
                 {
                     // JS加载
@@ -113,7 +113,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -122,7 +122,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -205,5 +205,5 @@ module.exports = (env) => {
         })
         // 默认环境
     }
-    return smp.wrap(webpackObj);
+    return webpackObj;
 }
