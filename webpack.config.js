@@ -5,8 +5,10 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
 const HappyPack = require('happypack');
-const {VueLoaderPlugin} = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
+const smp = new SpeedMeasurePlugin()
 
 module.exports = (env) => {
 // 命名用promise 调多页
@@ -39,6 +41,8 @@ module.exports = (env) => {
     let concurrencyArr = [{
         id: 'js',
         use: [{
+            loader: 'clear-print'
+        }, {
             loader: 'babel-loader',
             options: {
                 presets: ['@babel/preset-env'],
@@ -66,6 +70,10 @@ module.exports = (env) => {
         externals: {
             // vue 为模块名  $vue 为引入全局变量
             'vue$': 'vue/dist/vue.esm.js',
+        },
+        // 启用缓存在初次构建时较慢之后会以较快的速度运行
+        cache: {
+            type: 'filesystem'
         },
         resolve: {
             // 依次尝试调用
@@ -105,7 +113,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader','css-loader' ,'sass-loader','postcss-loader'],// 'clear-print',
+                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -114,7 +122,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader','css-loader' ,'less-loader','postcss-loader'],// 'clear-print',
+                    use: [env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -168,7 +176,9 @@ module.exports = (env) => {
             mode: "production",
             optimization: {
                 minimize: true,
-                minimizer: [new TerserPlugin()],
+                minimizer: [new TerserPlugin({
+                    parallel: true
+                })],
                 splitChunks: {
                     chunks: 'all', // 表示要分割的chunk类型：initial只处理同步的; async只处理异步的；all都处理
                     // 缓存分组
@@ -194,8 +204,6 @@ module.exports = (env) => {
             }
         })
         // 默认环境
-    } else {
-
     }
-    return webpackObj
+    return smp.wrap(webpackObj);
 }
