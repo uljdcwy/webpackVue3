@@ -4,12 +4,12 @@
   "description": "VUE打包",
   "private": true,
   "author": "艾迪泰格",
-  "main": "./src/background.js",
+  "main": "src/electron.js",
   "scripts": {
     "dev": "webpack --env ENV=development target=web webpack.config.js",
     "build": "webpack --env ENV=production target=web webpack.config.js",
     "build-renderer": "webpack --env ENV=production target=electron-renderer webpack.config.js",
-    "dev-electron": "cross-env electron ./src/background.js",
+    "dev-electron": "cross-env electron src/electron.js",
     "build-electron": "npm run build-renderer && electron-builder"
   },
   "license": "ISC",
@@ -47,10 +47,8 @@
       "buildResources": "resources"
     },
     "win": {
-      "target": [
-        "nsis",
-        "msi"
-      ]
+      "icon": "public/favicon.ico",
+      "target": "msi"
     },
     "linux": {
       "target": [
