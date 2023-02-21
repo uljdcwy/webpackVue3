@@ -3,41 +3,55 @@ const {
     BrowserWindow
 } = require("electron");
 
+const path = require("path");
+
+const isDev = (process.argv && process.argv[2] == "development");
+
+console.log(process.argv,"process.argv")
+
 function createWindow() {
-    // Create a new window
+
+    // 创建窗口对象
     const window = new BrowserWindow({
         width: 800,
         height: 600,
+        // 开启node在渲染进程中使用
+        webPreferences: {
+            nodeIntegration: true,
+            nodeIntegrationInWorker: true,
+            preload: path.join(__dirname, 'preload.js'),
+        },
         show: false
     });
 
-    // Event listeners on the window
+    // 页面加载完成
     window.webContents.on("did-finish-load", () => {
         window.show();
         window.focus();
     });
+    if(process.argv[3]){
+        window.loadURL(process.argv[3]);
+    }else{
+        // 读取渲染进程文件
+        window.loadFile(isDev ? "../dist/index.html": "./dist/index.html");
+    }
 
-    // Load our HTML file
-    window.loadFile("index.html");
+    if(isDev) window.webContents.openDevTools()
 }
 
-// This method is called when Electron
-// has finished initializing
+// 应用程序加载完成
 app.whenReady().then(() => {
     createWindow();
 
     app.on("activate", () => {
-        // On macOS it's common to re-create a window in the app when the
-        // dock icon is clicked and there are no other windows open.
+        // 如果应用程序处理活动状态并且窗口全部关闭则创建一个默认空口
         if (BrowserWindow.getAllWindows().length === 0) {
             createWindow();
         }
     });
 });
 
-// Quit when all windows are closed, except on macOS. There, it's common
-// for applications and their menu bar to stay active until the user quits
-// explicitly with Cmd + Q.
+// 所有窗口关闭时
 app.on("window-all-closed", function () {
     if (process.platform !== "darwin") {
         app.quit();

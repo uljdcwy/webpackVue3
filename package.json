@@ -9,8 +9,8 @@
     "dev": "webpack --env ENV=development target=web webpack.config.js",
     "build": "webpack --env ENV=production target=web webpack.config.js",
     "build-renderer": "webpack --env ENV=production target=electron-renderer webpack.config.js",
-    "dev-electron": "cross-env electron src/electron.js",
-    "build-electron": "npm run build-renderer && electron-builder"
+    "dev-electron": "electron src/electron.js development",
+    "build-electron": "electron-builder"
   },
   "license": "ISC",
   "devDependencies": {
@@ -40,15 +40,21 @@
     "webpack-cli": "^5.0.1",
     "webpack-merge": "^5.8.0"
   },
+  "files": [
+    "./dist"
+  ],
   "build": {
-    "productName": "当前项目的名称",
+    "productName": "艾迪泰格测试项目",
     "appId": "com.mycompany|electron",
     "directories": {
-      "buildResources": "resources"
+      "buildResources": "build"
     },
     "win": {
       "icon": "public/favicon.ico",
-      "target": "msi"
+      "target": [
+        "nsis",
+        "msi"
+      ]
     },
     "linux": {
       "target": [
@@ -60,6 +66,7 @@
     }
   },
   "dependencies": {
+    "pm2": "^5.2.2",
     "vue": "^3.2.47"
   }
 }

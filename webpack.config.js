@@ -9,6 +9,7 @@ const {VueLoaderPlugin} = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = (env) => {
+    console.log(env,"环境变量")
 // 命名用promise 调多页
     let pages = new Promise((resolve) => {
         const dirList = fs.readdirSync(path.resolve(__dirname + "/pages"));
@@ -148,7 +149,7 @@ module.exports = (env) => {
         plugins: PLUS,
         output: {
             filename: './js/[name].js',
-            path: path.resolve(__dirname, 'dist'),
+            path: path.resolve(__dirname, env.target == "electron-renderer" ? "renderer" : 'dist'),
             clean: true,
         }
     };
