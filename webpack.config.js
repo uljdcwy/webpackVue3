@@ -4,7 +4,7 @@ const fs = require("fs");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
-const HappyPack = require('happypack');
+// const HappyPack = require('happypack');
 const {VueLoaderPlugin} = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 
@@ -33,26 +33,6 @@ module.exports = (env) => {
                 })
             );
         });
-    })
-
-    // 并发插件数组
-    // 通过环境充量提升一秒
-    let concurrencyArr = [{
-        id: 'js',
-        threads: 4,
-        use: env.production ? ['cache-loader', {
-            loader: 'clear-print'
-        }, {
-            loader: 'babel-loader',
-            options: {
-                presets: ['@babel/preset-env'],
-                plugins: ['@babel/plugin-proposal-object-rest-spread']
-            }
-        }] : ['cache-loader']
-    }];
-
-    concurrencyArr.map(function (el) {
-        PLUS.push(new HappyPack(el));
     });
 
     // 样式文件地址
@@ -102,7 +82,15 @@ module.exports = (env) => {
                 {
                     // JS加载
                     test: /\.js$/i,
-                    use: "happypack/loader?id=js",// 'clear-print',
+                    use: env.production ? ['cache-loader',"thread-loader", {
+                        loader: 'clear-print'
+                    }, {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env'],
+                            plugins: ['@babel/plugin-proposal-object-rest-spread']
+                        }
+                    }] : ['cache-loader',"thread-loader"],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src'),
@@ -113,7 +101,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -122,7 +110,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
