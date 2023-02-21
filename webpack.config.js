@@ -45,7 +45,7 @@ module.exports = (env) => {
 
     let webpackObj = {
         // 构建为web应用
-        target: 'web',
+        target: env.target,
         cache: {
             type: 'filesystem',
             allowCollectingMemory: true,
@@ -82,7 +82,7 @@ module.exports = (env) => {
                 {
                     // JS加载
                     test: /\.js$/i,
-                    use: env.production ? ['cache-loader',"thread-loader", {
+                    use: (env.ENV == 'production') ? ['cache-loader',"thread-loader", {
                         loader: 'clear-print'
                     }, {
                         loader: 'babel-loader',
@@ -101,7 +101,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: ['cache-loader', (env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -110,7 +110,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: ['cache-loader', env.production ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: ['cache-loader', (env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -153,13 +153,13 @@ module.exports = (env) => {
         }
     };
     // 区分开发环境与生产环境
-    if (env.development) {
+    if ((env.ENV == 'development')) {
         Object.assign(webpackObj, {
             devtool: 'source-map',
             mode: "development"
         })
         // 生产环境
-    } else if (env.production) {
+    } else if ((env.ENV == 'production')) {
         Object.assign(webpackObj, {
             mode: "production",
             optimization: {

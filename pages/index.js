@@ -1,5 +1,5 @@
 
-import { createApp, h} from "vue$"
+import { createApp, h} from "vue"
 import appContent from "@/app.vue"
 
 const app = createApp(appContent);
