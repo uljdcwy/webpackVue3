@@ -9,6 +9,8 @@
     "dev": "webpack --env ENV=development target=web webpack.config.js",
     "build": "webpack --env ENV=production target=web webpack.config.js",
     "build-renderer": "webpack --env ENV=production target=electron-renderer webpack.config.js",
+    "build-preload": "webpack --env ENV=production target=electron-preload webpack.config.js",
+    "build-server": "webpack --env ENV=production target=node webpack.config.js",
     "dev-electron": "electron src/electron.js development",
     "build-electron": "electron-builder"
   },
@@ -38,16 +40,19 @@
     "vue-loader": "^17.0.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
+    "koa": "^2.14.1",
+    "pm2": "^5.2.2",
     "webpack-merge": "^5.8.0"
   },
   "files": [
-    "./dist"
+    "./electron-renderer"
   ],
   "build": {
     "productName": "艾迪泰格测试项目",
     "appId": "com.mycompany|electron",
+    "asarUnpack": ["./node/**"],
     "directories": {
-      "buildResources": "build"
+      "buildResources": ""
     },
     "win": {
       "icon": "public/favicon.ico",
@@ -66,7 +71,6 @@
     }
   },
   "dependencies": {
-    "pm2": "^5.2.2",
     "vue": "^3.2.47"
   }
 }

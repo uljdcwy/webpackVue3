@@ -4,57 +4,64 @@ const fs = require("fs");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
-// const HappyPack = require('happypack');
 const {VueLoaderPlugin} = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 
 module.exports = (env) => {
-    console.log(env,"环境变量")
-// 命名用promise 调多页
-    let pages = new Promise((resolve) => {
-        const dirList = fs.readdirSync(path.resolve(__dirname + "/pages"));
-        let entryObj = {};
-        dirList.map(function (e, i) {
-            entryObj[e.split('.')[0]] = [path.resolve(__dirname + "/pages/" + e)]
-        });
-        resolve(entryObj);
-    });
 
-
-// HTML插件数组
+    // 命名用promise 调多页
+    let pages;
+    // HTML插件数组
     let PLUS = [];
-// 获取所有页面并将HTML插件模版引入
-    pages.then(function (res) {
-        Object.keys(res).map(function (el) {
-            PLUS.push(
-                new HtmlWebpackPlugin({
-                    template: path.resolve(__dirname, './template.html'),
-                    filename: el + '.html',
-                    chunks: [el],
-                })
-            );
+    if(env.target == "web" || env.target == "electron-renderer" || env.target == "electron-preload") {
+        let isPreload = env.target == "electron-preload";
+        pages = new Promise((resolve) => {
+            const dirList = fs.readdirSync(path.resolve(__dirname + (isPreload ? "/preloads" : "/pages")));
+            let entryObj = {};
+            dirList.map(function (e, i) {
+                entryObj[e.split('.')[0]] = [path.resolve(__dirname + (isPreload ? "/preloads/" :  "/pages/") + e)]
+            });
+            resolve(entryObj);
         });
-    });
 
-    // 样式文件地址
-    PLUS.push(new MiniCssExtractPlugin({
-        filename: './css/[name].css',
-    }));
+        if(env.target != "electron-preload"){
+            // 获取所有页面并将HTML插件模版引入
+            pages.then(function (res) {
+                Object.keys(res).map(function (el) {
+                    PLUS.push(
+                        new HtmlWebpackPlugin({
+                            template: path.resolve(__dirname, './template.html'),
+                            filename: el + '.html',
+                            chunks: [el],
+                        })
+                    );
+                });
+            });
+        };
 
-    // VUE加载插件
-    PLUS.push(new VueLoaderPlugin());
+        // 样式文件地址
+        PLUS.push(new MiniCssExtractPlugin({
+            filename: './css/[name].css',
+        }));
 
-    let webpackObj = {
+        // VUE加载插件
+        PLUS.push(new VueLoaderPlugin());
+    }else if(env.target == "node"){
+        pages = {
+            index: "./Services/index.js"
+        }
+    }
+
+    let webpackDeploy = {
         // 构建为web应用
         target: env.target,
         cache: {
             type: 'filesystem',
             allowCollectingMemory: true,
         },
+        mode: env.ENV,
         // 配置静态引用
         externals: {
-            // vue 为模块名  $vue 为引入全局变量
-            'vue$': 'vue/dist/vue.esm.js',
         },
         resolve: {
             // 依次尝试调用
@@ -148,21 +155,19 @@ module.exports = (env) => {
         },
         plugins: PLUS,
         output: {
-            filename: './js/[name].js',
-            path: path.resolve(__dirname, env.target == "electron-renderer" ? "renderer" : 'dist'),
+            filename: (env.target == 'node' || env.target == 'electron-preload') ? '[name].js' : './js/[name].js',
+            path: path.resolve(__dirname, env.target),
             clean: true,
         }
     };
     // 区分开发环境与生产环境
     if ((env.ENV == 'development')) {
-        Object.assign(webpackObj, {
-            devtool: 'source-map',
-            mode: "development"
+        Object.assign(webpackDeploy, {
+            devtool: 'source-map'
         })
         // 生产环境
     } else if ((env.ENV == 'production')) {
-        Object.assign(webpackObj, {
-            mode: "production",
+        Object.assign(webpackDeploy, {
             optimization: {
                 minimize: true,
                 minimizer: [new TerserPlugin({
@@ -193,6 +198,6 @@ module.exports = (env) => {
             }
         })
         // 默认环境
-    }
-    return webpackObj;
+    };
+    return webpackDeploy;
 }
