@@ -90,7 +90,7 @@ module.exports = (env) => {
                 {
                     // JS加载
                     test: /\.js$/i,
-                    use: (env.ENV == 'production') ? ['cache-loader',"thread-loader", {
+                    use: (env.ENV == 'production') ? ['cache-loader', {
                         loader: 'clear-print'
                     }, {
                         loader: 'babel-loader',
@@ -98,7 +98,7 @@ module.exports = (env) => {
                             presets: ['@babel/preset-env'],
                             plugins: ['@babel/plugin-proposal-object-rest-spread']
                         }
-                    }] : ['cache-loader',"thread-loader"],// 'clear-print',
+                    }] : ['thread-loader','cache-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src'),

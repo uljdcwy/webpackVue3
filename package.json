@@ -26,9 +26,11 @@
     "electron-builder": "^23.6.0",
     "happypack": "^5.0.1",
     "html-webpack-plugin": "^5.5.0",
+    "koa": "^2.14.1",
     "less": "^4.1.3",
     "less-loader": "^11.1.0",
     "mini-css-extract-plugin": "^2.7.2",
+    "pm2": "^5.2.2",
     "postcss-cssnext": "^3.1.1",
     "postcss-loader": "^7.0.1",
     "sass": "^1.58.3",
@@ -40,8 +42,6 @@
     "vue-loader": "^17.0.0",
     "webpack": "^5.75.0",
     "webpack-cli": "^5.0.1",
-    "koa": "^2.14.1",
-    "pm2": "^5.2.2",
     "webpack-merge": "^5.8.0"
   },
   "files": [
@@ -50,7 +50,9 @@
   "build": {
     "productName": "艾迪泰格测试项目",
     "appId": "com.mycompany|electron",
-    "asarUnpack": ["./node/**"],
+    "asarUnpack": [
+      "./node/**"
+    ],
     "directories": {
       "buildResources": ""
     },

@@ -5,7 +5,7 @@
 import {onMounted, ref} from "vue";
 const obj = ref();
 onMounted(function(){
-  console.log(obj,"obj")
+  console.warn(obj,"obj")
 })
 </script>
 
