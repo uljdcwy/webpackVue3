@@ -50,7 +50,8 @@
     "productName": "艾迪泰格测试项目",
     "appId": "com.mycompany|electron",
     "asarUnpack": [
-      "./node/**"
+      "./node/**",
+      "./electron-preload/**"
     ],
     "directories": {
       "buildResources": ""

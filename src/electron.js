@@ -33,7 +33,7 @@ function createWindow() {
             nodeIntegrationInWorker: true,
             // 在页面中使用node
             nodeIntegrationInSubFrames: true,
-            preload: appUrl + "preloads/preload.js",
+            preload: unpackedUrl + "\\electron-preload\\preload.js",
         },
         show: false
     });
@@ -48,9 +48,9 @@ function createWindow() {
         window.loadURL(process.argv[3]);
     } else {
         // 读取渲染进程文件
-        window.loadFile(appUrl + "electron-renderer/index.html");
+        window.loadFile(appUrl + "/electron-renderer/index.html");
     }
-    if(isDev) window.webContents.openDevTools();
+    window.webContents.openDevTools();
 }
 
 // 应用程序加载完成
