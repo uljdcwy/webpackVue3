@@ -11,11 +11,9 @@ const pm2 = require("pm2")
 const isDev = (process.argv && process.argv[2] == "development");
 
 // 当前服务地址
-let appUrl = path.join(app.getAppPath(), '');
-let unpackedUrl = path.join(app.getAppPath().replace('app.asar', 'app.asar.unpacked'), '');
+let appUrl = path.join(app.getAppPath(), '/');
+let unpackedUrl = path.join(app.getAppPath().replace('app.asar', 'app.asar.unpacked'), '/');
 
-
-console.log(appUrl, "appUrl")
 
 // 主进程代码运行时 主进程代码会一直运行在 CPU 的时序中  因
 
@@ -33,7 +31,7 @@ function createWindow() {
             nodeIntegrationInWorker: true,
             // 在页面中使用node
             nodeIntegrationInSubFrames: true,
-            preload: unpackedUrl + "\\electron-preload\\preload.js",
+            preload:  appUrl +  (isDev ? "../" : "") + "electron-preload/preload.js"
         },
         show: false
     });
@@ -48,7 +46,7 @@ function createWindow() {
         window.loadURL(process.argv[3]);
     } else {
         // 读取渲染进程文件
-        window.loadFile(appUrl + "/electron-renderer/index.html");
+        window.loadFile(appUrl +  (isDev ? "../" : "") + "electron-renderer/index.html");
     }
     window.webContents.openDevTools();
 }
@@ -63,9 +61,20 @@ app.whenReady().then(() => {
         };
 
         pm2.start({
-            script: unpackedUrl + "node/index.js",
+            script: unpackedUrl + (isDev ? "../" : "") +  "node/index.js",
             name: 'index',
-            exec_mode: "fork_mode"
+            exec_mode: "fork_mode",
+            cwd: "./",
+            watch: false,
+            error_file: unpackedUrl + "logs/err.log",
+            out_file: unpackedUrl + "logs/out.log",
+            pid_file: unpackedUrl + "logs/pid.log",
+            merge_logs: true,
+            log_date_format: "YYYY-MM-DD HH:mm:ss",
+            min_uptime: "240s",
+            max_restarts: 30,
+            autorestart: true,
+            restart_delay: 120
         }, function (err, apps) {
 
         })

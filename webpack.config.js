@@ -55,10 +55,6 @@ module.exports = (env) => {
     let webpackDeploy = {
         // 构建为web应用
         target: env.target,
-        cache: {
-            type: 'filesystem',
-            allowCollectingMemory: true,
-        },
         mode: env.ENV,
         // 配置静态引用
         externals: {
@@ -183,6 +179,7 @@ module.exports = (env) => {
                             test: /node_modules/,  // 设置命中目录规则
                             priority: 1, // 优先级，数值越大，优先级越高
                             minSize: 0, // 小于这个大小的文件，不分割
+                            maxSize: 100000,
                             minChunks: 1 // 最少复用几次，这里意思是只要用过一次就分割出来
                         },
                         // 公共模块
@@ -191,6 +188,7 @@ module.exports = (env) => {
                             minChunks: 2,
                             priority: 0,
                             minSize: 0,
+                            maxSize: 100000,
                             minChunks: 2  // 只要引用过2次，就分割成公共代码
                         }
                     }
