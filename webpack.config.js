@@ -81,12 +81,12 @@ module.exports = (env) => {
                 // 加载 .vue 文件
                 {
                     test: /\.vue$/,
-                    use: ['cache-loader', 'vue-loader'],
+                    use: ['vue-loader'],
                 },
                 {
                     // JS加载
                     test: /\.js$/i,
-                    use: (env.ENV == 'production') ? ['cache-loader', {
+                    use: (env.ENV == 'production') ? [{
                         loader: 'clear-print'
                     }, {
                         loader: 'babel-loader',
@@ -94,7 +94,7 @@ module.exports = (env) => {
                             presets: ['@babel/preset-env'],
                             plugins: ['@babel/plugin-proposal-object-rest-spread']
                         }
-                    }] : ['thread-loader','cache-loader'],// 'clear-print',
+                    }] : ['thread-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src'),
@@ -105,7 +105,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: ['cache-loader', (env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -114,7 +114,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: ['cache-loader', (env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -179,7 +179,7 @@ module.exports = (env) => {
                             test: /node_modules/,  // 设置命中目录规则
                             priority: 1, // 优先级，数值越大，优先级越高
                             minSize: 0, // 小于这个大小的文件，不分割
-                            maxSize: 100000,
+                            maxSize: 1000000,
                             minChunks: 1 // 最少复用几次，这里意思是只要用过一次就分割出来
                         },
                         // 公共模块
@@ -188,7 +188,7 @@ module.exports = (env) => {
                             minChunks: 2,
                             priority: 0,
                             minSize: 0,
-                            maxSize: 100000,
+                            maxSize: 1000000,
                             minChunks: 2  // 只要引用过2次，就分割成公共代码
                         }
                     }

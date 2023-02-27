@@ -1,18 +1,23 @@
 const {
     app,
-    BrowserWindow
+    BrowserWindow,
+	Menu
 } = require("electron");
-
 const path = require("path");
-
-// 引入pm2
-const pm2 = require("pm2")
+const {
+	exec
+} = require("child_process");
+const iconv = require('iconv-lite');
+const sudo = require('sudo-prompt');
 
 const isDev = (process.argv && process.argv[2] == "development");
 
 // 当前服务地址
 let appUrl = path.join(app.getAppPath(), '/');
 let unpackedUrl = path.join(app.getAppPath().replace('app.asar', 'app.asar.unpacked'), '/');
+let nodeUrl = appUrl.replace("app.asar","") + (isDev ? "..\\" : "");
+
+let closeAppStatus = false;
 
 
 // 主进程代码运行时 主进程代码会一直运行在 CPU 的时序中  因
@@ -29,12 +34,60 @@ function createWindow() {
             nodeIntegration: true,
             // 在预加载中的require 使用node
             nodeIntegrationInWorker: true,
-            // 在页面中使用node
-            nodeIntegrationInSubFrames: true,
             preload:  appUrl +  (isDev ? "../" : "") + "electron-preload/preload.js"
         },
         show: false
     });
+	
+	
+	window.on('close', async (e) => {
+		if(closeAppStatus){
+			e.preventDefault();
+			return ;
+		}
+		if(BrowserWindow.getAllWindows().length <= 1){
+			closeAppStatus = true;
+			e.preventDefault()
+			// 关闭服务pm2
+			exec(`${nodeUrl}node\\killPm2.bat ${nodeUrl}node\\`, { cwd: "" }, function (eror, sdout, sterr) {
+				// 看端口中所有进程
+				exec(`netstat -aon|findstr 9999`,function(lokPortErr, lokPortSdout, lokPortSterr){
+					const encoding = 'cp936';
+					const binaryEncoding = 'binary';
+					let outStr = iconv.decode(new Buffer(lokPortSdout, binaryEncoding), encoding);
+					let execNodeExe = /([0-9]+)(\r|$)/g.exec(outStr);
+					let str = "";
+					while(execNodeExe){
+						// 收集所有9999端口进程
+						if(execNodeExe[1] != 0 && str.search(execNodeExe[1]) < 0){
+							str += `/PID ${execNodeExe[1]} `;
+						};
+						outStr = outStr.substring(execNodeExe.index + execNodeExe[1].length,outStr.length);
+						execNodeExe = /([0-9]+)(\r|$)/g.exec(outStr);
+					};
+					// 查询pid 为0 的所有进程
+					exec(`tasklist|findstr 0`,function(lookPortErr, lookPortSdout, lookPortSterr){
+						outStr = iconv.decode(new Buffer(lookPortSdout, binaryEncoding), encoding);
+						execNodeExe = /node\.exe\s+([0-9]+)?/mg.exec(outStr);
+						let execLength = /node\.exe.+(\r|$)/mg.exec(outStr);
+						while(execNodeExe){
+							// 收集所有node进程
+							if(execNodeExe[1] != 0 && str.search(execNodeExe[1]) < 0){
+								str += `/PID ${execNodeExe[1]}; `;
+							};
+							outStr = outStr.substring(execNodeExe.index + execLength[0].length,outStr.length);
+							execLength = /node\.exe.+(\r|$)/mg.exec(outStr);
+							execNodeExe = /node\.exe\s+([0-9]+)?/mg.exec(outStr);
+						};
+						// 关闭所有收集进程
+						exec(`taskkill /T /F ${str}`,function(closePortErr, closePortSdout, closePortSterr){
+							app.exit();
+						});
+					})
+				});
+			});
+		}
+	})
 
     // 页面加载完成
     window.webContents.on("did-finish-load", () => {
@@ -48,40 +101,52 @@ function createWindow() {
         // 读取渲染进程文件
         window.loadFile(appUrl +  (isDev ? "../" : "") + "electron-renderer/index.html");
     }
-    window.webContents.openDevTools();
+    if(isDev) window.webContents.openDevTools();
 }
 
 // 应用程序加载完成
 app.whenReady().then(() => {
-    pm2.connect(function (err) {
-        if (err) {
-            console.error(err)
-            process.exit(2);
-            return;
-        };
+	
+	let startPm2 = function(){
+		exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node\\", { cwd: nodeUrl + "\\node" }, (error, stdout, stderr) => {})
+	};
+	
+	let options = {
+		name: 'Electron',
+		icns: '/Applications/Electron.app/Contents/Resources/Electron.icns', // (optional)
+	};
 
-        pm2.start({
-            script: unpackedUrl + (isDev ? "../" : "") +  "node/index.js",
-            name: 'index',
-            exec_mode: "fork_mode",
-            cwd: "./",
-            watch: false,
-            error_file: unpackedUrl + "logs/err.log",
-            out_file: unpackedUrl + "logs/out.log",
-            pid_file: unpackedUrl + "logs/pid.log",
-            merge_logs: true,
-            log_date_format: "YYYY-MM-DD HH:mm:ss",
-            min_uptime: "240s",
-            max_restarts: 30,
-            autorestart: true,
-            restart_delay: 120
-        }, function (err, apps) {
-
-        })
-    })
-
+	const encoding = 'cp936';
+	const binaryEncoding = 'binary';
+	// 查看 Mysql 是否启动 如果没启动则调用权限启动Mysql
+	exec('net start', (error, stdout, stderr) => {
+		let outStr = iconv.decode(new Buffer(stdout, binaryEncoding), encoding);
+		if (outStr.search(/MySQL/i) < 0) {
+			exec(`${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin\\mysqld.exe --initialize --console`,function(err,sudot,stdoutsql){
+				if(err){
+					startPm2();
+					return ;
+				}
+				stdoutsql = iconv.decode(new Buffer(stdoutsql, binaryEncoding), encoding);
+				let addrReg = "root@localhost:";
+				let strStart = stdoutsql.search(addrReg);
+				stdoutsql = stdoutsql.slice(strStart + addrReg.length,stdoutsql.length).trim();
+				// mysql 密码 初如化密码完成
+				sudo.exec(`start ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\install_mysql.bat ` + `"${stdoutsql}"`, options, (eror, sdout, sterr) => {
+					if(eror){
+						startPm2();
+						return ;
+					}
+					startPm2();
+					// 在启动pm2前 鼗mysql 默认密码写入config.json
+				});
+			})
+		}else{
+			startPm2();
+		}
+	});
     createWindow();
-
+	Menu.setApplicationMenu(null);
     app.on("activate", () => {
         // 如果应用程序处理活动状态并且窗口全部关闭则创建一个默认空口
         if (BrowserWindow.getAllWindows().length === 0) {
