@@ -9,6 +9,7 @@ const {
 } = require("child_process");
 const iconv = require('iconv-lite');
 const sudo = require('sudo-prompt');
+const pm2 = require("pm2");
 
 const isDev = (process.argv && process.argv[2] == "development");
 
@@ -18,6 +19,11 @@ let unpackedUrl = path.join(app.getAppPath().replace('app.asar', 'app.asar.unpac
 let nodeUrl = appUrl.replace("app.asar","") + (isDev ? "..\\" : "");
 
 let closeAppStatus = false;
+	
+let options = {
+	name: 'Electron',
+	icns: '/Applications/Electron.app/Contents/Resources/Electron.icns', // (optional)
+};
 
 
 // 主进程代码运行时 主进程代码会一直运行在 CPU 的时序中  因
@@ -42,14 +48,20 @@ function createWindow() {
 	
 	window.on('close', async (e) => {
 		if(closeAppStatus){
+        // 读取渲染进程文件
+			window.loadFile(appUrl +  (isDev ? "../" : "") + "electron-renderer/closeServer.html");
 			e.preventDefault();
 			return ;
 		}
+		// e.preventDefault();
+		// pm2.killDaemon(function(){
+		// 		app.exit();
+		// });
 		if(BrowserWindow.getAllWindows().length <= 1){
 			closeAppStatus = true;
-			e.preventDefault()
+			e.preventDefault();
 			// 关闭服务pm2
-			exec(`${nodeUrl}node\\killPm2.bat ${nodeUrl}node\\`, { cwd: "" }, function (eror, sdout, sterr) {
+			exec(`${nodeUrl}node\\killPm2.bat ${nodeUrl}node`, { cwd: "" }, function (eror, sdout, sterr) {
 				// 看端口中所有进程
 				exec(`netstat -aon|findstr 9999`,function(lokPortErr, lokPortSdout, lokPortSterr){
 					const encoding = 'cp936';
@@ -108,12 +120,34 @@ function createWindow() {
 app.whenReady().then(() => {
 	
 	let startPm2 = function(){
-		exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node\\", { cwd: nodeUrl + "\\node" }, (error, stdout, stderr) => {})
-	};
 	
-	let options = {
-		name: 'Electron',
-		icns: '/Applications/Electron.app/Contents/Resources/Electron.icns', // (optional)
+		// pm2.connect(function(err) {
+		//   if (err) {
+		//     console.error(err)
+		//     process.exit(2)
+		//   }
+		
+		//   pm2.start({
+		//     script: unpackedUrl + "node\\index.js",
+		//     name: 'index',
+		// 	mode: "fork"
+		//   }, function(err, apps) {
+		//     if (err) {
+		//       console.error(err)
+		//       return pm2.disconnect()
+		//     }
+		
+		//     pm2.list((err, list) => {
+		//       console.log(err, list)
+		
+		//       pm2.restart('index', (err, proc) => {
+		//         // Disconnects from PM2
+		//         pm2.disconnect()
+		//       })
+		//     })
+		//   })
+		// })
+		
 	};
 
 	const encoding = 'cp936';
@@ -133,18 +167,15 @@ app.whenReady().then(() => {
 				stdoutsql = stdoutsql.slice(strStart + addrReg.length,stdoutsql.length).trim();
 				// mysql 密码 初如化密码完成
 				sudo.exec(`start ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\install_mysql.bat ` + `"${stdoutsql}"`, options, (eror, sdout, sterr) => {
-					if(eror){
-						startPm2();
-						return ;
-					}
-					startPm2();
+					
 					// 在启动pm2前 鼗mysql 默认密码写入config.json
 				});
 			})
-		}else{
-			startPm2();
 		}
 	});
+	
+	exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node", { cwd: nodeUrl + "\\node" }, (error, stdout, stderr) => {})
+		
     createWindow();
 	Menu.setApplicationMenu(null);
     app.on("activate", () => {
