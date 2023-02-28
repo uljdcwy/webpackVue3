@@ -120,6 +120,7 @@ function createWindow() {
 app.whenReady().then(() => {
 	
 	let startPm2 = function(){
+		exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node", { cwd: nodeUrl + "node" }, (error, stdout, stderr) => {})
 	
 		// pm2.connect(function(err) {
 		//   if (err) {
@@ -157,24 +158,25 @@ app.whenReady().then(() => {
 		let outStr = iconv.decode(new Buffer(stdout, binaryEncoding), encoding);
 		if (outStr.search(/MySQL/i) < 0) {
 			exec(`${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin\\mysqld.exe --initialize --console`,function(err,sudot,stdoutsql){
-				if(err){
-					startPm2();
-					return ;
-				}
 				stdoutsql = iconv.decode(new Buffer(stdoutsql, binaryEncoding), encoding);
 				let addrReg = "root@localhost:";
 				let strStart = stdoutsql.search(addrReg);
 				stdoutsql = stdoutsql.slice(strStart + addrReg.length,stdoutsql.length).trim();
 				// mysql 密码 初如化密码完成
 				sudo.exec(`start ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\install_mysql.bat ` + `"${stdoutsql}"`, options, (eror, sdout, sterr) => {
-					
+					if(eror){
+						exec(`cd ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data\\dormitory || rd /s /q ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data`,function(cdErr,cdSdout,cdSterr){
+						});
+					}
+					startPm2();
 					// 在启动pm2前 鼗mysql 默认密码写入config.json
 				});
 			})
+		}else{
+			startPm2();
 		}
 	});
 	
-	exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node", { cwd: nodeUrl + "\\node" }, (error, stdout, stderr) => {})
 		
     createWindow();
 	Menu.setApplicationMenu(null);

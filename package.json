@@ -1,5 +1,5 @@
 {
-	"name": "vuebuild",
+	"name": "itTiger",
 	"version": "1.0.0",
 	"description": "VUE打包",
 	"private": true,
@@ -60,7 +60,7 @@
 			"to": "dormitory.sql"
 		}],
 		"productName": "宿舍管理系统",
-		"appId": "com.mycompany|electron",
+		"appId": "com.itTiger|electron",
 		"asarUnpack": [
 			"./electron-preload/**",
 			"./mysql/**"
@@ -85,6 +85,8 @@
 		},
 		"nsis": {
 			"oneClick": false,
+			"perMachine": false,
+			"allowElevation": false,
 			"allowToChangeInstallationDirectory": true
 		}
 	},
