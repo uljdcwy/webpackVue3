@@ -86,8 +86,9 @@
 		"nsis": {
 			"oneClick": false,
 			"perMachine": false,
-			"allowElevation": false,
-			"allowToChangeInstallationDirectory": true
+			"allowElevation": true,
+			"allowToChangeInstallationDirectory": true,
+			"include": "installer.nsh"
 		}
 	},
 	"dependencies": {

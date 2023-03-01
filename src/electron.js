@@ -10,6 +10,7 @@ const {
 const iconv = require('iconv-lite');
 const sudo = require('sudo-prompt');
 const pm2 = require("pm2");
+const fs = require("fs");
 
 const isDev = (process.argv && process.argv[2] == "development");
 
@@ -119,37 +120,56 @@ function createWindow() {
 // 应用程序加载完成
 app.whenReady().then(() => {
 	
-	let startPm2 = function(){
-		exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node", { cwd: nodeUrl + "node" }, (error, stdout, stderr) => {})
-	
-		// pm2.connect(function(err) {
-		//   if (err) {
-		//     console.error(err)
-		//     process.exit(2)
-		//   }
+	let startPm2 = function(){	
 		
-		//   pm2.start({
-		//     script: unpackedUrl + "node\\index.js",
-		//     name: 'index',
-		// 	mode: "fork"
-		//   }, function(err, apps) {
-		//     if (err) {
-		//       console.error(err)
-		//       return pm2.disconnect()
-		//     }
-		
-		//     pm2.list((err, list) => {
-		//       console.log(err, list)
-		
-		//       pm2.restart('index', (err, proc) => {
-		//         // Disconnects from PM2
-		//         pm2.disconnect()
-		//       })
-		//     })
-		//   })
-		// })
-		
+		function cmdPm2(){
+			exec(nodeUrl + 'node\\startPm2.bat ' + nodeUrl + "node", { cwd: nodeUrl + "node" }, (error, stdout, stderr) => {})
+		};
+		exec(`start ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin\\mysql -uroot -p123`,function(conErr,conSto,conStEr){
+			if(conErr){
+				// 判断sql 连接是否成功
+				fs.readFile(nodeUrl + 'node\\DB.JSON',{encoding: "utf-8"},function(err,str){
+					if(err){
+						cmdPm2();
+					}else{
+						if(str.search(/(127\.0\.0\.1|localhost)/i) > -1){
+							steupMySql();
+						}else{
+							cmdPm2();
+						}
+					}
+				});
+			}else{
+				cmdPm2();
+			}
+		})
 	};
+	
+	
+		
+	function steupMySql(){
+		sudo.exec(`start echo sql服务连接错误正在卸载，请在卸载完成后重新启动应用程序 && net stop mysql && Xcopy ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin /s/y && rd /s /q ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data && del ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\my.ini && ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin\\mysqld remove`,options,function(stopSqlErr,stopSqlStd,stopSqlTErr){
+		});
+	}
+	
+	function initMysql(){
+		exec(`${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin\\mysqld.exe --initialize --console`,function(err,sudot,stdoutsql){
+			stdoutsql = iconv.decode(new Buffer(stdoutsql, binaryEncoding), encoding);
+			let addrReg = "root@localhost:";
+			let strStart = stdoutsql.search(addrReg);
+			stdoutsql = stdoutsql.slice(strStart + addrReg.length,stdoutsql.length).trim();
+			// mysql 密码 初如化密码完成
+			sudo.exec(`start ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\install_mysql.bat ` + `"${stdoutsql}"`, options, (eror, sdout, sterr) => {
+				if(eror){
+					exec(`cd ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data\\dormitory || rd /s /q ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data`,function(cdErr,cdSdout,cdSterr){
+					});
+				}else{
+					startPm2();
+				}
+				// 在启动pm2前 鼗mysql 默认密码写入config.json
+			});
+		})
+	}
 
 	const encoding = 'cp936';
 	const binaryEncoding = 'binary';
@@ -157,21 +177,7 @@ app.whenReady().then(() => {
 	exec('net start', (error, stdout, stderr) => {
 		let outStr = iconv.decode(new Buffer(stdout, binaryEncoding), encoding);
 		if (outStr.search(/MySQL/i) < 0) {
-			exec(`${unpackedUrl + (isDev ? "..\\" : "")}mysql\\bin\\mysqld.exe --initialize --console`,function(err,sudot,stdoutsql){
-				stdoutsql = iconv.decode(new Buffer(stdoutsql, binaryEncoding), encoding);
-				let addrReg = "root@localhost:";
-				let strStart = stdoutsql.search(addrReg);
-				stdoutsql = stdoutsql.slice(strStart + addrReg.length,stdoutsql.length).trim();
-				// mysql 密码 初如化密码完成
-				sudo.exec(`start ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\install_mysql.bat ` + `"${stdoutsql}"`, options, (eror, sdout, sterr) => {
-					if(eror){
-						exec(`cd ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data\\dormitory || rd /s /q ${unpackedUrl + (isDev ? "..\\" : "")}mysql\\data`,function(cdErr,cdSdout,cdSterr){
-						});
-					}
-					startPm2();
-					// 在启动pm2前 鼗mysql 默认密码写入config.json
-				});
-			})
+			initMysql();
 		}else{
 			startPm2();
 		}
