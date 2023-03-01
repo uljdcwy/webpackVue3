@@ -1,14 +1,14 @@
 const path = require("path");
 const fs = require("fs");
+const webpack = require("webpack");
 // HTML插件
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
 const {VueLoaderPlugin} = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
-
+const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 module.exports = (env) => {
-
     // 命名用promise 调多页
     let pages;
     // HTML插件数组
@@ -19,7 +19,9 @@ module.exports = (env) => {
             const dirList = fs.readdirSync(path.resolve(__dirname + (isPreload ? "/preloads" : "/pages")));
             let entryObj = {};
             dirList.map(function (e, i) {
-                entryObj[e.split('.')[0]] = [path.resolve(__dirname + (isPreload ? "/preloads/" :  "/pages/") + e)]
+				let currentPage = [hotScript];
+				currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" :  "/pages/") + e));
+                entryObj[e.split('.')[0]] = currentPage
             });
             resolve(entryObj);
         });
@@ -153,6 +155,7 @@ module.exports = (env) => {
         output: {
             filename: (env.target == 'node' || env.target == 'electron-preload') ? '[name].js' : './js/[name].js',
             path: path.resolve(__dirname, env.target),
+			publicPath: "/",
             clean: true,
         }
     };
@@ -160,7 +163,8 @@ module.exports = (env) => {
     if ((env.ENV == 'development')) {
         Object.assign(webpackDeploy, {
             devtool: 'source-map'
-        })
+        });
+		PLUS.push(new webpack.HotModuleReplacementPlugin());
         // 生产环境
     } else if ((env.ENV == 'production')) {
         Object.assign(webpackDeploy, {
