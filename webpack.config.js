@@ -92,7 +92,7 @@ module.exports = (env) => {
 							appendTsSuffixTo: [/\.vue$/]
 						},
 					},'thread-loader'],   // 就是上面安装的ts-loader
-					exclude: "/node-modules/" // 排除node-modules目录
+					exclude: "/node_modules/" // 排除node-modules目录
 				},
                 {
                     test: /\.(t|j)s$/i,
