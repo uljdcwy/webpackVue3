@@ -80,14 +80,22 @@ module.exports = (env) => {
         },
         module: {
             rules: [
-                // 加载 .vue 文件
                 {
                     test: /\.vue$/,
                     use: ['vue-loader'],
                 },
+				{
+					test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件
+					use: ["clear-print",{
+						loader: "ts-loader",
+						options: {
+							appendTsSuffixTo: [/\.vue$/]
+						},
+					},'thread-loader'],   // 就是上面安装的ts-loader
+					exclude: "/node-modules/" // 排除node-modules目录
+				},
                 {
-                    // JS加载
-                    test: /\.js$/i,
+                    test: /\.(t|j)s$/i,
                     use: (env.ENV == 'production') ? [{
                         loader: 'clear-print'
                     }, {

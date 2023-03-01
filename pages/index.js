@@ -22,7 +22,6 @@ function /*#__PURE__*/ moduleHot() {
 		module.hot.accept();
 		// 热替换完成后逻辑
 		module.hot.dispose(function() {
-			clearInterval(timer);
 		});
 	}
 }
