@@ -6,7 +6,7 @@
 	"author": "宿舍管理系统",
 	"main": "src/electron.js",
 	"scripts": {
-		"dev": "webpack --env ENV=development target=web webpack.config.js && node devServer.js",
+		"dev": "node devServer.js",
 		"build": "webpack --env ENV=production target=web webpack.config.js",
 		"build-renderer": "webpack --env ENV=production target=electron-renderer webpack.config.js",
 		"build-preload": "webpack --env ENV=production target=electron-preload webpack.config.js",

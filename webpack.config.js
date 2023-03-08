@@ -5,7 +5,7 @@ const webpack = require("webpack");
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // 调用并发插件
-const {VueLoaderPlugin} = require('vue-loader');
+const { VueLoaderPlugin } = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 module.exports = (env) => {
@@ -13,20 +13,23 @@ module.exports = (env) => {
     let pages;
     // HTML插件数组
     let PLUS = [];
-    if(env.target == "web" || env.target == "electron-renderer" || env.target == "electron-preload") {
+    if (env.target == "web" || env.target == "electron-renderer" || env.target == "electron-preload") {
         let isPreload = env.target == "electron-preload";
         pages = new Promise((resolve) => {
             const dirList = fs.readdirSync(path.resolve(__dirname + (isPreload ? "/preloads" : "/pages")));
             let entryObj = {};
             dirList.map(function (e, i) {
-				let currentPage = [hotScript];
-				currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" :  "/pages/") + e));
+                let currentPage = [];
+                if((env.ENV == 'development')){
+                    currentPage.push(hotScript);
+                }
+                currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" : "/pages/") + e));
                 entryObj[e.split('.')[0]] = currentPage
             });
             resolve(entryObj);
         });
 
-        if(env.target != "electron-preload"){
+        if (env.target != "electron-preload") {
             // 获取所有页面并将HTML插件模版引入
             pages.then(function (res) {
                 Object.keys(res).map(function (el) {
@@ -48,7 +51,7 @@ module.exports = (env) => {
 
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());
-    }else if(env.target == "node"){
+    } else if (env.target == "node") {
         pages = {
             index: "./Services/index.js"
         }
@@ -58,6 +61,10 @@ module.exports = (env) => {
         // 构建为web应用
         target: env.target,
         mode: env.ENV,
+        cache: {
+            type: 'filesystem',
+            cacheDirectory: path.resolve(__dirname, '.temp_cache'),
+        },
         // 配置静态引用
         externals: {
         },
@@ -84,38 +91,21 @@ module.exports = (env) => {
                     test: /\.vue$/,
                     use: ['vue-loader'],
                 },
-				{
-					test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件
-					use: ["clear-print",{
-						loader: "ts-loader",
-						options: {
-							appendTsSuffixTo: [/\.vue$/]
-						},
-					},'thread-loader'],   // 就是上面安装的ts-loader
-					exclude: "/node_modules/" // 排除node-modules目录
-				},
                 {
-                    test: /\.(t|j)s$/i,
-                    use: (env.ENV == 'production') ? [{
-                        loader: 'clear-print'
-                    }, {
-                        loader: 'babel-loader',
+                    test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件
+                    use: ["clear-print", {
+                        loader: require.resolve('ts-loader'),
                         options: {
-                            presets: ['@babel/preset-env'],
-                            plugins: ['@babel/plugin-proposal-object-rest-spread']
-                        }
-                    }] : ['thread-loader'],// 'clear-print',
-                    exclude: /(node_modules|public)/,
-                    include: [
-                        path.resolve(__dirname, 'src'),
-                        path.resolve(__dirname, 'self_modules'),
-                        path.resolve(__dirname, 'pages')
-                    ]
+                            appendTsSuffixTo: [/\.vue$/],
+                            transpileOnly: true
+                        },
+                    }],   // 就是上面安装的ts-loader
+                    exclude: "/node_modules/" // 排除node-modules目录
                 },
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', "thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -124,7 +114,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader',"thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', "thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -163,7 +153,7 @@ module.exports = (env) => {
         output: {
             filename: (env.target == 'node' || env.target == 'electron-preload') ? '[name].js' : './js/[name].js',
             path: path.resolve(__dirname, env.target),
-			publicPath: "/",
+            publicPath: "/",
             clean: true,
         }
     };
@@ -172,9 +162,25 @@ module.exports = (env) => {
         Object.assign(webpackDeploy, {
             devtool: 'source-map'
         });
-		PLUS.push(new webpack.HotModuleReplacementPlugin());
+        PLUS.push(new webpack.HotModuleReplacementPlugin());
         // 生产环境
     } else if ((env.ENV == 'production')) {
+        webpackDeploy.module.rules.push({
+            test: /\.js$/i,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env'],
+                    plugins: ['@babel/plugin-proposal-object-rest-spread']
+                }
+            },// 'clear-print',
+            exclude: /(node_modules|public)/,
+            include: [
+                path.resolve(__dirname, 'src'),
+                path.resolve(__dirname, 'self_modules'),
+                path.resolve(__dirname, 'pages')
+            ]
+        })
         Object.assign(webpackDeploy, {
             optimization: {
                 minimize: true,

@@ -1,17 +1,16 @@
 <template>
-  <div ref="obj">2456123</div>
+  <div ref="obj">123</div>
 </template>
 <script setup lang="ts">
 import {onMounted, ref} from "vue";
-import "@/test.ts"
 const obj = ref();
-
-let obj1:number = 123;
-obj1 = 456
+let test:number = 123;
+test = "123"
+console.log(obj);
 
 onMounted(function(){
 })
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped="scoped">
 </style>
