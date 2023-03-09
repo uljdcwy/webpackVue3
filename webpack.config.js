@@ -94,10 +94,10 @@ module.exports = (env) => {
                 {
                     test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件
                     use: ["clear-print", {
-                        loader: require.resolve('ts-loader'),
+                        loader: 'ts-loader',
                         options: {
                             appendTsSuffixTo: [/\.vue$/],
-                            transpileOnly: true
+                            transpileOnly: true // 不使用语法检查TS，提升编译速度
                         },
                     }],   // 就是上面安装的ts-loader
                     exclude: "/node_modules/" // 排除node-modules目录

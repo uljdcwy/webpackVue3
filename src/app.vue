@@ -5,7 +5,7 @@
 import {onMounted, ref} from "vue";
 const obj = ref();
 let test:number = 123;
-test = "123"
+test = 123456
 console.log(obj);
 
 onMounted(function(){
