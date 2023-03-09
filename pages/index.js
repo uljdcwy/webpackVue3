@@ -2,9 +2,22 @@ import {
 	createApp,
 	h
 } from "vue"
-import appContent from "@/app.vue"
+import appContent from "@/app.vue";
+import { createRouter, createWebHashHistory } from "vue-router"
 
 const app = createApp(appContent);
+
+
+const routes = [
+	{ path: '/', component: import("@/test.vue") },
+]
+
+const router = createRouter({
+	history: createWebHashHistory(),
+	routes, // `routes: routes` 的缩写
+});
+
+app.use(router)
 
 document.body.onload = function() {
 	let div = document.createElement('div');

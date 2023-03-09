@@ -1,15 +1,16 @@
 <template>
   <div ref="obj">1阿三发射点发23</div>
+  <router-view></router-view>
 </template>
 <script setup lang="ts">
-import {onMounted, ref} from "Vue";
+import {onMounted, ref} from "vue";
 import VueECharts from "VueECharts";
 
 const obj = ref();
 let test:number = 123;
-console.log(VueECharts,"VueECharts",obj)
 
 onMounted(function(){
+  console.warn(obj,123456)
 })
 </script>
 

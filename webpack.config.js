@@ -14,11 +14,11 @@ module.exports = (env) => {
     // 命名用promise 调多页
     let pages;
     let isDev = env.ENV == 'development';
-    let isCDN = false;
+    let isCDN = true;
     let isCDNList = {
         Vue: "https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.runtime.global.prod.min.js",
         Echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
-        VueECharts: "https://cdn.jsdelivr.net/npm/vue-echarts@latest"
+        VueECharts: "https://cdn.jsdelivr.net/npm/vue-echarts@latest",
     };
     let notCDNList = {
         Vue: "notCDNStatic/vueGlobal.js",
@@ -72,6 +72,7 @@ module.exports = (env) => {
         if(!isCDN){
             PLUS.push(new CopyPlugin({
                 patterns: [
+
                     { from: "node_modules/vue/dist/vue.runtime.global.prod.js", to: notCDNList.Vue },
                     { from: "node_modules/echarts/dist/echarts.js", to: notCDNList.Echarts },
                     { from: "public/VueEcharts.js", to: notCDNList.VueECharts },
