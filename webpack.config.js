@@ -8,9 +8,24 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
+const CopyPlugin = require("copy-webpack-plugin");
+
 module.exports = (env) => {
     // 命名用promise 调多页
     let pages;
+    let isDev = env.ENV == 'development';
+    let isCDN = false;
+    let isCDNList = {
+        Vue: "https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.runtime.global.prod.min.js",
+        Echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
+        VueECharts: "https://cdn.jsdelivr.net/npm/vue-echarts@latest"
+    };
+    let notCDNList = {
+        Vue: "notCDNStatic/vueGlobal.js",
+        Echarts: "notCDNStatic/Echarts.js",
+        VueECharts: "notCDNStatic/VueECharts.js"
+    }
+
     // HTML插件数组
     let PLUS = [];
     if (env.target == "web" || env.target == "electron-renderer" || env.target == "electron-preload") {
@@ -20,7 +35,7 @@ module.exports = (env) => {
             let entryObj = {};
             dirList.map(function (e, i) {
                 let currentPage = [];
-                if((env.ENV == 'development')){
+                if(isDev){
                     currentPage.push(hotScript);
                 }
                 currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" : "/pages/") + e));
@@ -38,6 +53,8 @@ module.exports = (env) => {
                             template: path.resolve(__dirname, './template.html'),
                             filename: el + '.html',
                             chunks: [el],
+                            title: "测试项目",
+                            CDNList: isCDN ? isCDNList : notCDNList
                         })
                     );
                 });
@@ -51,6 +68,16 @@ module.exports = (env) => {
 
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());
+
+        if(!isCDN){
+            PLUS.push(new CopyPlugin({
+                patterns: [
+                    { from: "node_modules/vue/dist/vue.runtime.global.prod.js", to: notCDNList.Vue },
+                    { from: "node_modules/echarts/dist/echarts.js", to: notCDNList.Echarts },
+                    { from: "public/VueEcharts.js", to: notCDNList.VueECharts },
+                ],
+            }));
+        }
     } else if (env.target == "node") {
         pages = {
             index: "./Services/index.js"
@@ -66,17 +93,16 @@ module.exports = (env) => {
             cacheDirectory: path.resolve(__dirname, '.temp_cache'),
         },
         // 配置静态引用
-        externals: {
-        },
+        externals: Object.keys(isCDNList),
         resolve: {
             // 依次尝试调用
-            extensions: ['.js', '.vue', '.json', '.ts'],
+            extensions: ['.js', '.vue', '.ts', '.json'],
             // 使用导入时的路径别名
             alias: {
                 '@': path.resolve(__dirname, './src/')
             },
             // 先调么有模块 再调node模块
-            modules: ['./self_modules', 'node_modules'],
+            modules: ['./webpackLoads', 'node_modules'],
             // 防止webpack 5 特别的BUG
             fallback: {
                 'path': false
@@ -153,18 +179,20 @@ module.exports = (env) => {
         output: {
             filename: (env.target == 'node' || env.target == 'electron-preload') ? '[name].js' : './js/[name].js',
             path: path.resolve(__dirname, env.target),
-            publicPath: "/",
+            publicPath: isDev ? "/" : "",
             clean: true,
         }
     };
     // 区分开发环境与生产环境
-    if ((env.ENV == 'development')) {
+    if (isDev) {
         Object.assign(webpackDeploy, {
             devtool: 'source-map'
         });
+
+
         PLUS.push(new webpack.HotModuleReplacementPlugin());
         // 生产环境
-    } else if ((env.ENV == 'production')) {
+    } else {
         webpackDeploy.module.rules.push({
             test: /\.js$/i,
             use: {

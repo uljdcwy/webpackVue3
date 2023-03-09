@@ -10,6 +10,7 @@ document.body.onload = function() {
 	let div = document.createElement('div');
 	div.id = "app";
 	document.body.appendChild(div);
+	console.warn(app.mount)
 	app.mount(div)
 };
 

@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title><%= htmlWebpackPlugin.options.title %></title>
+    <% for(var key in htmlWebpackPlugin.options.CDNList) { %>
+
+        <script defer="defer" src=<%= htmlWebpackPlugin.options.CDNList[key]%>></script>
+    <% }%>
     <script type="text/javascript">try{global}catch (e){window.global = window;}
     </script>
 </head>
