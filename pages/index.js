@@ -5,6 +5,8 @@ import {
 import appContent from "@/app.vue";
 import { createRouter, createWebHashHistory } from "vue-router"
 
+import { createStore } from 'vuex'
+
 const app = createApp(appContent);
 
 
@@ -17,7 +19,21 @@ const router = createRouter({
 	routes, // `routes: routes` 的缩写
 });
 
-app.use(router)
+// 创建一个新的 store 实例
+const store = createStore({
+	state () {
+		return {
+			count: 0
+		}
+	},
+	mutations: {
+		increment (state) {
+			state.count++
+		}
+	}
+})
+
+app.use(router).use(store)
 
 document.body.onload = function() {
 	let div = document.createElement('div');
