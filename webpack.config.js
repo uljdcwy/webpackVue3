@@ -35,7 +35,7 @@ module.exports = (env) => {
             let entryObj = {};
             dirList.map(function (e, i) {
                 let currentPage = [];
-                if(isDev){
+                if (isDev) {
                     currentPage.push(hotScript);
                 }
                 currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" : "/pages/") + e));
@@ -69,7 +69,7 @@ module.exports = (env) => {
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());
 
-        if(!isCDN){
+        if (!isCDN) {
             PLUS.push(new CopyPlugin({
                 patterns: [
 
@@ -84,6 +84,10 @@ module.exports = (env) => {
             index: "./Services/index.js"
         }
     }
+    PLUS.push(new webpack.DllReferencePlugin({
+        context: path.join(__dirname, ".", "dll"),
+        manifest: require('./manifest.json')
+    }));
 
     let webpackDeploy = {
         // 构建为web应用

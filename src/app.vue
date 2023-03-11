@@ -3,7 +3,7 @@
   <router-view></router-view>
 </template>
 <script setup lang="ts">
-import {onMounted, ref} from "vue";
+const { onMounted, ref } = require("vue");
 import VueECharts from "VueECharts";
 
 const obj = ref();

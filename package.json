@@ -7,6 +7,7 @@
 	"main": "src/electron.js",
 	"scripts": {
 		"dev": "node devServer.js",
+		"build-dll": "webpack --config ./webpack.dll.js",
 		"build": "webpack --env ENV=production target=web webpack.config.js",
 		"build-renderer": "webpack --env ENV=production target=electron-renderer webpack.config.js",
 		"build-preload": "webpack --env ENV=production target=electron-preload webpack.config.js",
@@ -18,6 +19,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.20.12",
 		"@babel/preset-env": "^7.20.2",
+		"axios": "^1.3.4",
 		"babel-loader": "^8.2.5",
 		"cardinal": "^2.1.1",
 		"copy-webpack-plugin": "^11.0.0",
@@ -26,6 +28,7 @@
 		"echarts": "^5.4.1",
 		"electron": "^23.1.0",
 		"electron-builder": "^23.6.0",
+		"element-plus": "^2.2.36",
 		"express": "^4.18.2",
 		"html-webpack-plugin": "^5.5.0",
 		"http": "^0.0.1-security",
