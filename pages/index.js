@@ -6,12 +6,14 @@ import appContent from "@/app.vue";
 import { createRouter, createWebHashHistory } from "vue-router"
 
 import { createStore } from 'vuex'
+import test from "@/test.vue"
 
 const app = createApp(appContent);
 
 
+
 const routes = [
-	{ path: '/', component: import("@/test.vue") },
+	{ path: '/', component: test },
 ]
 
 const router = createRouter({
