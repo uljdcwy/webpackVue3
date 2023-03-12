@@ -3,23 +3,15 @@ import {
 	h
 } from "vue"
 import appContent from "@/app.vue";
-import { createRouter, createWebHashHistory } from "vue-router"
 
 import { createStore } from 'vuex'
-import test from "@/test.vue"
+
+import router from "@/router/index.js"
 
 const app = createApp(appContent);
 
 
-
-const routes = [
-	{ path: '/', component: test },
-]
-
-const router = createRouter({
-	history: createWebHashHistory(),
-	routes, // `routes: routes` 的缩写
-});
+console.log(router,"router")
 
 // 创建一个新的 store 实例
 const store = createStore({
