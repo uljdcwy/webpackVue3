@@ -92,6 +92,9 @@ module.exports = (env) => {
         mode: env.ENV,
         cache: {
             type: 'filesystem',
+            buildDependencies: {
+                config: [__filename],  // 当构建依赖的config文件（通过 require 依赖）内容发生变化时，缓存失效
+            },
             cacheDirectory: path.resolve(__dirname, '.temp_cache'),
         },
         // 配置静态引用
@@ -113,11 +116,19 @@ module.exports = (env) => {
         entry: () => {
             return pages;
         },
+        experiments: {
+            asyncWebAssembly: true,
+            syncWebAssembly: true
+        },
         module: {
             rules: [
                 {
                     test: /\.vue$/,
                     use: ['vue-loader'],
+                },
+                {
+                    test: /\.wasm$/,
+                    type: 'webassembly/async',
                 },
                 {
                     test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件

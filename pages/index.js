@@ -8,11 +8,9 @@ import { createStore } from 'vuex'
 
 import router from "@/router/index.js"
 import { ElButton } from "element-plus"
+import { _Z4facti } from '@/factorial.wasm';
 
 const app = createApp(appContent);
-
-
-console.log(router,"router")
 
 // 创建一个新的 store 实例
 const store = createStore({
