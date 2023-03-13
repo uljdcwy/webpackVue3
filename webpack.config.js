@@ -9,6 +9,7 @@ const { VueLoaderPlugin } = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 const CopyPlugin = require("copy-webpack-plugin");
+// const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 
 module.exports = (env) => {
     // 命名用promise 调多页
@@ -233,13 +234,20 @@ module.exports = (env) => {
                 path.resolve(__dirname, 'self_modules'),
                 path.resolve(__dirname, 'pages')
             ]
-        })
+        });
+
+        // PLUS.push(new BundleAnalyzerPlugin())
+
+
         Object.assign(webpackDeploy, {
             optimization: {
                 minimize: true,
                 minimizer: [new TerserPlugin({
                     parallel: true
                 })],
+                runtimeChunk: {
+                    name: (entrypoint) => `runtime~${entrypoint.name}`,
+                },
                 splitChunks: {
                     chunks: 'all', // 表示要分割的chunk类型：initial只处理同步的; async只处理异步的；all都处理
                     // 缓存分组
@@ -251,6 +259,15 @@ module.exports = (env) => {
                             priority: 1, // 优先级，数值越大，优先级越高
                             minSize: 0, // 小于这个大小的文件，不分割
                             minChunks: 1 // 最少复用几次，这里意思是只要用过一次就分割出来
+                        },
+                        // element 单独拆包使用
+                        elementUI: {
+                            name: "elementUI", // 单独将 elementUI 拆包
+                            priority: 5, // 权重需大于`vendor`
+                            test: /[\/]node_modules[\/]element-plus[\/]/,
+                            chunks: 'initial',
+                            minSize: 100,
+                            minChunks: 1
                         },
                         // 公共模块
                         common: {
