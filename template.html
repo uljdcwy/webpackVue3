@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <title><%= htmlWebpackPlugin.options.title %></title>
     <% for(var key in htmlWebpackPlugin.options.CDNList) { %>
-
-        <script defer="defer" src=<%= htmlWebpackPlugin.options.CDNList[key]%>></script>
+        <script defer="defer" src=<%= 'static/' + key + '/' + htmlWebpackPlugin.options.CDNList[key].split('/').pop() %>></script>
+    <% }%>
+    <% for(var key in htmlWebpackPlugin.options.isStaticCss) { %>
+        <link rel="stylesheet" type="text/css" href=<%= 'static/' + key + '/' + htmlWebpackPlugin.options.isStaticCss[key].split('/').pop() %>>
     <% }%>
     <script type="text/javascript">try{global}catch (e){window.global = window;}
     </script>

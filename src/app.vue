@@ -1,10 +1,13 @@
 <template>
   <div ref="obj">1阿三发射点发23</div>
+  <el-button>我是 ElButton</el-button>
   <router-view></router-view>
 </template>
 <script setup lang="ts">
-const { onMounted, ref } = require("vue");
-import VueECharts from "VueECharts";
+import { onMounted, ref } from "vue";
+
+
+console.warn(axios,"axios");
 
 const obj = ref();
 let test:number = 123;

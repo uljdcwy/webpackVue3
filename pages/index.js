@@ -7,6 +7,7 @@ import appContent from "@/app.vue";
 import { createStore } from 'vuex'
 
 import router from "@/router/index.js"
+import { ElButton } from "element-plus"
 
 const app = createApp(appContent);
 
@@ -27,7 +28,7 @@ const store = createStore({
 	}
 })
 
-app.use(router).use(store)
+app.use(router).use(store).use(ElButton)
 
 document.body.onload = function() {
 	let div = document.createElement('div');

@@ -14,17 +14,21 @@ module.exports = (env) => {
     // 命名用promise 调多页
     let pages;
     let isDev = env.ENV == 'development';
-    let isCDN = true;
+    let isCDN = false;
     let isCDNList = {
-        Vue: "https://cdn.bootcdn.net/ajax/libs/vue/3.2.47/vue.runtime.global.prod.min.js",
-        Echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
-        VueECharts: "https://cdn.jsdelivr.net/npm/vue-echarts@latest",
+        echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
+        axios: "https://unpkg.com/axios/dist/axios.min.j"
     };
     let notCDNList = {
-        Vue: "notCDNStatic/vueGlobal.js",
-        Echarts: "notCDNStatic/Echarts.js",
-        VueECharts: "notCDNStatic/VueECharts.js"
+        echarts: "node_modules/echarts/dist/echarts.common.min.js",
+        axios: "node_modules/axios/dist/axios.min.js"
     }
+
+    let isStaticCss = {
+        elementPlusCss: "node_modules/element-plus/theme-chalk/index.css"
+    }
+
+    let CNDJSList = isCDN ? isCDNList : notCDNList;
 
     // HTML插件数组
     let PLUS = [];
@@ -54,7 +58,8 @@ module.exports = (env) => {
                             filename: el + '.html',
                             chunks: [el],
                             title: "测试项目",
-                            CDNList: isCDN ? isCDNList : notCDNList
+                            CDNList: CNDJSList,
+                            isStaticCss: isStaticCss
                         })
                     );
                 });
@@ -69,21 +74,12 @@ module.exports = (env) => {
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());
 
-        if (!isCDN) {
-            PLUS.push(new CopyPlugin({
-                patterns: [
-
-                    { from: "node_modules/vue/dist/vue.runtime.global.prod.js", to: notCDNList.Vue },
-                    { from: "node_modules/echarts/dist/echarts.js", to: notCDNList.Echarts },
-                    { from: "public/VueEcharts.js", to: notCDNList.VueECharts },
-                ],
-            }));
-        }
     } else if (env.target == "node") {
         pages = {
             index: "./Services/index.js"
         }
     }
+
     PLUS.push(new webpack.DllReferencePlugin({
         context: path.join(__dirname, ".", "dll"),
         manifest: require('./manifest.json')
@@ -136,7 +132,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|c|sa|)ss$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', "thread-loader", 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -145,7 +141,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.(le|c)ss$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', "thread-loader", 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -198,6 +194,30 @@ module.exports = (env) => {
         PLUS.push(new webpack.HotModuleReplacementPlugin());
         // 生产环境
     } else {
+
+        let patterns = [];
+
+        if (!isCDN) {
+            for(let key in CNDJSList){
+                patterns.push({
+                    from: CNDJSList[key],
+                    to: "static/"+ key
+                });
+            }
+        }
+
+
+        for(let key in isStaticCss){
+            patterns.push({
+                from: isStaticCss[key],
+                to: "static/"+ key
+            });
+        }
+
+        PLUS.push(new CopyPlugin({
+            patterns: patterns,
+        }));
+
         webpackDeploy.module.rules.push({
             test: /\.js$/i,
             use: {
@@ -230,7 +250,6 @@ module.exports = (env) => {
                             test: /node_modules/,  // 设置命中目录规则
                             priority: 1, // 优先级，数值越大，优先级越高
                             minSize: 0, // 小于这个大小的文件，不分割
-                            maxSize: 1000000,
                             minChunks: 1 // 最少复用几次，这里意思是只要用过一次就分割出来
                         },
                         // 公共模块
@@ -239,7 +258,6 @@ module.exports = (env) => {
                             minChunks: 2,
                             priority: 0,
                             minSize: 0,
-                            maxSize: 1000000,
                             minChunks: 2  // 只要引用过2次，就分割成公共代码
                         }
                     }
