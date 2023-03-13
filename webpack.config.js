@@ -80,10 +80,10 @@ module.exports = (env) => {
         }
     }
 
-    PLUS.push(new webpack.DllReferencePlugin({
-        context: path.join(__dirname, ".", "dll"),
-        manifest: require('./manifest.json')
-    }));
+    // PLUS.push(new webpack.DllReferencePlugin({
+    //     context: path.join(__dirname, ".", "dll"),
+    //     manifest: require('./manifest.json')
+    // }));
 
     let webpackDeploy = {
         // 构建为web应用
