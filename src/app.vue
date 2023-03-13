@@ -7,13 +7,13 @@
 import { onMounted, ref } from "vue";
 
 
-console.warn(axios,"axios");
+console.log(axios,"axios");
 
 const obj = ref();
 let test:number = 123;
 
 onMounted(function(){
-  console.warn(obj,123456)
+  console.log(obj,123456)
 })
 </script>
 

@@ -8,7 +8,7 @@ import { useStore } from "vuex";
 
 const {state: { count } } = useStore();
 
-console.warn(count,"count")
+console.log(count,"count")
 </script>
 
 <style scoped>

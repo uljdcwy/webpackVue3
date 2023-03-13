@@ -21,7 +21,7 @@ module.exports = (env) => {
         axios: "https://unpkg.com/axios/dist/axios.min.j"
     };
     let notCDNList = {
-        echarts: "node_modules/echarts/dist/echarts.common.min.js",
+        echarts: "node_modules/echarts/dist/echarts.js",
         axios: "node_modules/axios/dist/axios.min.js"
     }
 
