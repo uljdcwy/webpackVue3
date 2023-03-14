@@ -104,7 +104,8 @@ module.exports = (env) => {
             extensions: ['.js', '.vue', '.ts', '.json'],
             // 使用导入时的路径别名
             alias: {
-                '@': path.resolve(__dirname, './src/')
+                '@': path.resolve(__dirname, './src/'),
+                '@wasm': path.resolve(__dirname, './wasm/'),
             },
             // 先调么有模块 再调node模块
             modules: ['./webpackLoads', 'node_modules'],
