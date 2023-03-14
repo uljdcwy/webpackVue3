@@ -219,17 +219,18 @@ module.exports = (env) => {
             }
         }
 
-
-        for(let key in isStaticCss){
-            patterns.push({
-                from: isStaticCss[key],
-                to: "static/"+ key
-            });
+        if(env.target == 'web'){
+            for(let key in isStaticCss){
+                patterns.push({
+                    from: isStaticCss[key],
+                    to: "static/"+ key
+                });
+            }
+    
+            PLUS.push(new CopyPlugin({
+                patterns: patterns,
+            }));
         }
-
-        PLUS.push(new CopyPlugin({
-            patterns: patterns,
-        }));
 
         webpackDeploy.module.rules.push({
             test: /\.js$/i,
