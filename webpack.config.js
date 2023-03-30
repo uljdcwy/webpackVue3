@@ -101,7 +101,7 @@ module.exports = (env) => {
         externals: Object.keys(isCDNList),
         resolve: {
             // 依次尝试调用
-            extensions: ['.js', '.vue', '.ts', '.json'],
+            extensions: ['.js', '.mjs', '.vue', '.ts', '.d.ts', '.json'],
             // 使用导入时的路径别名
             alias: {
                 '@': path.resolve(__dirname, './src/'),
@@ -133,7 +133,7 @@ module.exports = (env) => {
                 },
                 {
                     test: /\.tsx?$/,    // .ts或者tsx后缀的文件，就是typescript文件
-                    use: ["clear-print", {
+                    use: [{
                         loader: 'ts-loader',
                         options: {
                             appendTsSuffixTo: [/\.vue$/],
@@ -144,7 +144,7 @@ module.exports = (env) => {
                 },
                 {
                     // scss加载
-                    test: /\.(sc|c|sa|)ss$/i,
+                    test: /\.(sc|sa|)ss$/i,
                     use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
@@ -153,12 +153,17 @@ module.exports = (env) => {
                 },
                 {
                     // less加载
-                    test: /\.(le|c)ss$/i,
+                    test: /\.less$/i,
                     use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
                     ]
+                },
+                {
+                    // 静态CSS加载
+                    test: /\.css$/i,
+                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'postcss-loader'],// 'clear-print',
                 },
                 {
                     test: /\.(png|svg|jpg|jpeg|gif)$/i,

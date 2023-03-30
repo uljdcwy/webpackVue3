@@ -4,4 +4,7 @@
         "target": "ES2016",
 		"moduleResolution": "node",
 	},
+    "include": [
+        "node_modules/**/*"
+    ],
 }

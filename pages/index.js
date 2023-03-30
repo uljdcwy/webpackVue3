@@ -1,6 +1,5 @@
 import {
 	createApp,
-	h
 } from "vue"
 import appContent from "@/app.vue";
 
@@ -8,15 +7,12 @@ import { createStore } from 'vuex'
 
 import router from "@/router/index.js"
 import { ElButton } from "element-plus"
-console.log(import('@wasm/factorial.wasm'),123);
+import "./../public/common.css"
 
-
-import('@wasm/test.wasm').then(function(res){
-	console.log(res.main())
-})
 
 import('@wasm/factorial.wasm').then(function(res){
-	console.log(res._Z4facti(5))
+	let val = res._Z4facti(5);
+	console.log(val)
 })
 
 const app = createApp(appContent);
@@ -42,19 +38,16 @@ document.body.onload = function() {
 	let div = document.createElement('div');
 	div.id = "app";
 	document.body.appendChild(div);
-	console.log(app.mount)
 	app.mount(div)
 };
 
-
-/*#__PURE__*/
-moduleHot()
+/*#__PURE__*/ moduleHot()
 
 function /*#__PURE__*/ moduleHot() {
-	if (module.hot) {
+	if (module?.hot) {
 		module.hot.accept();
 		// 热替换完成后逻辑
-		module.hot.dispose(function() {
+		module?.hot.dispose(function() {
 		});
 	}
 }

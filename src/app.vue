@@ -1,21 +1,27 @@
 <template>
-  <div ref="obj">1阿三发射点发23</div>
-  <el-button>我是 ElButton</el-button>
+  <div class="bg-box"></div>
+  <component-header></component-header>
   <router-view></router-view>
 </template>
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
+import ComponentHeader from "./components/header.vue"
 
-
-console.log(axios,"axios");
-
-const obj = ref();
-let test:number = 123;
 
 onMounted(function(){
-  console.log(obj,123456)
+console.log(ComponentHeader,"header")
 })
 </script>
 
 <style lang="scss" scoped="scoped">
+  .bg-box{
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    background-image: url(./../public/bg.png);
+    background-size: 100% 100%;
+  }
 </style>

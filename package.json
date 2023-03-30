@@ -95,6 +95,7 @@
 		}
 	},
 	"dependencies": {
+		"@dataview/datav-vue3": "^0.0.0-test.1672506674342",
 		"child_process": "^1.0.2",
 		"element3": "^0.0.40",
 		"iconv-lite": "^0.6.3",
