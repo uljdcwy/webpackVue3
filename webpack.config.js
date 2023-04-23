@@ -77,7 +77,7 @@ module.exports = (env) => {
 
     } else if (env.target == "node") {
         pages = {
-            index: "./Services/index.js"
+            index: "./Services/index"
         }
     }
 

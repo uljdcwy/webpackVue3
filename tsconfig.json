@@ -1,8 +1,7 @@
 {
 	"compilerOptions": {
-        "module": "es6",
-        "target": "ES2016",
-		"moduleResolution": "node",
+        "target": "ES6",
+        "strict": true
 	},
     "include": [
         "node_modules/**/*"
