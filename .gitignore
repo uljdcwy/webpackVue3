@@ -1,5 +1,5 @@
 node_modules/*
-Services/*
+Services/routers/*
 web/*
 node/*
 pages/*
