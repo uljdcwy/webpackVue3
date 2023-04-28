@@ -8,5 +8,5 @@ electron-preload/*
 public/*
 mysql/*
 dist
-**/index.ts
+/Services/index.ts
 # 此文件主要用来忽图不需要提交的文件
