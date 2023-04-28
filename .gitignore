@@ -9,4 +9,6 @@ public/*
 mysql/*
 dist
 /Services/index.ts
+/Services/DBConfig.ts
+/Services/routers/*
 # 此文件主要用来忽图不需要提交的文件
