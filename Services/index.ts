@@ -53,76 +53,12 @@ router.post("/createDB", async function (ctx, next) {
 }, getListMiddle).post('/person/add', async (ctx, next) => {
   ctx.dbName = 'person';
   let params = ctx.request.body;
-  if(!Boolean(params.phone)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "手机号不能为空"
-    };
-    return ;
-  }
-  if(!Boolean(params.name)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "姓名不能为空"
-    };
-    return ;
-  }
-  if(!Boolean(params.cardType)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "证件类型不能为空"
-    };
-    return ;
-  }
-  if(!Boolean(params.cardID)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "证件号不能为空"
-    };
-    return ;
-  }
   await next();
 }, addMiddle).put('/person/update', async (ctx, next) => {
   ctx.dbName = 'person';
   ctx.mainKey = 'id';
 
   let params = ctx.request.body;
-  if(!Boolean(params.phone)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "手机号不能为空"
-    };
-    return ;
-  }
-  if(!Boolean(params.name)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "姓名不能为空"
-    };
-    return ;
-  }
-  if(!Boolean(params.cardType)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "证件类型不能为空"
-    };
-    return ;
-  }
-  if(!Boolean(params.cardID)){
-    ctx.body = {
-      code: 0,
-      data: null,
-      msg: "证件号不能为空"
-    };
-    return ;
-  }
   await next();
 }, updateMiddle).delete('/person/delete', async (ctx, next) => {
   ctx.dbName = 'person';
@@ -130,8 +66,11 @@ router.post("/createDB", async function (ctx, next) {
 
   await next();
 }, deleteMiddle).post('/pay', async (ctx, next) => {
-  ctx.dbName = 'person';
-  ctx.mainKey = 'id';
+  
+  
+  ctx.body = {
+
+  }
 
 })
 app.use(mount('/venue', router.middleware())).use(router.allowedMethods());
