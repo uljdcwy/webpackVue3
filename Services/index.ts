@@ -8,6 +8,7 @@ import { getListMiddle } from "./middle/getList"
 import { addMiddle, addManyMiddle } from "./middle/add"
 import { updateMiddle } from "./middle/update";
 import { deleteMiddle } from "./middle/delete"
+import { getFormatTime } from "../moduleApi/Date";
 
 const app = new Koa();
 const router = new Router();
@@ -58,21 +59,15 @@ router.post("/createDB", async function (ctx, next) {
   ctx.dbName = 'person';
   ctx.mainKey = 'id';
 
-  let params = ctx.request.body;
   await next();
 }, updateMiddle).delete('/person/delete', async (ctx, next) => {
   ctx.dbName = 'person';
   ctx.mainKey = 'id';
 
   await next();
-}, deleteMiddle).post('/pay', async (ctx, next) => {
-  
-  
-  ctx.body = {
+}, deleteMiddle)
 
-  }
 
-})
 app.use(mount('/venue', router.middleware())).use(router.allowedMethods());
 
 app.use(cors({
