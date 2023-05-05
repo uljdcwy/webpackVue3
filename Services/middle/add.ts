@@ -31,7 +31,6 @@ export const addManyMiddle = async (ctx) => {
         let manyParams = ctx.request.body;
         let keys: string = '';
         let values: string = '';
-        console.log(manyParams,"manyParams")
         manyParams.forEach((el: any, index: number) => {
             values += !values ? ' VALUES(' : ', (';
             let startStatus = false;
@@ -47,8 +46,6 @@ export const addManyMiddle = async (ctx) => {
             }
             values += ')'
         })
-
-        console.log(keys, "keys", values, "values")
 
         let result = await execute(`INSERT INTO ${ctx.dbName}(${keys})${values}`, []);
 

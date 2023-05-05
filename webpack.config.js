@@ -98,7 +98,7 @@ module.exports = (env) => {
             cacheDirectory: path.resolve(__dirname, '.temp_cache'),
         },
         // 配置静态引用
-        externals: Object.keys(isCDNList),
+        externals: env.target !== "node" ? Object.keys(isCDNList) : [],
         resolve: {
             // 依次尝试调用
             extensions: ['.js', '.mjs', '.vue', '.ts', '.d.ts', '.json'],

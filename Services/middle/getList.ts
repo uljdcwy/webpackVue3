@@ -4,6 +4,7 @@ import { execute } from "../mysql";
 export const getListMiddle =  async (ctx, next) => {
     try{
       let params = ctx.request.query;
+      console.log(params,"params")
       ctx.body = await findTableMiddle(params, ctx);
     
     }catch(e){
@@ -55,6 +56,9 @@ export const getListMiddle =  async (ctx, next) => {
       count = recordCount;
       sqlStr += ` LIMIT ${pageIndex}, ${pageSize}`;
     }
+
+    console.log(sqlStr,"sqlStr")
+
     return {
       code: 1,
       data: await execute(sqlStr),
