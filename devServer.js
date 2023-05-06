@@ -30,7 +30,7 @@ app.use(express.static('./web'))
 
 if (require.main === module) {
   var server = http.createServer(app);
-  server.listen(3000, "localhost", function () {
+  server.listen(5000, "localhost", function () {
     console.log('Listening on %j', server.address());
   });
 }

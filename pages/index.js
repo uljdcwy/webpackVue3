@@ -3,9 +3,7 @@ import {
 } from "vue"
 import appContent from "@/app.vue";
 
-import { createStore } from 'vuex'
-
-import router from "@/router/index.js"
+import router from "@/router/index"
 import { ElButton } from "element-plus"
 import "./../public/common.css"
 
@@ -18,19 +16,7 @@ import('@wasm/factorial.wasm').then(function(res){
 const app = createApp(appContent);
 
 
-// 创建一个新的 store 实例
-const store = createStore({
-	state () {
-		return {
-			count: 0
-		}
-	},
-	mutations: {
-		increment (state) {
-			state.count++
-		}
-	}
-})
+
 
 app.use(router).use(store).use(ElButton)
 

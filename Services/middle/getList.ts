@@ -14,7 +14,7 @@ export const getListMiddle =  async (ctx, next) => {
 
   export const findTableMiddle = async (params: any, ctx) => {
     
-    let pageIndex: number | null, pageSize: number | null, count: number | null = null;
+    let pageIndex: number | 0, pageSize: number | 0, count: number | null = null;
     let sqlStr: string | null = `select * from ${ctx.dbName} WHERE 1=1`;
 
     
@@ -51,10 +51,11 @@ export const getListMiddle =  async (ctx, next) => {
     
     // 如果值不为声名的值则说明传pageIndex与pageSize 需要返回数量
     if(params.pageIndex !== undefined  || params.pageSize !== undefined){
-      pageIndex = params.pageIndex || 0, pageSize = params.pageSize || 10;
+      pageIndex = Number(params.pageIndex) || 0, pageSize = Number(params.pageSize) || 10;
       let [{recordCount}] = await execute(sqlStr.replace("*", "COUNT(*) as recordCount"));
       count = recordCount;
-      sqlStr += ` LIMIT ${pageIndex}, ${pageSize}`;
+      let startPosition = pageIndex * pageSize
+      sqlStr += ` LIMIT ${startPosition}, ${startPosition + pageSize}`;
     }
 
     console.log(sqlStr,"sqlStr")

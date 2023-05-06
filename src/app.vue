@@ -21,7 +21,6 @@ console.log(ComponentHeader,"header")
     top: 0;
     bottom: 0;
     z-index: -1;
-    background-image: url(./../public/bg.png);
     background-size: 100% 100%;
   }
 </style>

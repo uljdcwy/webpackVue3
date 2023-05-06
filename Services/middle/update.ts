@@ -20,7 +20,6 @@ export const updateMiddle = async function (ctx, next) {
             }
         }
     }
-    console.log(updateSql,"updateSql")
     ctx.body = await execute(`UPDATE ${ctx.dbName} SET ${updateSql} WHERE ${ctx.mainKey} = ${mainKey}`, []);
 }
 
@@ -32,22 +31,30 @@ export const updateManyMiddle = async (ctx) => {
     let mainKey: any = ctx.mainKey || 'id';
 
     for(let key in updateData){
+        let val = updateData[key];
         if(updateSql){
             updateSql += `, ${key} = CASE ${mainKey}`
             for(let i = 0; i < mainKeyArr.length; i++){
-                updateSql += ` WHEN ${mainKeyArr[i]} THEN ${updateData[key]}`
+                if (typeof val == 'string') {
+                    updateSql += ` WHEN ${mainKeyArr[i]} THEN '${val}'`
+                } else {
+                    updateSql += ` WHEN ${mainKeyArr[i]} THEN ${val}`
+                }
             }
             updateSql += ` END`
         }else{
             updateSql += ` ${key} = CASE ${mainKey}`
             for(let i = 0; i < mainKeyArr.length; i++){
-                updateSql += ` WHEN ${mainKeyArr[i]} THEN ${updateData[key]}`
+                if (typeof val == 'string') {
+                    updateSql += ` WHEN ${mainKeyArr[i]} THEN '${val}'`
+                } else {
+                    updateSql += ` WHEN ${mainKeyArr[i]} THEN ${val}`
+                }
             }
             updateSql += ` END`
         }
     }
 
-    console.log(updateSql,"updateSql")
     mainKeyArr = mainKeyArr.join(',')
 
     ctx.body = await execute(`UPDATE ${ctx.dbName} SET${updateSql} WHERE ${mainKey} IN (${mainKeyArr})`);
