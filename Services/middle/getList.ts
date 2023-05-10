@@ -56,9 +56,13 @@ export const getListMiddle =  async (ctx, next) => {
       count = recordCount;
       let startPosition = pageIndex * pageSize
       sqlStr += ` LIMIT ${startPosition}, ${startPosition + pageSize}`;
+      return {
+        code: 1,
+        count: count,
+        data: await execute(sqlStr),
+        msg: '',
+      }
     }
-
-    console.log(sqlStr,"sqlStr")
 
     return {
       code: 1,
