@@ -34,6 +34,7 @@ export const updateManyMiddle = async (ctx) => {
 
 export const updateSql = async (ctx) => {
     let params = ctx.request.body;
+    console.info(JSON.stringify(params),"更新参数");
     let mainKey: any = 'id';
     let updateSql: string = '';
 
@@ -57,6 +58,7 @@ export const updateSql = async (ctx) => {
 
 export const updateManySql = async (ctx) => {
     let params = ctx.request.body;
+    console.info(JSON.stringify(params),"批量更新参数");
     let mainKeyArr: any = params.mainKeyArr;
     let updateSql: string = '';
     let updateData = params.updateData;

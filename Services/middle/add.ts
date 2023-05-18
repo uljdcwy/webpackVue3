@@ -16,7 +16,6 @@ export const addMiddle = async (ctx) => {
 
 export const addManyMiddle = async (ctx) => {
     try {
-
         ctx.body = {
             code: 1,
             msg: "",
@@ -30,6 +29,7 @@ export const addManyMiddle = async (ctx) => {
 
 export const addSql = async (ctx) => {
     let params = ctx.request.body;
+    console.info(JSON.stringify(params),"新增参数");
     let keys: string = '';
     let values: string = '';
     for (let key in params) {
@@ -47,6 +47,7 @@ export const addSql = async (ctx) => {
 
 export const addManySql = async (ctx) => {
     let manyParams = ctx.request.body;
+    console.info(JSON.stringify(manyParams),"批量新增参数");
     let keys: string = '';
     let values: string = '';
     manyParams.forEach((el: any, index: number) => {

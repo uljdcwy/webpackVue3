@@ -16,12 +16,13 @@ module.exports = (env) => {
     let pages;
     let isDev = env.ENV == 'development';
     let isCDN = false;
+    let splitAllNpm = false;
     let isCDNList = {
-        echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
+        // echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
         axios: "https://unpkg.com/axios/dist/axios.min.j"
     };
     let notCDNList = {
-        echarts: "node_modules/echarts/dist/echarts.js",
+        // echarts: "node_modules/echarts/dist/echarts.js",
         axios: "node_modules/axios/dist/axios.min.js"
     }
 
@@ -58,7 +59,7 @@ module.exports = (env) => {
                             template: path.resolve(__dirname, './template.html'),
                             filename: el + '.html',
                             chunks: [el],
-                            title: "测试项目",
+                            title: "场地订阅后台管理",
                             CDNList: CNDJSList,
                             isStaticCss: isStaticCss
                         })
@@ -76,6 +77,7 @@ module.exports = (env) => {
         PLUS.push(new VueLoaderPlugin());
 
     } else if (env.target == "node") {
+        splitAllNpm = true;
         pages = {
             index: "./Services/index"
         }
@@ -216,22 +218,22 @@ module.exports = (env) => {
         let patterns = [];
 
         if (!isCDN) {
-            for(let key in CNDJSList){
+            for (let key in CNDJSList) {
                 patterns.push({
                     from: CNDJSList[key],
-                    to: "static/"+ key
+                    to: "static/" + key
                 });
             }
         }
 
-        if(env.target == 'web'){
-            for(let key in isStaticCss){
+        if (env.target == 'web') {
+            for (let key in isStaticCss) {
                 patterns.push({
                     from: isStaticCss[key],
-                    to: "static/"+ key
+                    to: "static/" + key
                 });
             }
-    
+
             PLUS.push(new CopyPlugin({
                 patterns: patterns,
             }));
@@ -263,20 +265,31 @@ module.exports = (env) => {
                 minimizer: [new TerserPlugin({
                     parallel: true
                 })],
-                runtimeChunk: {
+                runtimeChunk: !splitAllNpm ? {
                     name: (entrypoint) => `runtime~${entrypoint.name}`,
-                },
+                } : {},
                 splitChunks: {
                     chunks: 'all', // 表示要分割的chunk类型：initial只处理同步的; async只处理异步的；all都处理
                     // 缓存分组
                     cacheGroups: {
                         // 第三方模块
-                        verdors: {
+                        verdors: !splitAllNpm ? {
                             name: 'verdor', // chunk名称
                             test: /node_modules/,  // 设置命中目录规则
                             priority: 1, // 优先级，数值越大，优先级越高
                             minSize: 0, // 小于这个大小的文件，不分割
                             minChunks: 1 // 最少复用几次，这里意思是只要用过一次就分割出来
+                        } : {
+
+                            test: /[\\/]node_modules[\\/]/,
+                            name(module) {
+                                //取得名称。例如 /node_modules/packageName/not/this/part.js
+                                // 或 /node_modules/packageName
+                                const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+
+                                // npm package 是 URL 安全的，但有些服务不喜欢 @ 符号
+                                return `npm.${packageName.replace('@', '')}`;
+                            },
                         },
                         // element 单独拆包使用
                         elementUI: {
@@ -285,6 +298,15 @@ module.exports = (env) => {
                             test: /[\/]node_modules[\/]element-plus[\/]/,
                             chunks: 'initial',
                             minSize: 100,
+                            minChunks: 1
+                        },
+                        // koaRouter 单独拆包使用
+                        koaRouter: {
+                            name: "koaRouter", // 单独将 koaRouter 拆包
+                            priority: 10, // 权重需大于`koaRouter`
+                            test: /[\/]node_modules\/koa-router\//,
+                            chunks: 'initial',
+                            minSize: 0,
                             minChunks: 1
                         },
                         // 公共模块

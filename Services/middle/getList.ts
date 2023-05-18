@@ -4,7 +4,6 @@ import { execute } from "../mysql";
 export const getListMiddle =  async (ctx, next) => {
     try{
       let params = ctx.request.query;
-      console.log(params,"params")
       ctx.body = await findTableMiddle(params, ctx);
     
     }catch(e){
@@ -14,6 +13,7 @@ export const getListMiddle =  async (ctx, next) => {
 
   export const findTableMiddle = async (params: any, ctx) => {
     
+    console.info(JSON.stringify(params),"查询参数");
     let pageIndex: number | 0, pageSize: number | 0, count: number | null = null;
     let sqlStr: string | null = `select * from ${ctx.dbName} WHERE 1=1`;
 
@@ -54,8 +54,8 @@ export const getListMiddle =  async (ctx, next) => {
       pageIndex = Number(params.pageIndex) || 0, pageSize = Number(params.pageSize) || 10;
       let [{recordCount}] = await execute(sqlStr.replace("*", "COUNT(*) as recordCount"));
       count = recordCount;
-      let startPosition = pageIndex * pageSize
-      sqlStr += ` LIMIT ${startPosition}, ${startPosition + pageSize}`;
+      let startPosition = pageIndex * pageSize;
+      sqlStr += ` LIMIT ${pageSize} offset ${startPosition}`;
       return {
         code: 1,
         count: count,

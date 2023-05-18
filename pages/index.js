@@ -5,7 +5,7 @@ import appContent from "@/app.vue";
 
 import router from "@/router/index"
 import { ElButton } from "element-plus"
-import "./../public/common.css"
+import "./../public/common.scss"
 
 
 import('@wasm/factorial.wasm').then(function(res){

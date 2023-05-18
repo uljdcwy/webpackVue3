@@ -12,7 +12,19 @@ const wx = new Router();
 
 app.use(bodyParser());
 
-app.use(staticFiles("./web"))
+app.use(staticFiles("./web", {
+  maxage: 600000,
+  extensions: ['appcache'],
+  setHeaders: (res: any, path: any) => {
+    if(path.search(/.appcache/) > -1){
+      // console.log(res.headers,res.Headers,"res.headers,res.Headers")
+      // console.log("path",ctx['Content-Type'],ctx.setHeaders)
+      // res[''] ='text/cache-manifest');
+      res.setHeader('Content-Type', 'text/cache-manifest')
+      // ctx.response.header['Content-Type'] = 'text/cache-manifest';
+    }
+  }
+}))
 
 
 

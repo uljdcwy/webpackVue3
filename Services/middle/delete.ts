@@ -14,6 +14,7 @@ export const deleteMiddle = async (ctx, next) => {
 
 export const deleteSql = async (ctx) => {
     let params = ctx.request.body;
+    console.info(JSON.stringify(params),"删除参数");
     let mainKey: any = 'id';
 
     for (let key in params) {
