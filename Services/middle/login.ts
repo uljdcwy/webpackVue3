@@ -16,34 +16,21 @@ export const loginMiddle = async (ctx,next) => {
                 code: 0
             }
         }else{
-            if(params.account == "Administrator" && params.password == "888888"){
+            let password = await findTableMiddle({ account: params.account }, { dbName: "account" });
+
+            if(md5(params.password) == (password.data[0] && password.data[0].password)){
                 ctx.body = {
-                    token: getToken({
-                        account: 'Administrator',
-                        password: '888888'
-                    }),
+                    token: getToken(params),
                     expression: 14400,
                     msg: "获取token成功",
                     code: 1
                 }
             }else{
-                let password = await findTableMiddle({ account: params.account }, { dbName: "account" });
-    
-                if(md5(params.password) == (password.data[0] && password.data[0].password)){
-                    ctx.body = {
-                        token: getToken(params),
-                        expression: 14400,
-                        msg: "获取token成功",
-                        code: 1
-                    }
-                }else{
-                    ctx.body = {
-                        msg: "帐号密码错误",
-                        data: null,
-                        code: 0
-                    }
+                ctx.body = {
+                    msg: "帐号密码错误",
+                    data: null,
+                    code: 0
                 }
-
             }
             
         }
