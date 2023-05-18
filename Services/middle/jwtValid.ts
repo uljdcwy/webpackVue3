@@ -1,6 +1,6 @@
 import Jwt from "jsonwebtoken";
 
-const secret = "wxy-ittiger"
+const secret = "123456"
 
 export const getToken = (loginData, expTime = 14400) => {
     return Jwt.sign({
