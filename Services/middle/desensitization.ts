@@ -5,7 +5,7 @@ export enum EncryptionType {
     Identification
 }
 
-const sercert = "wxy-ittiger"
+const sercert = "123456"
 
 export const encryption = (encrypted: any, type: EncryptionType = EncryptionType.Phone, level: number = 3): any => {
     let ciphertext = CryptoJS.AES.encrypt(JSON.stringify(encrypted), sercert).toString();
