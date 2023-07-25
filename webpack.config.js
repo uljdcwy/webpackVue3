@@ -23,16 +23,11 @@ module.exports = (env) => {
     let isCDN = false;
     let splitAllNpm = false;
     let isCDNList = {
-        // echarts: "https://cdn.jsdelivr.net/npm/echarts@5.4.1",
-        axios: "https://unpkg.com/axios/dist/axios.min.j"
     };
     let notCDNList = {
-        // echarts: "node_modules/echarts/dist/echarts.js",
-        axios: "node_modules/axios/dist/axios.min.js"
     }
 
     let isStaticCss = {
-        elementPlusCss: "node_modules/element-plus/theme-chalk/index.css"
     }
 
     let CNDJSList = isCDN ? isCDNList : notCDNList;
