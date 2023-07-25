@@ -1,6 +1,7 @@
 const path = require("path");
 const fs = require("fs");
 const webpack = require("webpack");
+const DevHtml = require("./webpackPlugins/webpack5Dev");
 // HTML插件
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -10,7 +11,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 const CopyPlugin = require("copy-webpack-plugin");
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-
 module.exports = (env) => {
     // 命名用promise 调多页
     let pages;
@@ -51,6 +51,7 @@ module.exports = (env) => {
         });
 
         if (env.target != "electron-preload") {
+            console.log('开始使用HTML插件',path.resolve(__dirname, './template.html'))
             // 获取所有页面并将HTML插件模版引入
             pages.then(function (res) {
                 Object.keys(res).map(function (el) {
@@ -110,7 +111,7 @@ module.exports = (env) => {
                 '@wasm': path.resolve(__dirname, './wasm/'),
             },
             // 先调么有模块 再调node模块
-            modules: ['./webpackLoads', 'node_modules'],
+            modules: ['./webpackPlugins', './webpackLoads', 'node_modules'],
             // 防止webpack 5 特别的BUG
             fallback: {
                 'path': false
@@ -206,12 +207,16 @@ module.exports = (env) => {
     };
     // 区分开发环境与生产环境
     if (isDev) {
+
+
         Object.assign(webpackDeploy, {
             devtool: 'source-map'
         });
 
 
         PLUS.push(new webpack.HotModuleReplacementPlugin());
+        // 生成HTML文件的插件
+        PLUS.push(new DevHtml());
         // 生产环境
     } else {
 

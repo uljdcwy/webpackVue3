@@ -5,7 +5,6 @@ import appContent from "@/app.vue";
 
 import router from "@/router/index"
 import { ElButton } from "element-plus"
-import "./../public/common.scss"
 
 
 import('@wasm/factorial.wasm').then(function(res){
@@ -18,7 +17,7 @@ const app = createApp(appContent);
 
 
 
-app.use(router).use(store).use(ElButton)
+app.use(router).use(ElButton)
 
 document.body.onload = function() {
 	let div = document.createElement('div');

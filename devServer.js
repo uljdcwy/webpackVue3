@@ -1,22 +1,19 @@
-var http = require('http');
+let http = require('http');
 
-var express = require('express');
+let express = require('express');
 
-var app = express();
+let app = express();
 
-// Step 1: Create & configure a webpack compiler
-var webpack = require('webpack');
-var webpackConfig = require('./webpack.config')({
+let webpack = require('webpack');
+let webpackConfig = require('./webpack.config')({
   ENV: "development",
   target: "web"
 });
-var compiler = webpack(webpackConfig);
+let compiler = webpack(webpackConfig);
 let instance = require('webpack-dev-middleware')(compiler);
 
-// Step 2: Attach the dev middleware to the compiler & the server
 app.use(instance);
 
-// Step 3: Attach the hot middleware to the compiler & the server
 app.use(
   require('webpack-hot-middleware')(compiler, {
     log: console.log,
@@ -25,7 +22,6 @@ app.use(
   })
 );
 
-// Do anything you like with the rest of your express application.
 app.use(express.static('./web'))
 
 if (require.main === module) {
