@@ -10,6 +10,11 @@ const { VueLoaderPlugin } = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 const CopyPlugin = require("copy-webpack-plugin");
+
+const AutoImport = require('unplugin-auto-import/webpack')
+const Components = require('unplugin-vue-components/webpack')
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
+
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 module.exports = (env) => {
     // 命名用promise 调多页
@@ -51,7 +56,7 @@ module.exports = (env) => {
         });
 
         if (env.target != "electron-preload") {
-            console.log('开始使用HTML插件',path.resolve(__dirname, './template.html'))
+            console.log('开始使用HTML插件', path.resolve(__dirname, './template.html'))
             // 获取所有页面并将HTML插件模版引入
             pages.then(function (res) {
                 Object.keys(res).map(function (el) {
@@ -65,6 +70,14 @@ module.exports = (env) => {
                             isStaticCss: isStaticCss
                         })
                     );
+
+                    PLUS.push(AutoImport({
+                        resolvers: [ElementPlusResolver()],
+                    }),
+                        Components({
+                            resolvers: [ElementPlusResolver()],
+                        }))
+
                 });
             });
         };
