@@ -1,6 +1,6 @@
 // 根目录  开发环境生成web html 文件的插件
 const fs = require('fs');
-class DevHtml { // 创建一个时间戳插件
+class DevHtml {
   apply(compiler) {
     // 编译完成钩子，在编译完成后获取编译后文件，
     compiler.hooks.done.tap('DevHtml ', (compilation, callback) => {
@@ -35,7 +35,7 @@ class DevHtml { // 创建一个时间戳插件
       <body></body>
       
       </html>`
-      // 执行回调 以使其他插执行钩子调用
+
       fs.writeFile('./web/index.html', str, function (err, data) {
         if (err) {
           return console.error(err);
