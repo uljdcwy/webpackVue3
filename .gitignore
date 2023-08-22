@@ -1,14 +1,16 @@
-node_modules/*
-Services/routers/*
-web/*
-node/*
-pages/*
-electron-renderer/*
-electron-preload/*
-public/*
-mysql/*
-dist
+node_modules/**
+Services/routers/**
+web/**
+node/**
+pages/**
+electron-renderer/**
+electron-preload/**
+public/**
+mysql/**
+dist/**
 /Services/index.ts
 /Services/DBConfig.ts
-/Services/routers/*
+/Services/routers/**
+.vs/**
+.temp_cache/**
 # 此文件主要用来忽图不需要提交的文件
