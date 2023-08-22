@@ -1,5 +1,5 @@
 import { execute, query } from "../mysql";
-
+// 更新中间件
 export const updateMiddle = async function (ctx, next) {
     try{
         ctx.body = {
@@ -15,7 +15,7 @@ export const updateMiddle = async function (ctx, next) {
         }
     }
 }
-
+// 批量更新中间件
 export const updateManyMiddle = async (ctx) => {
     try{
         ctx.body = {
@@ -31,13 +31,13 @@ export const updateManyMiddle = async (ctx) => {
         }
     }
 }
-
+// 更新的方法
 export const updateSql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params),"更新参数");
     let mainKey: any = 'id';
     let updateSql: string = '';
-
+    // 拼接参数
     for (let key in params) {
         if (key === ctx.mainKey) {
             mainKey = params[key];
@@ -53,9 +53,10 @@ export const updateSql = async (ctx) => {
             }
         }
     }
+    // 执行更新SQL
     return await execute(`UPDATE ${ctx.dbName} SET ${updateSql} WHERE ${ctx.mainKey} = ${mainKey}`, []);
 }
-
+// 批量更新的方法
 export const updateManySql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params),"批量更新参数");
@@ -63,7 +64,7 @@ export const updateManySql = async (ctx) => {
     let updateSql: string = '';
     let updateData = params.updateData;
     let mainKey: any = ctx.mainKey || 'id';
-
+    // 循环批量拼接批量更新SQL
     for(let key in updateData){
         let val = updateData[key];
         if(updateSql){
@@ -90,6 +91,6 @@ export const updateManySql = async (ctx) => {
     }
 
     mainKeyArr = mainKeyArr.join(',')
-
+    // 执行更新sql语句
     return await execute(`UPDATE ${ctx.dbName} SET${updateSql} WHERE ${mainKey} IN (${mainKeyArr})`);
 }

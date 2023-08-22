@@ -1,6 +1,7 @@
 import { getToken } from "./jwtValid"
-import { findTableMiddle } from "./getList"
+import { findTableSql } from "./getList"
 import md5 from "md5";
+// 登录中间件
 export const loginMiddle = async (ctx,next) => {
     try {
         let params = ctx.request.body;
@@ -16,7 +17,7 @@ export const loginMiddle = async (ctx,next) => {
                 code: 0
             }
         }else{
-            let password = await findTableMiddle({ account: params.account }, { dbName: "account" });
+            let password = await findTableSql({ account: params.account }, { dbName: "account" });
 
             if(md5(params.password) == (password.data[0] && password.data[0].password)){
                 ctx.body = {
