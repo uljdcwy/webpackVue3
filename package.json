@@ -7,7 +7,6 @@
 	"main": "src/electron.js",
 	"scripts": {
 		"dev": "node devServer.js",
-		"build-dll": "webpack --config ./webpack.dll.js",
 		"build": "webpack --env ENV=production target=web webpack.config.js",
 		"build-renderer": "webpack --env ENV=production target=electron-renderer webpack.config.js",
 		"build-preload": "webpack --env ENV=production target=electron-preload webpack.config.js",
