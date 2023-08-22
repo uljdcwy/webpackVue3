@@ -1,8 +1,7 @@
 {
 	"compilerOptions": {
         "target": "ES6",
-        "strict": true,
-        "types": ["element-plus/global"]
+        "strict": true
 	},
     "include": [
         "node_modules/**/*"
