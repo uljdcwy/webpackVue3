@@ -11,10 +11,6 @@ const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 const CopyPlugin = require("copy-webpack-plugin");
 
-const AutoImport = require('unplugin-auto-import/webpack')
-const Components = require('unplugin-vue-components/webpack')
-const { ElementPlusResolver } = require('unplugin-vue-components/resolvers')
-
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 module.exports = (env) => {
     // 命名用promise 调多页
@@ -60,18 +56,11 @@ module.exports = (env) => {
                             template: path.resolve(__dirname, './template.html'),
                             filename: el + '.html',
                             chunks: [el],
-                            title: "场地订阅后台管理",
+                            title: "车牌识别资料集",
                             CDNList: CNDJSList,
                             isStaticCss: isStaticCss
                         })
                     );
-
-                    PLUS.push(AutoImport({
-                        resolvers: [ElementPlusResolver()],
-                    }),
-                        Components({
-                            resolvers: [ElementPlusResolver()],
-                        }))
 
                 });
             });
@@ -247,7 +236,7 @@ module.exports = (env) => {
                 });
             }
 
-            PLUS.push(new CopyPlugin({
+            patterns[0] && PLUS.push(new CopyPlugin({
                 patterns: patterns,
             }));
         }
