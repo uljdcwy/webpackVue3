@@ -2,10 +2,12 @@ import { execute } from "../mysql";
 // 新增中间件
 export const addMiddle = async (ctx) => {
     try {
+        let data = await addSql(ctx);
+        console.log(data,"data")
         ctx.body = {
             code: 1,
             msg: '',
-            data: await addSql(ctx),
+            data
             
         };
     } catch (e) {
@@ -37,8 +39,16 @@ export const addSql = async (ctx) => {
     for (let key in params) {
         let val = params[key];
         if (typeof val == 'string') {
+            val = val.replace(/(\\*)(")/g,(str,$1,$2) => {
+                if($1 && $2){
+                    return '\\'.repeat($1.length + 1) + '"'
+                }else{
+                    return "\\" + $2
+                }
+            })
             values += values ? `, "${val}"` : `"${val}"`;
         } else {
+            val = val ? `'${JSON.stringify(val)}'` : val;
             values += values ? `, ${val}` : val;
         }
         keys += keys ? (', ' + key) : key;
@@ -64,6 +74,7 @@ export const addManySql = async (ctx) => {
             if (typeof val == 'string') {
                 values += startStatus ? `, '${val}'` : `'${val}'`;
             } else {
+                val = val ? `'${JSON.stringify(val)}'` : val;
                 values += startStatus ? `, ${val}` : val;
             }
             startStatus = true;

@@ -1,9 +1,12 @@
 
 import { execute } from "../mysql";
 
-export const getListMiddle = async (ctx, next) => {
+export const getListMiddle = async (ctx) => {
   try {
     let params = ctx.request.query;
+    if(!Object.keys(params)[0]){
+      params = ctx.request.body;
+    }
     // 执行查表的方法
     ctx.body = await findTableSql(params, ctx);
 
@@ -25,21 +28,14 @@ export const findTableSql = async (params: any, ctx) => {
     if (key == "pageSize" || key == "pageIndex" || key == "sortFile" || key == "sortOrder") {
       continue;
       // 如果是时间参数做SQL开始与结束操作
-    } else if (timeIndex > 0) {
+    } else if (timeIndex > 0 && params[key]) {
       try {
-        let timeArr = decodeURIComponent(params[key]);
-        if (typeof timeArr == 'string') {
-          if (timeArr[0] == `"`) {
-            timeArr = timeArr.slice(1, timeArr.length - 1)
-          }
-          timeArr = timeArr.replace(/'/g, '"');
-          timeArr = JSON.parse(timeArr);
-        }
+        let timeArr = params[key];
         sqlStr += ` and ${key} between '${timeArr[0]}' and '${timeArr[1]}'  `;
       } catch (e) {
         return { code: 0, msg: '时间格式异常' };
       }
-    } else {
+    } else if(params[key]) {
       sqlStr += ` AND ${key}='${params[key]}'`
     }
   }
