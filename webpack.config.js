@@ -287,10 +287,11 @@ module.exports = (env) => {
                             name(module) {
                                 //取得名称。例如 /node_modules/packageName/not/this/part.js
                                 // 或 /node_modules/packageName
-                                const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+                                let regExp = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
+                                const packageName = regExp && regExp[1];
 
                                 // npm package 是 URL 安全的，但有些服务不喜欢 @ 符号
-                                return `npm.${packageName.replace('@', '')}`;
+                                return `npm.${packageName?.replace('@', '')}`;
                             },
                         },
                         // element 单独拆包使用
