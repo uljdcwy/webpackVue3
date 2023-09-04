@@ -10,6 +10,7 @@ const { VueLoaderPlugin } = require('vue-loader');
 const TerserPlugin = require("terser-webpack-plugin");
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
 const CopyPlugin = require("copy-webpack-plugin");
+const CompressionPlugin = require("compression-webpack-plugin");
 
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
 module.exports = (env) => {
@@ -73,7 +74,9 @@ module.exports = (env) => {
 
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());
-
+        // GZ压缩包插件
+        PLUS.push(new CompressionPlugin());
+        
     } else if (env.target == "node") {
         splitAllNpm = true;
         pages = {

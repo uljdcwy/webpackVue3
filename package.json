@@ -23,6 +23,7 @@
 		"babel-loader": "^8.2.5",
 		"cardinal": "^2.1.1",
 		"copy-webpack-plugin": "^11.0.0",
+		"compression-webpack-plugin": "^10.0.0",
 		"cross-env": "^7.0.3",
 		"css-loader": "^6.7.3",
 		"echarts": "^5.4.1",
