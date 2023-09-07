@@ -74,9 +74,9 @@ module.exports = (env) => {
 
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());
-        // GZ压缩包插件
-        PLUS.push(new CompressionPlugin());
-        
+
+        !isDev && PLUS.push(new CompressionPlugin());
+
     } else if (env.target == "node") {
         splitAllNpm = true;
         pages = {
@@ -148,7 +148,7 @@ module.exports = (env) => {
                 {
                     // scss加载
                     test: /\.(sc|sa|)ss$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: '../' } } : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -157,7 +157,7 @@ module.exports = (env) => {
                 {
                     // less加载
                     test: /\.less$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: '../' } } : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
                         path.resolve(__dirname, 'src')
@@ -166,7 +166,7 @@ module.exports = (env) => {
                 {
                     // 静态CSS加载
                     test: /\.css$/i,
-                    use: [(env.ENV == 'production') ? MiniCssExtractPlugin.loader : 'style-loader', 'css-loader', 'postcss-loader'],// 'clear-print',
+                    use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: '../' } } : 'style-loader', 'css-loader', 'postcss-loader'],// 'clear-print',
                 },
                 {
                     test: /\.(png|svg|jpg|jpeg|gif)$/i,
