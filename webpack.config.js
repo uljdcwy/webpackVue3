@@ -57,6 +57,7 @@ module.exports = (env) => {
                             template: path.resolve(__dirname, './template.html'),
                             filename: el + '.html',
                             chunks: [el],
+                            hash: true,
                             title: "车牌识别资料集",
                             CDNList: CNDJSList,
                             isStaticCss: isStaticCss
