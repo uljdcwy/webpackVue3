@@ -36,6 +36,16 @@ class DevHtml {
       
       </html>`
 
+      // 文件接收完成准备写入 查看是否有写入目录如果没有创建
+      try {
+          fs.accessSync('web', fs.constants.R_OK | fs.constants.W_OK);
+      } catch (err) {
+          console.log('文件接收完成', err)
+          if (err) {
+              fs.mkdirSync("web")
+          }
+      }
+
       fs.writeFile('./web/index.html', str, function (err, data) {
         if (err) {
           return console.error(err);

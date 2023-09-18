@@ -30,7 +30,7 @@ export const asyncRequest = function () {
     console.log(asyncRequest.cancel,"asyncRequest")
     return instance({
         method: "post",
-        url: "http://127.0.0.1:300/",
+        url: "",
         // cancelToken: source.token,
     });
 }
