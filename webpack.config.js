@@ -105,11 +105,14 @@ module.exports = (env) => {
         externals: env.target !== "node" ? Object.keys(isCDNList) : [],
         resolve: {
             // 依次尝试调用
-            extensions: ['.js', '.mjs', '.vue', '.ts', '.d.ts', '.json'],
+            extensions: ['.js', '.mjs', '.vue', '.ts', '.node', '.d.ts', '.json'],
             // 使用导入时的路径别名
             alias: {
                 '@': path.resolve(__dirname, './src/'),
-                '@wasm': path.resolve(__dirname, './wasm/'),
+                '@wasm': path.resolve(__dirname, './wasmModule/'),
+                '@node': path.resolve(__dirname, './nodeModule/'),
+                '@public': path.resolve(__dirname, './public/'),
+                '@api': path.resolve(__dirname, './moduleApi/'),
             },
             // 先调么有模块 再调node模块
             modules: ['./webpackPlugins', './webpackLoads', 'node_modules'],

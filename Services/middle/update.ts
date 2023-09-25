@@ -1,4 +1,6 @@
 import { execute, query } from "../mysql";
+import { getSaveDir } from "../utils/checkFile";
+import fs from "fs";
 // 更新中间件
 export const updateMiddle = async function (ctx) {
     try {
@@ -103,4 +105,47 @@ export const updateManySql = async (ctx) => {
     mainKeyArr = mainKeyArr.join(',')
     // 执行更新sql语句
     return await execute(`UPDATE ${ctx.dbName} SET${updateSql} WHERE ${mainKey} IN (${mainKeyArr})`);
+}
+
+export const updateJsonFile = async (ctx) => {
+    let saveDir = getSaveDir('database');
+    let params = ctx.request.body;
+    // 保存的文件
+    let saveFile = `${saveDir}/${ctx.dbName}.js`;
+    let fileContent;
+    try {
+        fileContent = JSON.parse(fs.readFileSync(saveFile).toString());
+        let hasUpdate = false;
+        fileContent.some((el, idx) => {
+            if (el.id == params.id) {
+                fileContent[idx] = Object.assign(el,params);
+                hasUpdate = true;
+                return true;
+            }
+        });
+
+        fs.writeFileSync(saveFile, JSON.stringify(fileContent), 'utf-8');
+        if(hasUpdate){
+            ctx.body = {
+                code: 1,
+                data: {
+                    insertId: params.id
+                },
+                msg: ""
+            }
+        }else{
+            ctx.body = {
+                code: 0,
+                data: null,
+                msg: "未查询到数据"
+            }
+        }
+    } catch (e) {
+        console.log(JSON.stringify(e),"查看更新错误");
+        ctx.body = {
+            code: 0,
+            msg: "更新失败",
+            data: null
+        }
+    };
 }
