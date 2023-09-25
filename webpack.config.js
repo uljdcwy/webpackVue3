@@ -128,6 +128,10 @@ module.exports = (env) => {
         module: {
             rules: [
                 {
+                    test: /\.node$/,
+                    use: ['node-loader'],
+                },
+                {
                     test: /\.vue$/,
                     use: ['vue-loader'],
                 },

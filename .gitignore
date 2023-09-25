@@ -13,4 +13,5 @@ dist/**
 /Services/routers/**
 .vs/**
 .temp_cache/**
+**/build/**
 # 此文件主要用来忽图不需要提交的文件

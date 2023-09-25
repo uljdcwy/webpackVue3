@@ -6,11 +6,14 @@ import bodyParser from "koa-bodyparser";
 import staticFiles from "koa-static";
 import axios from "axios";
 import { router } from "./routers/index"
+import test from "./test.node"
 
 const app = new Koa();
 const wx = new Router();
 
-app.use(bodyParser());
+app.use(bodyParser({}));
+
+console.log(test,"test")
 
 app.use(staticFiles("./web", {
   maxage: 600000,
@@ -24,16 +27,16 @@ app.use(staticFiles("./web", {
       // ctx.response.header['Content-Type'] = 'text/cache-manifest';
     }
   }
-}))
+}) as any)
 
 
 
-app.use(mount('/wx', wx.middleware())).use(wx.allowedMethods());
+app.use(mount('/wx', wx.middleware()) as any).use(wx.allowedMethods() as any);
 
 app.use(cors({
   origin: function (ctx) {
     return ctx.header.origin;
   }
-}));
+}) as any);
 
 app.listen(10015)
