@@ -1,5 +1,5 @@
 import * as fs from "fs";
-export const getSaveDir = (/** @type {fs.PathLike} */ fileName) => {
+export const getSaveDir = (fileName) => {
     console.info("获取目录了")
     try {
         fs.accessSync(fileName, fs.constants.R_OK | fs.constants.W_OK);

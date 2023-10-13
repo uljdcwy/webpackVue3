@@ -34,7 +34,7 @@
         "public/"
     ],
     "include": [
-        "@types/Service/add.d.ts",
+        "@types/Service/sqlRun.d.ts",
         "@types/Service/EncryptionType.d",
         "@types/router/index.d.ts", // 引入类型文件
         "src/", // 在文件中引用TS检查

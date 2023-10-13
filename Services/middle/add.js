@@ -3,6 +3,11 @@ import { getUuid } from "../utils/uuid.js";
 import { getSaveDir } from "../utils/checkFile.js"
 import * as fs from "fs";
 
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const addMiddle = async (ctx) => {
     try {
         let data = await addSql(ctx);
@@ -18,18 +23,29 @@ export const addMiddle = async (ctx) => {
 
     }
 }
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const addbatchesMiddle = async (ctx) => {
     try {
         ctx.body = {
             code: 1,
             msg: "",
-            data: await addManySql(ctx)
+            data: await batchesAddSqlRun(ctx)
         };
     } catch (e) {
         ctx.body = { code: 0, data: null, msg: '新增失败' };
 
     }
 }
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const addSql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "新增参数");
@@ -55,12 +71,21 @@ export const addSql = async (ctx) => {
     return await execute(`INSERT INTO ${ctx.dbName}(${keys}) VALUES(${values})`, []);
 }
 
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const batchesAddSqlRun = async (ctx) => {
     let manyParams = ctx.request.body;
     console.info(JSON.stringify(manyParams), "批量新增参数");
     let keys = '';
     let values = '';
-    manyParams.forEach((el, index) => {
+    manyParams.forEach(
+        /**
+         * @type {forEachFn}
+         */
+        (el, index) => {
         values += !values ? ' VALUES(' : ', (';
         let startStatus = false;
         for (let key in el) {
@@ -75,10 +100,16 @@ export const batchesAddSqlRun = async (ctx) => {
             startStatus = true;
         }
         values += ')'
-    })
+    });
     return await execute(`INSERT INTO ${ctx.dbName}(${keys})${values}`, []);
 }
-export const addJsonFile = async (ctx) => {
+
+/**
+ * @type {writeFile} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns 返回空
+ */
+export const addJsonFile = (ctx) => {
     let id = getUuid();
     let params = ctx.request.body;
     params.id = id;
