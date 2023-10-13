@@ -1,0 +1,3 @@
+interface batchesAddSqlRun {
+     (): Promise<any>
+}

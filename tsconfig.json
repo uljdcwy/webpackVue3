@@ -6,6 +6,7 @@
         "allowJs": true, // TS指向JS有用
         "checkJs": true, // 检查JS中的TS
         "noEmit": true,
+        "module": "NodeNext",
         "moduleResolution": "NodeNext",
         "allowImportingTsExtensions": true,
         "paths": {
@@ -33,14 +34,15 @@
         "public/"
     ],
     "include": [
-        "@types/*", // 引入类型文件
+        "@types/Service/add.d.ts",
+        "@types/Service/EncryptionType.d",
+        "@types/router/index.d.ts", // 引入类型文件
         "src/", // 在文件中引用TS检查
         "moduleApi/", // 自定义的moduleApi
         "webpackLoads/",
         "webpackPlugins/",
         "Services/",
         "pages/",
-        "preloads/",
-        "Services/middle/EncryptionType.ts"
+        "preloads/"
     ],
 }

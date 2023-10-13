@@ -1,7 +1,8 @@
-import { execute } from "../mysql";
-import { getUuid } from "../utils/uuid";
-import { getSaveDir } from "../utils/checkFile"
+import { execute } from "../mysql.js";
+import { getUuid } from "../utils/uuid.js";
+import { getSaveDir } from "../utils/checkFile.js"
 import * as fs from "fs";
+
 export const addMiddle = async (ctx) => {
     try {
         let data = await addSql(ctx);
@@ -17,7 +18,7 @@ export const addMiddle = async (ctx) => {
 
     }
 }
-export const addManyMiddle = async (ctx) => {
+export const addbatchesMiddle = async (ctx) => {
     try {
         ctx.body = {
             code: 1,
@@ -53,7 +54,8 @@ export const addSql = async (ctx) => {
     }
     return await execute(`INSERT INTO ${ctx.dbName}(${keys}) VALUES(${values})`, []);
 }
-export const addManySql = async (ctx) => {
+
+export const batchesAddSqlRun = async (ctx) => {
     let manyParams = ctx.request.body;
     console.info(JSON.stringify(manyParams), "批量新增参数");
     let keys = '';
