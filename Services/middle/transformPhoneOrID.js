@@ -1,5 +1,5 @@
-import { encryption, EncryptionType, decrypt } from "./desensitization"
-// 转换手机号与身份证号中间件
+import { encryption, decrypt } from "./desensitization.js"
+import { EncryptionType } from "./EncryptionType.ts"
 export const transformMiddle = async (ctx,next) => {
     let params = ctx.request.body;
     let phoneSercert = encryption(params.phone);

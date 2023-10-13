@@ -1,6 +1,4 @@
-import { Config } from "./serverType"
-
-const config: Config = {
+const config = {
     host: 'locahost',
     port: 3306,
     user: 'root',

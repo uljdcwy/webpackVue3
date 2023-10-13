@@ -1,7 +1,7 @@
 
-import { execute } from "../mysql";
-import { getSaveDir } from "../utils/checkFile";
-import fs from "fs";
+import { execute } from "../mysql.js";
+import { getSaveDir } from "../utils/checkFile.js";
+import * as fs from "fs";
 
 export const getListMiddle = async (ctx) => {
   try {
@@ -9,27 +9,23 @@ export const getListMiddle = async (ctx) => {
     if (!Object.keys(params)[0]) {
       params = ctx.request.body;
     }
-    // 执行查表的方法
     ctx.body = await findTableSql(params, ctx);
 
   } catch (e) {
     ctx.body = { code: 0, msg: '查询数据异常' };
   }
 }
-// 查询表的方法
-export const findTableSql = async (params: any, ctx) => {
+export const findTableSql = async (params, ctx) => {
 
   console.info(JSON.stringify(params), "查询参数");
-  let pageIndex: number | 0, pageSize: number | 0, count: number | null = null;
-  let sqlStr: string | null = `select * from ${ctx.dbName} WHERE 1=1`;
+  let pageIndex, pageSize, count = null;
+  let sqlStr = `select * from ${ctx.dbName} WHERE 1=1`;
 
 
   for (let key in params) {
     let timeIndex = key.search(/time/i);
-    // 如果是分页参数过虑
     if (key == "pageSize" || key == "pageIndex" || key == "sortFile" || key == "sortOrder") {
       continue;
-      // 如果是时间参数做SQL开始与结束操作
     } else if (timeIndex > 0 && params[key]) {
       try {
         let timeArr = params[key];
@@ -43,12 +39,10 @@ export const findTableSql = async (params: any, ctx) => {
   }
 
 
-  // 如果传了排序字段 传了排序
   if (params.sortFile !== undefined && params.sortOrder !== undefined) {
     sqlStr += ` ORDER BY ${params.sortFile} ${params.sortOrder}`
   }
 
-  // 如果值不为声名的值则说明传pageIndex与pageSize 需要返回数量
   if (params.pageIndex !== undefined || params.pageSize !== undefined) {
     pageIndex = Number(params.pageIndex) || 0, pageSize = Number(params.pageSize) || 10;
     let [{ recordCount }] = await execute(sqlStr.replace("*", "COUNT(*) as recordCount"));
@@ -77,7 +71,6 @@ export const getJsonFile = async (ctx) => {
 export const getJsonData = async (params,ctx) => {
   
   let saveDir = getSaveDir('database');
-  // 保存的文件
   let saveFile = `${saveDir}/${ctx.dbName}.js`;
   let fileContent;
   try {
@@ -108,8 +101,7 @@ export const getJsonData = async (params,ctx) => {
       };
     };
     
-    // 初始化返回的数据
-    let initData: any = [];
+    let initData = [];
     let searchObj = {};
     for (let key in params) {
       if (key != "pageIndex" && key != "pageSize") {
@@ -117,12 +109,10 @@ export const getJsonData = async (params,ctx) => {
       }
     }
     
-    // 查询参数
     fileContent.forEach((el, idx) => {
       let searchStatus = true;
       for (let key in searchObj) {
         if (key.search(/time/i) > -1 && searchObj[key]) {
-          // 结束时间
           let startTime = Number(searchObj[key][0].replace(/[-\s:]/g, ''));
           let endTime = Number(searchObj[key][1].replace(/[-\s:]/g, ''));
           let currentTime = Number(el[key].replace(/[-\s:]/g, ''));
@@ -138,7 +128,6 @@ export const getJsonData = async (params,ctx) => {
       }
     });
 
-    // 需分页
     if ((params.pageIndex || params.pageIndex === 0) && params.pageSize) {
       let startPosition = params.pageIndex * params.pageSize;
       console.log("查看分页中",params.pageIndex * params.pageSize, params.pageSize)

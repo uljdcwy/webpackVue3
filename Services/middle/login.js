@@ -1,7 +1,7 @@
-import { getToken } from "./jwtValid"
-import { findTableSql } from "./getList"
+import { getToken } from "./jwtValid.js"
+import { findTableSql } from "./getList.js"
+// @ts-ignore
 import md5 from "md5";
-// 登录中间件
 export const loginMiddle = async (ctx,next) => {
     try {
         let params = ctx.request.body;

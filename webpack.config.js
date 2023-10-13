@@ -1,19 +1,17 @@
-const path = require("path");
-const fs = require("fs");
-const webpack = require("webpack");
-const DevHtml = require("./webpackPlugins/webpack5Dev");
-// HTML插件
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-// 调用并发插件
-const { VueLoaderPlugin } = require('vue-loader');
-const TerserPlugin = require("terser-webpack-plugin");
+import path from "path";
+import fs from "fs";
+import webpack from "webpack";
+import DevHtml from "./webpackPlugins/webpack5Dev.js";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import { VueLoaderPlugin } from "vue-loader";
+import TerserPlugin from "terser-webpack-plugin";
+import CopyPlugin from "copy-webpack-plugin";
+import CompressionPlugin from "compression-webpack-plugin";
 const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000';
-const CopyPlugin = require("copy-webpack-plugin");
-const CompressionPlugin = require("compression-webpack-plugin");
 
 // const { BundleAnalyzerPlugin } = require("webpack-bundle-analyzer");
-module.exports = (env) => {
+export default (env) => {
     // 命名用promise 调多页
     let pages;
     let isDev = env.ENV == 'development';
@@ -34,27 +32,28 @@ module.exports = (env) => {
     if (env.target == "web" || env.target == "electron-renderer" || env.target == "electron-preload") {
         let isPreload = env.target == "electron-preload";
         pages = new Promise((resolve) => {
-            const dirList = fs.readdirSync(path.resolve(__dirname + (isPreload ? "/preloads" : "/pages")));
+            console.log(path.resolve(process.cwd(), "./pages"),"123456")
+            const dirList = fs.readdirSync(path.resolve(process.cwd(), (isPreload ? "./preloads" : "./pages")));
             let entryObj = {};
             dirList.map(function (e, i) {
                 let currentPage = [];
                 if (isDev) {
                     currentPage.push(hotScript);
                 }
-                currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" : "/pages/") + e));
+                currentPage.push(path.resolve((isPreload ? "./preloads/" : "./pages/") + e));
                 entryObj[e.split('.')[0]] = currentPage
             });
             resolve(entryObj);
         });
 
         if (env.target != "electron-preload") {
-            console.log('开始使用HTML插件', path.resolve(__dirname, './template.html'))
+            console.log('开始使用HTML插件', path.resolve(process.cwd(), './template.html'))
             // 获取所有页面并将HTML插件模版引入
             pages.then(function (res) {
                 Object.keys(res).map(function (el) {
                     PLUS.push(
                         new HtmlWebpackPlugin({
-                            template: path.resolve(__dirname, './template.html'),
+                            template: path.resolve(process.cwd(), './template.html'),
                             filename: el + '.html',
                             chunks: [el],
                             hash: true,
@@ -85,11 +84,6 @@ module.exports = (env) => {
         }
     }
 
-    // PLUS.push(new webpack.DllReferencePlugin({
-    //     context: path.join(__dirname, ".", "dll"),
-    //     manifest: require('./manifest.json')
-    // }));
-
     let webpackDeploy = {
         // 构建为web应用
         target: env.target,
@@ -97,9 +91,9 @@ module.exports = (env) => {
         cache: {
             type: 'filesystem',
             buildDependencies: {
-                config: [__filename],  // 当构建依赖的config文件（通过 require 依赖）内容发生变化时，缓存失效
+                config: [process.cwd()],  // 当构建依赖的config文件（通过 require 依赖）内容发生变化时，缓存失效
             },
-            cacheDirectory: path.resolve(__dirname, '.temp_cache'),
+            cacheDirectory: path.resolve(process.cwd(), '.temp_cache'),
         },
         // 配置静态引用
         externals: env.target !== "node" ? Object.keys(isCDNList) : [],
@@ -108,11 +102,11 @@ module.exports = (env) => {
             extensions: ['.js', '.mjs', '.vue', '.ts', '.node', '.d.ts', '.json'],
             // 使用导入时的路径别名
             alias: {
-                '@': path.resolve(__dirname, './src/'),
-                '@wasm': path.resolve(__dirname, './wasmModule/'),
-                '@node': path.resolve(__dirname, './nodeModule/'),
-                '@public': path.resolve(__dirname, './public/'),
-                '@api': path.resolve(__dirname, './moduleApi/'),
+                '@': path.resolve(process.cwd(), './src/'),
+                '@wasm': path.resolve(process.cwd(), './wasmModule/'),
+                '@node': path.resolve(process.cwd(), './nodeModule/'),
+                '@public': path.resolve(process.cwd(), './public/'),
+                '@api': path.resolve(process.cwd(), './moduleApi/'),
             },
             // 先调么有模块 再调node模块
             modules: ['./webpackPlugins', './webpackLoads', 'node_modules'],
@@ -159,7 +153,7 @@ module.exports = (env) => {
                     use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: '../' } } : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
-                        path.resolve(__dirname, 'src')
+                        path.resolve(process.cwd(), 'src')
                     ]
                 },
                 {
@@ -168,7 +162,7 @@ module.exports = (env) => {
                     use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: '../' } } : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
                     exclude: /(node_modules|public)/,
                     include: [
-                        path.resolve(__dirname, 'src')
+                        path.resolve(process.cwd(), 'src')
                     ]
                 },
                 {
@@ -203,13 +197,13 @@ module.exports = (env) => {
             ],
         },
         resolveLoader: {
-            modules: ['node_modules', path.resolve(__dirname, 'webpackLoads')],
+            modules: ['node_modules', path.resolve(process.cwd(), 'webpackLoads')],
         },
         plugins: PLUS,
         output: {
             filename: (env.target == 'node' || env.target == 'electron-preload') ? '[name].js' : './js/[name].js',
-            path: path.resolve(__dirname, env.target),
-            publicPath: isDev ? "/" : "",
+            path: path.resolve(process.cwd(), env.target),
+            publicPath: isDev ? "./" : "",
             clean: true,
         }
     };
@@ -263,9 +257,9 @@ module.exports = (env) => {
             },// 'clear-print',
             exclude: /(node_modules|public)/,
             include: [
-                path.resolve(__dirname, 'src'),
-                path.resolve(__dirname, 'self_modules'),
-                path.resolve(__dirname, 'pages')
+                path.resolve(process.cwd(), 'src'),
+                path.resolve(process.cwd(), 'self_modules'),
+                path.resolve(process.cwd(), 'pages')
             ]
         });
 

@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 
+// @ts-ignore
 const index = () => import("@/views/index.vue");
 
 const routes = [
@@ -8,5 +9,5 @@ const routes = [
 
 export default createRouter({
     history: createWebHashHistory(),
-    routes, // `routes: routes` 的缩写
+    routes,
 });

@@ -1,8 +1,7 @@
 import { execute } from "../mysql";
 import { getUuid } from "../utils/uuid";
 import { getSaveDir } from "../utils/checkFile"
-import fs from "fs";
-// 新增中间件
+import * as fs from "fs";
 export const addMiddle = async (ctx) => {
     try {
         let data = await addSql(ctx);
@@ -18,7 +17,6 @@ export const addMiddle = async (ctx) => {
 
     }
 }
-// 指量新增中间件
 export const addManyMiddle = async (ctx) => {
     try {
         ctx.body = {
@@ -31,14 +29,11 @@ export const addManyMiddle = async (ctx) => {
 
     }
 }
-// 新增方法
 export const addSql = async (ctx) => {
-    // 获取新增参数
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "新增参数");
-    let keys: string = '';
-    let values: string = '';
-    // 循环参数 并拼接
+    let keys = '';
+    let values = '';
     for (let key in params) {
         let val = params[key];
         if (typeof val == 'string') {
@@ -56,19 +51,14 @@ export const addSql = async (ctx) => {
         }
         keys += keys ? (', ' + key) : key;
     }
-    // 执行新增sql
     return await execute(`INSERT INTO ${ctx.dbName}(${keys}) VALUES(${values})`, []);
 }
-// 批量新增方法
 export const addManySql = async (ctx) => {
-    // 获取批量新增的参数
     let manyParams = ctx.request.body;
     console.info(JSON.stringify(manyParams), "批量新增参数");
-    let keys: string = '';
-    let values: string = '';
-    // 循环参数
-    manyParams.forEach((el: any, index: number) => {
-        // 拼接SQL语句
+    let keys = '';
+    let values = '';
+    manyParams.forEach((el, index) => {
         values += !values ? ' VALUES(' : ', (';
         let startStatus = false;
         for (let key in el) {
@@ -84,18 +74,14 @@ export const addManySql = async (ctx) => {
         }
         values += ')'
     })
-    // 执行批量新增 sql
     return await execute(`INSERT INTO ${ctx.dbName}(${keys})${values}`, []);
 }
-// 添加JSON，代替SQL的方法添加方法
 export const addJsonFile = async (ctx) => {
     let id = getUuid();
-    // 获取新增参数
-    let params: any = ctx.request.body;
+    let params = ctx.request.body;
     params.id = id;
     let saveDir = getSaveDir('database');
     
-    // 保存的文件
     let saveFile = `${saveDir}/${ctx.dbName}.js`;
     let fileContent;
     if(fs.existsSync(saveFile)){
