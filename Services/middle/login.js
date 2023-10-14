@@ -1,8 +1,9 @@
 import { getToken } from "./jwtValid.js"
-import { findTableSql } from "./getList.js"
+import { findSqlRun } from "./getList.js"
+import config from "Services/config.js";
 // @ts-ignore
 import md5 from "md5";
-export const loginMiddle = async (ctx,next) => {
+export const loginMiddle = async (/** @type {{ request: { body: any; }; body: { msg: string; code: number; token?: any; expression?: number; data?: null; }; }} */ ctx,/** @type {any} */ next) => {
     try {
         let params = ctx.request.body;
         
@@ -17,12 +18,12 @@ export const loginMiddle = async (ctx,next) => {
                 code: 0
             }
         }else{
-            let password = await findTableSql({ account: params.account }, { dbName: "account" });
+            let password = await findSqlRun({ account: params.account }, { dbName: "account" });
 
             if(md5(params.password) == (password.data[0] && password.data[0].password)){
                 ctx.body = {
                     token: getToken(params),
-                    expression: 14400,
+                    expression: config.expression,
                     msg: "获取token成功",
                     code: 1
                 }

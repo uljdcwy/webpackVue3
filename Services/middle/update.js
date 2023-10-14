@@ -1,6 +1,13 @@
 import { execute, query } from "../mysql.js";
 import { getSaveDir } from "../utils/checkFile.js";
 import * as fs from "fs";
+
+
+/**
+ * @type {middle} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateMiddle = async function (ctx) {
     try {
         ctx.body = {
@@ -16,6 +23,11 @@ export const updateMiddle = async function (ctx) {
         }
     }
 }
+/**
+ * @type {middle} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateManyMiddle = async (ctx) => {
     try {
         ctx.body = {
@@ -31,6 +43,12 @@ export const updateManyMiddle = async (ctx) => {
         }
     }
 }
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateSql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "更新参数");
@@ -61,6 +79,11 @@ export const updateSql = async (ctx) => {
     }
     return await execute(`UPDATE ${ctx.dbName} SET ${updateSql} WHERE ${ctx.mainKey} = ${mainKey}`, []);
 }
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateManySql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "批量更新参数");
@@ -99,7 +122,12 @@ export const updateManySql = async (ctx) => {
     return await execute(`UPDATE ${ctx.dbName} SET${updateSql} WHERE ${mainKey} IN (${mainKeyArr})`);
 }
 
-export const updateJsonFile = async (ctx) => {
+/**
+ * @type {writeFile} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const updateJsonFile = (ctx) => {
     let saveDir = getSaveDir('database');
     let params = ctx.request.body;
     let saveFile = `${saveDir}/${ctx.dbName}.js`;
@@ -107,7 +135,7 @@ export const updateJsonFile = async (ctx) => {
     try {
         fileContent = JSON.parse(fs.readFileSync(saveFile).toString());
         let hasUpdate = false;
-        fileContent.some((el, idx) => {
+        fileContent.some(/**@type {forEach} */ (el, idx) => {
             if (el.id == params.id) {
                 fileContent[idx] = Object.assign(el,params);
                 hasUpdate = true;

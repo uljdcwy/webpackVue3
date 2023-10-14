@@ -1,12 +1,19 @@
+import { type } from "os";
 import { execute } from "../mysql.js";
 import { getSaveDir } from "../utils/checkFile.js";
 import * as fs from "fs";
+
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const deleteMiddle = async (ctx) => {
     try {
         ctx.body = {
             code: 1,
             msg: "",
-            data: await deleteSql(ctx)
+            data: await deleteSqlRun(ctx)
         };
     } catch (e) {
         ctx.body = {
@@ -16,7 +23,13 @@ export const deleteMiddle = async (ctx) => {
         }
     }
 }
-export const deleteSql = async (ctx) => {
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const deleteSqlRun = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "删除参数");
     let mainKey = 'id';
@@ -29,7 +42,12 @@ export const deleteSql = async (ctx) => {
     }
 }
 
-export const deleteJsonFile = async (ctx) => {
+/**
+ * @type {writeFile} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns 返回空
+ */
+export const deleteJsonFile = (ctx) => {
     let saveDir = getSaveDir('database');
     let deleteID = ctx.request.body.id;
     let saveFile = `${saveDir}/${ctx.dbName}.js`;
@@ -37,14 +55,14 @@ export const deleteJsonFile = async (ctx) => {
     try {
         fileContent = JSON.parse(fs.readFileSync(saveFile).toString());
         let hasDelete = false;
-        fileContent.some((el, idx) => {
+        fileContent.some(/**@type {forEach} */ (el, idx) => {
             if (el.id == deleteID) {
                 fileContent[idx] = null;
                 hasDelete = true;
                 return true;
             }
         });
-        fileContent = fileContent.filter((e) => e);
+        fileContent = fileContent.filter(/** @type {filter} */(e) => e);
 
         fs.writeFileSync(saveFile, JSON.stringify(fileContent), 'utf-8');
         if(hasDelete){

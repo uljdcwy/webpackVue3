@@ -1,13 +1,14 @@
 import * as fs from "fs";
+import { type } from "os";
 import * as querystring from "querystring"
-export const upload = async (ctx, next) => {
+export const upload = async (/** @type {{ req: any; body: any; }} */ ctx, /** @type {any} */ next) => {
     let req = ctx.req;
     req.setEncoding('binary');
     let body = '';
     
     let boundary = req.headers['content-type'].split('; ')[1].replace('boundary=', '');
     
-    req.on('data', function (d) {
+    req.on('data', function (/** @type {any} */d) {
         body += d;
     });
     let data = await new Promise((resolve, reject) => {
@@ -28,7 +29,7 @@ export const upload = async (ctx, next) => {
                     fs.mkdirSync("public")
                 }
             }
-
+            /**@type {any} */
             let file = querystring.parse(body, '\r\n', ':');
             let fileInfo = file['Content-Disposition']?.split('; ');
             let fileName = '';

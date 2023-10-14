@@ -9,7 +9,7 @@ public/**
 mysql/**
 dist/**
 /Services/index.ts
-/Services/DBConfig.ts
+/Services/config.ts
 /Services/routers/**
 .vs/**
 .temp_cache/**

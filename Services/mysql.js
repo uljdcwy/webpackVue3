@@ -1,9 +1,10 @@
 import mysql2 from "mysql2";
-import config from "./DBConfig.js"
-import { SqlFunction } from "./serverType.js"
+import config from "./config.js"
 
 const pool = mysql2.createPool(config);
-
+/**
+ * 
+ */
 process.on('exit', async (code) => {
     try{
         pool.end();
@@ -12,9 +13,9 @@ process.on('exit', async (code) => {
     }
 });
 
-export const createDB = (DBName) => {
+export const createDB = (/** @type {String} */ DBName) => {
     return new Promise((resolve, reject) => {
-        const connection = mysql2.createConnection(config);
+        const connection = mysql2.createConnection(config.dbData);
         connection.connect((err) => {
             if (err) {
                 console.error(JSON.stringify(err));
@@ -37,6 +38,12 @@ export const createDB = (DBName) => {
     })
 }
 
+/**
+ * @type {sql} sql执行，此方法能一定程度避免被注入SQL
+ * @param sql SQL语句
+ * @param params SQL参数一般不用，
+ * @returns 
+ */
 export const query = (sql, params) => {
     return new Promise((resolve, reject) => {
         pool.query(sql, params, function (err, results, fields) {
@@ -51,7 +58,12 @@ export const query = (sql, params) => {
         });
     })
 };
-
+/**
+ * @type {sql} sql执行，此方法能一定程度避免被注入SQL
+ * @param sql SQL语句
+ * @param params SQL参数一般不用，
+ * @returns 
+ */
 export const execute = (sql, params) => {
     
     return new Promise((resolve, reject) => {

@@ -10,7 +10,7 @@ import * as fs from "fs";
  */
 export const addMiddle = async (ctx) => {
     try {
-        let data = await addSql(ctx);
+        let data = await addSqlRun(ctx);
         console.log(data, "data")
         ctx.body = {
             code: 1,
@@ -28,7 +28,7 @@ export const addMiddle = async (ctx) => {
  * @param ctx 上下文对象
  * @returns 返回空 
  */
-export const addbatchesMiddle = async (ctx) => {
+export const addBatchesMiddle = async (ctx) => {
     try {
         ctx.body = {
             code: 1,
@@ -46,7 +46,7 @@ export const addbatchesMiddle = async (ctx) => {
  * @param ctx 参数ctx为路由的上下文对象
  * @returns  返回承诺函数
  */
-export const addSql = async (ctx) => {
+export const addSqlRun = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "新增参数");
     let keys = '';
@@ -83,7 +83,7 @@ export const batchesAddSqlRun = async (ctx) => {
     let values = '';
     manyParams.forEach(
         /**
-         * @type {forEachFn}
+         * @type {forEach}
          */
         (el, index) => {
         values += !values ? ' VALUES(' : ', (';

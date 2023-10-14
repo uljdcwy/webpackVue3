@@ -1,21 +1,34 @@
 
+import { type } from "os";
 import { execute } from "../mysql.js";
 import { getSaveDir } from "../utils/checkFile.js";
 import * as fs from "fs";
 
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const getListMiddle = async (ctx) => {
   try {
     let params = ctx.request.query;
     if (!Object.keys(params)[0]) {
       params = ctx.request.body;
     }
-    ctx.body = await findTableSql(params, ctx);
+    ctx.body = await findSqlRun(params, ctx);
 
   } catch (e) {
     ctx.body = { code: 0, msg: '查询数据异常' };
   }
 }
-export const findTableSql = async (params, ctx) => {
+
+/**
+ * @type {findSqlRun} sql 运行时的TS类型定义
+ * @param params 数据请求参数
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const findSqlRun = async (params, ctx) => {
 
   console.info(JSON.stringify(params), "查询参数");
   let pageIndex, pageSize, count = null;
@@ -64,10 +77,20 @@ export const findTableSql = async (params, ctx) => {
   }
 }
 
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const getJsonFile = async (ctx) => {
   ctx.body = await getJsonData(ctx.request.body, ctx)
 }
 
+/**
+ * @type {getJsonData} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns 返回空
+ */
 export const getJsonData = async (params,ctx) => {
   
   let saveDir = getSaveDir('database');
@@ -87,7 +110,7 @@ export const getJsonData = async (params,ctx) => {
     
     if ((params.id || params.id === 0)) {
       let content;
-      fileContent.some((el) => {
+      fileContent.some(/** @type {forEach} */(el) => {
         if (el.id == params.id && /\.txt$/.test(el?.articleContent)) {
           el.articleContent = fs.readFileSync(el?.articleContent).toString();
           content = el;
@@ -101,7 +124,11 @@ export const getJsonData = async (params,ctx) => {
       };
     };
     
+    /**
+     * @type {any[]}
+     */
     let initData = [];
+    /**@type {any} */
     let searchObj = {};
     for (let key in params) {
       if (key != "pageIndex" && key != "pageSize") {
@@ -109,7 +136,7 @@ export const getJsonData = async (params,ctx) => {
       }
     }
     
-    fileContent.forEach((el, idx) => {
+    fileContent.forEach(/** @type {forEach} */(el, idx) => {
       let searchStatus = true;
       for (let key in searchObj) {
         if (key.search(/time/i) > -1 && searchObj[key]) {
