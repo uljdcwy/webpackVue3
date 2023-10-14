@@ -4,6 +4,7 @@ import cors from "koa2-cors";
 import mount from "koa-mount";
 import bodyParser from "koa-bodyparser";
 import staticFiles from "koa-static";
+import config from "./config.js";
 import axios from "axios";
 
 const app = new Koa();
@@ -31,4 +32,4 @@ app.use(cors({
   }
 }));
 
-app.listen(10015)
+app.listen(config.port)
