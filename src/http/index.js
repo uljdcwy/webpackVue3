@@ -1,22 +1,21 @@
-import { generateXHRCancelKey } from "@/utils/utils.js"
+import axios from "axios";
 
 const instance = axios.create();
 
-instance.interceptors.request.use(function (config) {
+instance.interceptors.request.use(function (/** @type {any} */ config) {
     console.log(config, "config")
     return config;
-}, function (error) {
+}, function (/** @type {any} */ error) {
     return Promise.reject(error);
 });
 
-instance.interceptors.response.use(function (response) {
+instance.interceptors.response.use(function (/** @type {any} */ response) {
     return response;
-}, function (error) {
+}, function (/** @type {any} */ error) {
     return Promise.reject(error);
 });
 
 export const asyncRequest = function () {
-    console.log(asyncRequest.cancel,"asyncRequest")
     return instance({
         method: "post",
         url: "",

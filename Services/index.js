@@ -5,6 +5,7 @@ import mount from "koa-mount";
 import bodyParser from "koa-bodyparser";
 import staticFiles from "koa-static";
 import config from "./config.js";
+import { getIP } from "./utils/getIP.js"
 import axios from "axios";
 
 const app = new Koa();
@@ -32,4 +33,6 @@ app.use(cors({
   }
 }));
 
-app.listen(config.port)
+app.listen(config.port, () => {
+  console.log(`服务启用中 ${getIP()}:${config.port}`)
+})
