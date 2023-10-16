@@ -1,13 +1,12 @@
 import { createApp } from "vue";
-import app from "@/app.vue"
+// @ts-ignore
+import App from "@/app.vue"
+const app = createApp(App)
 
+alert(123)
 document.body.onload = async function() {
-	console.info(app)
-	return new Promise((resolve, reject) => {
-		setTimeout(() => {
-			resolve(123)
-		}, 3000)
-	})
+	console.log(123456789)
+	app.mount("#app");
 };
 
 /*#__PURE__*/ moduleHot()

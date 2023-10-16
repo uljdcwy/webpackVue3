@@ -1,9 +1,9 @@
 {
-	"name": "itTiger",
+	"name": "test",
 	"version": "1.0.0",
-	"description": "VUE打包",
+	"description": "打包工具",
 	"private": true,
-	"author": "宿舍管理系统",
+	"author": "zhengxiya",
 	"type": "module",
 	"main": "src/electron.js",
 	"scripts": {
@@ -81,8 +81,8 @@
 	" extraResources 资源扩展目录": "from 与 to:",
 	"build": {
 		"extraResources": [],
-		"productName": "宿舍管理系统",
-		"appId": "com.itTiger|electron",
+		"productName": "zhengxiya",
+		"appId": "com.zhengxiya|electron",
 		"asarUnpack": [
 			"./electron-preload/**",
 			"./mysql/**"

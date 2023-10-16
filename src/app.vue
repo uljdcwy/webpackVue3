@@ -1,13 +1,13 @@
 <template>
+    123456798
 </template>
-<script setup lang="ts">
+<script setup lang="js">
 import { onMounted, ref } from "vue";
 import com from "@/components/header.vue"
-import { store } from "@/store/index"
-console.log(store,"store")
+import { store } from "@/store/index.js"
+console.log(123456, "store")
 
 
 </script>
 
-<style lang="scss" scoped="scoped">
-</style>
+<style lang="scss" scoped="scoped"></style>
