@@ -1,11 +1,16 @@
-import { execute } from "../mysql";
-import { getUuid } from "../utils/uuid";
-import { getSaveDir } from "../utils/checkFile"
-import fs from "fs";
-// 新增中间件
+import { execute } from "../mysql.js";
+import { getUuid } from "../utils/uuid.js";
+import { getSaveDir } from "../utils/checkFile.js"
+import * as fs from "fs";
+
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const addMiddle = async (ctx) => {
     try {
-        let data = await addSql(ctx);
+        let data = await addSqlRun(ctx);
         console.log(data, "data")
         ctx.body = {
             code: 1,
@@ -18,27 +23,34 @@ export const addMiddle = async (ctx) => {
 
     }
 }
-// 指量新增中间件
-export const addManyMiddle = async (ctx) => {
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
+export const addBatchesMiddle = async (ctx) => {
     try {
         ctx.body = {
             code: 1,
             msg: "",
-            data: await addManySql(ctx)
+            data: await batchesAddSqlRun(ctx)
         };
     } catch (e) {
         ctx.body = { code: 0, data: null, msg: '新增失败' };
 
     }
 }
-// 新增方法
-export const addSql = async (ctx) => {
-    // 获取新增参数
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const addSqlRun = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "新增参数");
-    let keys: string = '';
-    let values: string = '';
-    // 循环参数 并拼接
+    let keys = '';
+    let values = '';
     for (let key in params) {
         let val = params[key];
         if (typeof val == 'string') {
@@ -56,19 +68,24 @@ export const addSql = async (ctx) => {
         }
         keys += keys ? (', ' + key) : key;
     }
-    // 执行新增sql
     return await execute(`INSERT INTO ${ctx.dbName}(${keys}) VALUES(${values})`, []);
 }
-// 批量新增方法
-export const addManySql = async (ctx) => {
-    // 获取批量新增的参数
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const batchesAddSqlRun = async (ctx) => {
     let manyParams = ctx.request.body;
     console.info(JSON.stringify(manyParams), "批量新增参数");
-    let keys: string = '';
-    let values: string = '';
-    // 循环参数
-    manyParams.forEach((el: any, index: number) => {
-        // 拼接SQL语句
+    let keys = '';
+    let values = '';
+    manyParams.forEach(
+        /**
+         * @type {forEach}
+         */
+        (el, index) => {
         values += !values ? ' VALUES(' : ', (';
         let startStatus = false;
         for (let key in el) {
@@ -83,19 +100,21 @@ export const addManySql = async (ctx) => {
             startStatus = true;
         }
         values += ')'
-    })
-    // 执行批量新增 sql
+    });
     return await execute(`INSERT INTO ${ctx.dbName}(${keys})${values}`, []);
 }
-// 添加JSON，代替SQL的方法添加方法
-export const addJsonFile = async (ctx) => {
+
+/**
+ * @type {writeFile} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns 返回空
+ */
+export const addJsonFile = (ctx) => {
     let id = getUuid();
-    // 获取新增参数
-    let params: any = ctx.request.body;
+    let params = ctx.request.body;
     params.id = id;
     let saveDir = getSaveDir('database');
     
-    // 保存的文件
     let saveFile = `${saveDir}/${ctx.dbName}.js`;
     let fileContent;
     if(fs.existsSync(saveFile)){

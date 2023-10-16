@@ -1,14 +1,19 @@
-import { execute } from "../mysql";
-import { getSaveDir } from "../utils/checkFile";
-import fs from "fs";
-// 删除中间件
+import { type } from "os";
+import { execute } from "../mysql.js";
+import { getSaveDir } from "../utils/checkFile.js";
+import * as fs from "fs";
+
+/**
+ * @type {middle} 中间件方法
+ * @param ctx 上下文对象
+ * @returns 返回空 
+ */
 export const deleteMiddle = async (ctx) => {
     try {
-        // 执行删除方法
         ctx.body = {
             code: 1,
             msg: "",
-            data: await deleteSql(ctx)
+            data: await deleteSqlRun(ctx)
         };
     } catch (e) {
         ctx.body = {
@@ -18,40 +23,46 @@ export const deleteMiddle = async (ctx) => {
         }
     }
 }
-// 删除 单个的SQL方法
-export const deleteSql = async (ctx) => {
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const deleteSqlRun = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "删除参数");
-    let mainKey: any = 'id';
-    // 循环参数获取主键的值
+    let mainKey = 'id';
     
     mainKey = params[ctx.mainKey];
     if (typeof mainKey == 'string') {
-        // 执行SQL语句并返回
         return await execute(`DELETE FROM ${ctx.dbName} WHERE ${ctx.mainKey} in(${mainKey})`, []);
     } else {
-        // 执行SQL语句并返回
         return await execute(`DELETE FROM ${ctx.dbName} WHERE ${ctx.mainKey} = ${mainKey}`, []);
     }
 }
 
-export const deleteJsonFile = async (ctx) => {
+/**
+ * @type {writeFile} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns 返回空
+ */
+export const deleteJsonFile = (ctx) => {
     let saveDir = getSaveDir('database');
     let deleteID = ctx.request.body.id;
-    // 保存的文件
     let saveFile = `${saveDir}/${ctx.dbName}.js`;
     let fileContent;
     try {
         fileContent = JSON.parse(fs.readFileSync(saveFile).toString());
         let hasDelete = false;
-        fileContent.some((el, idx) => {
+        fileContent.some(/**@type {forEach} */ (el, idx) => {
             if (el.id == deleteID) {
                 fileContent[idx] = null;
                 hasDelete = true;
                 return true;
             }
         });
-        fileContent = fileContent.filter((e) => e);
+        fileContent = fileContent.filter(/** @type {filter} */(e) => e);
 
         fs.writeFileSync(saveFile, JSON.stringify(fileContent), 'utf-8');
         if(hasDelete){

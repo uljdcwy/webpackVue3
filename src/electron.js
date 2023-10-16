@@ -72,6 +72,7 @@ function createWindow() {
 					let str = "";
 					while(execNodeExe){
 						// 收集所有9999端口进程
+						// @ts-ignore
 						if(execNodeExe[1] != 0 && str.search(execNodeExe[1]) < 0){
 							str += `/PID ${execNodeExe[1]} `;
 						};
@@ -85,9 +86,11 @@ function createWindow() {
 						let execLength = /node\.exe.+(\r|$)/mg.exec(outStr);
 						while(execNodeExe){
 							// 收集所有node进程
+							// @ts-ignore
 							if(execNodeExe[1] != 0 && str.search(execNodeExe[1]) < 0){
 								str += `/PID ${execNodeExe[1]}; `;
 							};
+							// @ts-ignore
 							outStr = outStr.substring(execNodeExe.index + execLength[0].length,outStr.length);
 							execLength = /node\.exe.+(\r|$)/mg.exec(outStr);
 							execNodeExe = /node\.exe\s+([0-9]+)?/mg.exec(outStr);

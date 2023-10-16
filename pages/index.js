@@ -1,24 +1,11 @@
 import {
 	createApp,
 } from "vue"
-import appContent from "@/app.vue";
-
-import router from "@/router/index"
-import { ElButton } from "element-plus"
-import "@/scss/theme.scss"
+// @ts-ignore
+import App from "@/app.vue";
+const app = createApp(App);
 
 
-import('@wasm/factorial.wasm').then(function(res){
-	let val = res._Z4facti(5);
-	console.log(val)
-})
-
-const app = createApp(appContent);
-
-
-
-
-app.use(router)
 
 document.body.onload = function() {
 	let div = document.createElement('div');
@@ -30,9 +17,12 @@ document.body.onload = function() {
 /*#__PURE__*/ moduleHot()
 
 function /*#__PURE__*/ moduleHot() {
+	// @ts-ignore
 	if (module?.hot) {
+		// @ts-ignore
 		module.hot.accept();
 		// 热替换完成后逻辑
+		// @ts-ignore
 		module?.hot.dispose(function() {
 		});
 	}

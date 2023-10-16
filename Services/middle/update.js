@@ -1,7 +1,13 @@
-import { execute, query } from "../mysql";
-import { getSaveDir } from "../utils/checkFile";
-import fs from "fs";
-// 更新中间件
+import { execute, query } from "../mysql.js";
+import { getSaveDir } from "../utils/checkFile.js";
+import * as fs from "fs";
+
+
+/**
+ * @type {middle} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateMiddle = async function (ctx) {
     try {
         ctx.body = {
@@ -17,7 +23,11 @@ export const updateMiddle = async function (ctx) {
         }
     }
 }
-// 批量更新中间件
+/**
+ * @type {middle} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateManyMiddle = async (ctx) => {
     try {
         ctx.body = {
@@ -33,13 +43,17 @@ export const updateManyMiddle = async (ctx) => {
         }
     }
 }
-// 更新的方法
+
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateSql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "更新参数");
-    let mainKey: any = 'id';
-    let updateSql: string = '';
-    // 拼接参数
+    let mainKey = 'id';
+    let updateSql = '';
     for (let key in params) {
         if (key === ctx.mainKey) {
             mainKey = params[key];
@@ -63,18 +77,20 @@ export const updateSql = async (ctx) => {
             }
         }
     }
-    // 执行更新SQL
     return await execute(`UPDATE ${ctx.dbName} SET ${updateSql} WHERE ${ctx.mainKey} = ${mainKey}`, []);
 }
-// 批量更新的方法
+/**
+ * @type {sqlRun} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
 export const updateManySql = async (ctx) => {
     let params = ctx.request.body;
     console.info(JSON.stringify(params), "批量更新参数");
-    let mainKeyArr: any = params.mainKeyArr;
-    let updateSql: string = '';
+    let mainKeyArr = params.mainKeyArr;
+    let updateSql = '';
     let updateData = params.updateData;
-    let mainKey: any = ctx.mainKey || 'id';
-    // 循环批量拼接批量更新SQL
+    let mainKey = ctx.mainKey || 'id';
     for (let key in updateData) {
         let val = updateData[key];
         if (updateSql) {
@@ -103,20 +119,23 @@ export const updateManySql = async (ctx) => {
     }
 
     mainKeyArr = mainKeyArr.join(',')
-    // 执行更新sql语句
     return await execute(`UPDATE ${ctx.dbName} SET${updateSql} WHERE ${mainKey} IN (${mainKeyArr})`);
 }
 
-export const updateJsonFile = async (ctx) => {
+/**
+ * @type {writeFile} sql 运行时的TS类型定义
+ * @param ctx 参数ctx为路由的上下文对象
+ * @returns  返回承诺函数
+ */
+export const updateJsonFile = (ctx) => {
     let saveDir = getSaveDir('database');
     let params = ctx.request.body;
-    // 保存的文件
     let saveFile = `${saveDir}/${ctx.dbName}.js`;
     let fileContent;
     try {
         fileContent = JSON.parse(fs.readFileSync(saveFile).toString());
         let hasUpdate = false;
-        fileContent.some((el, idx) => {
+        fileContent.some(/**@type {forEach} */ (el, idx) => {
             if (el.id == params.id) {
                 fileContent[idx] = Object.assign(el,params);
                 hasUpdate = true;
