@@ -32,46 +32,6 @@ module.exports = (env) => {
     // HTML插件数组
     let PLUS = [];
     if (env.target == "web" || env.target == "electron-renderer" || env.target == "electron-preload") {
-        let isPreload = env.target == "electron-preload";
-        pages = new Promise((resolve) => {
-            const dirList = fs.readdirSync(path.resolve(__dirname + (isPreload ? "/preloads" : "/pages")));
-            let entryObj = {};
-            dirList.map(function (e, i) {
-                let currentPage = [];
-                if (isDev) {
-                    currentPage.push(hotScript);
-                }
-                currentPage.push(path.resolve(__dirname + (isPreload ? "/preloads/" : "/pages/") + e));
-                entryObj[e.split('.')[0]] = currentPage
-            });
-            resolve(entryObj);
-        });
-
-        if (env.target != "electron-preload") {
-            console.log('开始使用HTML插件', path.resolve(__dirname, './template.html'))
-            // 获取所有页面并将HTML插件模版引入
-            pages.then(function (res) {
-                Object.keys(res).map(function (el) {
-                    PLUS.push(
-                        new HtmlWebpackPlugin({
-                            template: path.resolve(__dirname, './template.html'),
-                            filename: el + '.html',
-                            chunks: [el],
-                            hash: true,
-                            title: "车牌识别资料集",
-                            CDNList: CNDJSList,
-                            isStaticCss: isStaticCss
-                        })
-                    );
-
-                });
-            });
-        };
-
-        // 样式文件地址
-        PLUS.push(new MiniCssExtractPlugin({
-            filename: './css/[name].css',
-        }));
 
         // VUE加载插件
         PLUS.push(new VueLoaderPlugin());

@@ -12,7 +12,8 @@
 		"build-preload": "webpack --env ENV=production target=electron-preload webpack.config.js",
 		"build-server": "webpack --env ENV=production target=node webpack.config.js",
 		"dev-electron": "electron src/electron.js development",
-		"build-electron": "electron-builder"
+		"build-electron": "electron-builder",
+		"test": "webpack --env ENV=production target=web ./webpack/webpack.dev.js"
 	},
 	"license": "ISC",
 	"devDependencies": {
