@@ -1,4 +1,4 @@
-import fs from "fs"
+const fs = require("fs");
 class DevHtml {
   /**
    * @param {{ hooks: { done: { tap: (arg0: string, arg1: (compilation: any, callback: any) => void) => void; }; }; }} compiler
@@ -50,4 +50,4 @@ class DevHtml {
   }
 }
 
-export default DevHtml
+module.exports = DevHtml
