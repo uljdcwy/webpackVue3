@@ -1,9 +1,9 @@
 {
-	"name": "itTiger",
-	"version": "1.0.0",
+	"name": "zhengxiya",
+	"version": "1.1.0",
 	"description": "VUE打包",
 	"private": true,
-	"author": "宿舍管理系统",
+	"author": "zhengxiya",
 	"main": "src/electron.js",
 	"scripts": {
 		"dev": "node devServer.js",
@@ -74,8 +74,8 @@
 	" extraResources 资源扩展目录": "from 与 to:",
 	"build": {
 		"extraResources": [],
-		"productName": "宿舍管理系统",
-		"appId": "com.itTiger|electron",
+		"productName": "zhengxiya",
+		"appId": "com.zhengxiya|electron",
 		"asarUnpack": [
 			"./electron-preload/**",
 			"./mysql/**"
@@ -102,8 +102,7 @@
 			"oneClick": false,
 			"perMachine": false,
 			"allowElevation": true,
-			"allowToChangeInstallationDirectory": true,
-			"include": "installer.nsh"
+			"allowToChangeInstallationDirectory": true
 		}
 	},
 	"dependencies": {

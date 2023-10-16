@@ -6,5 +6,3 @@ interface forEach {
 interface filter {
     (el: any): any
 }
-
-let Tst: string;
