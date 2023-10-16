@@ -1,9 +1,10 @@
 {
-	"name": "itTiger",
+	"name": "test",
 	"version": "1.0.0",
-	"description": "VUE打包",
+	"description": "打包工具",
 	"private": true,
-	"author": "宿舍管理系统",
+	"author": "zhengxiya",
+	"type": "module",
 	"main": "src/electron.js",
 	"scripts": {
 		"dev": "node devServer.js",
@@ -19,6 +20,12 @@
 		"@babel/core": "^7.20.12",
 		"@babel/plugin-proposal-object-rest-spread": "^7.20.7",
 		"@babel/preset-env": "^7.20.2",
+		"@types/koa-bodyparser": "^4.3.10",
+		"@types/koa-mount": "^4.0.3",
+		"@types/koa-router": "^7.4.5",
+		"@types/koa-static": "^4.0.2",
+		"@types/koa2-cors": "^2.0.3",
+		"@types/uuid": "^9.0.5",
 		"axios": "^1.3.4",
 		"babel-loader": "^8.2.5",
 		"cardinal": "^2.1.1",
@@ -74,8 +81,8 @@
 	" extraResources 资源扩展目录": "from 与 to:",
 	"build": {
 		"extraResources": [],
-		"productName": "宿舍管理系统",
-		"appId": "com.itTiger|electron",
+		"productName": "zhengxiya",
+		"appId": "com.zhengxiya|electron",
 		"asarUnpack": [
 			"./electron-preload/**",
 			"./mysql/**"

@@ -7,7 +7,6 @@ import staticFiles from "koa-static";
 import config from "./config.js";
 import { getIP } from "./utils/getIP.js"
 import axios from "axios";
-import { stringify } from "uuid";
 
 const app = new Koa();
 const wx = new Router();

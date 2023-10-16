@@ -1,21 +1,23 @@
-let http = require('http');
-
-let express = require('express');
+import http from "http";
+import express from "express";
+import webpack from "webpack";
+import devMiddleware from "webpack-dev-middleware";
+import hotMiddleware from "webpack-hot-middleware";
+import Config from "./webpack.config.js";
 
 let app = express();
 
-let webpack = require('webpack');
-let webpackConfig = require('./webpack.config')({
+let webpackConfig = Config({
   ENV: "development",
   target: "web"
 });
 let compiler = webpack(webpackConfig);
-let instance = require('webpack-dev-middleware')(compiler);
+let instance = devMiddleware(compiler);
 
 app.use(instance);
 
 app.use(
-  require('webpack-hot-middleware')(compiler, {
+  hotMiddleware(compiler, {
     log: console.log,
     path: '/__webpack_hmr',
     heartbeat: 10 * 1000,
@@ -24,9 +26,7 @@ app.use(
 
 app.use(express.static('./web'))
 
-if (require.main === module) {
-  var server = http.createServer(app);
-  server.listen(5000, "localhost", function () {
-    console.log('Listening on %j', server.address());
-  });
-}
+var server = http.createServer(app);
+server.listen(5000, "localhost", function () {
+  console.log('Listening on %j', server.address());
+});
