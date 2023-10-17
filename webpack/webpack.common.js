@@ -30,7 +30,6 @@ module.exports = {
   resolveLoader: {
     modules: ['node_modules', path.resolve(basePath, './webpackLoads')],
   },
-  plugins: [],
   module: {
     rules: [
       {

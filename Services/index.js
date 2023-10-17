@@ -4,7 +4,7 @@ import cors from "koa2-cors";
 import mount from "koa-mount";
 import bodyParser from "koa-bodyparser";
 import staticFiles from "koa-static";
-import config from "./config.json" assert { type: 'json' };;
+import config from "./config.json" assert { type: 'json' };
 import { getIP } from "./utils/getIP.js"
 import axios from "axios";
 
