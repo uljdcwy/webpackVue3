@@ -1,45 +1,16 @@
-const { getEnv, getEntry } = require("./utils.js");
 const path = require("path");
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
-let env = getEnv();
-let isDev = env.ENV == 'development';
-let plugins = [new VueLoaderPlugin()];
 let basePath = process.cwd();
 module.exports = {
-  entry: getEntry(env, plugins),
+  target: "web",
   output: {
-      filename: (env.target == 'node' || env.target == 'electron-preload') ? '[name].js' : './js/[name].js',
-      path: path.resolve(basePath, env.target || "web"),
-      publicPath: isDev ? "/" : "",
+      filename: './js/[name].js',
+      path: path.resolve(basePath, "web"),
       clean: true,
   },
-  plugins: plugins,
+  plugins: [new VueLoaderPlugin()],
   module: {
     rules: [
-      {
-        // scss加载
-        test: /\.(sc|sa|)ss$/i,
-        use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: './' } } : 'style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
-        exclude: /(node_modules|public)/,
-        include: [
-          path.resolve(basePath, './src')
-        ]
-      },
-      {
-        // less加载
-        test: /\.less$/i,
-        use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: './' } } : 'style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
-        exclude: /(node_modules|public)/,
-        include: [
-          path.resolve(basePath, 'src')
-        ]
-      },
-      {
-        // 静态CSS加载
-        test: /\.css$/i,
-        use: [(env.ENV == 'production') ? { loader: MiniCssExtractPlugin.loader, options: { publicPath: './' } } : 'style-loader', 'css-loader', 'postcss-loader'],// 'clear-print',
-      },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset',

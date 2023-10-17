@@ -5,10 +5,7 @@ let express = require('express');
 let app = express();
 
 let webpack = require('webpack');
-let webpackConfig = require('./webpack.config')({
-  ENV: "development",
-  target: "web"
-});
+let webpackConfig = require('./webpack/webpack.dev');
 let compiler = webpack(webpackConfig);
 let instance = require('webpack-dev-middleware')(compiler);
 

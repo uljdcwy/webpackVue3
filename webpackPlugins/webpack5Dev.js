@@ -1,10 +1,13 @@
 const fs = require("fs");
+let basePath = process.cwd();
 class DevHtml {
   /**
    * @param {{ hooks: { done: { tap: (arg0: string, arg1: (compilation: any, callback: any) => void) => void; }; }; }} compiler
    */
   apply(compiler) {
+    console.log(123456)
     compiler.hooks.done.tap('DevHtml ', (/** @type {{ compilation: { assets: any; }; }} */ compilation, /** @type {any} */ callback) => {
+      
       let str = `<!doctype html>
                   <html lang="en" manifest="app.appcache">
                       <head>
@@ -32,16 +35,17 @@ class DevHtml {
                     <body></body>
                     
                     </html>`
+                    console.log(basePath + '/web',"basePath")
 
       try {
-        fs.accessSync('web', fs.constants.R_OK | fs.constants.W_OK);
+        fs.accessSync(basePath + '/web', fs.constants.R_OK | fs.constants.W_OK);
       } catch (err) {
         if (err) {
-          fs.mkdirSync("web")
+          fs.mkdirSync(basePath + "/web")
         }
       }
 
-      fs.writeFile('./web/index.html', str, function (/** @type {any} */ err, /** @type {any} */ data) {
+      fs.writeFile(basePath + '/web/index.html', str, function (/** @type {any} */ err, /** @type {any} */ data) {
         if (err) {
           return console.error(err);
         }

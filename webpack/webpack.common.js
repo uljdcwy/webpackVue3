@@ -1,11 +1,8 @@
 const { getEnv } = require("./utils.js");
 const path = require("path");
 let basePath = process.cwd();
-let env = getEnv();
 
 module.exports = {
-  target: env.target,
-  mode: env.ENV,
   resolve: {
     extensions: ['.js', '.mjs', '.vue', '.ts', '.node', '.d.ts', '.json'],
     alias: {

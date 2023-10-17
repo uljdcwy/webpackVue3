@@ -5,7 +5,6 @@ const test = require("./build/release/winMouseEvent.node");
 
 
 setTimeout(() => {
-    console.log(23456)
     console.log("test",test['startMonitorMouse']((downStatus,x,y,e) => {
         console.log("回调执行了",downStatus,x,y,e)
         if(e == "right down") process.exit(1)

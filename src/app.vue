@@ -1,5 +1,4 @@
 <template>
-    <img src="@public/test.png" alt="">
     123456798
 </template>
 <script setup>

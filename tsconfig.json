@@ -43,6 +43,7 @@
         "webpackPlugins/",
         "Services/",
         "pages/",
-        "preloads/"
+        "preloads/",
+        "webpack/"
     ],
 }
