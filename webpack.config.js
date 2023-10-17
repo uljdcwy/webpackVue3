@@ -94,7 +94,7 @@ module.exports = (env) => {
         // 构建为web应用
         target: env.target,
         mode: env.ENV,
-        cache: {
+        cache: { 
             type: 'filesystem',
             buildDependencies: {
                 config: [__filename],  // 当构建依赖的config文件（通过 require 依赖）内容发生变化时，缓存失效

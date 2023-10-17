@@ -9,7 +9,7 @@
 		"dev": "node devServer.js",
 		"build": "webpack --config ./webpack/webpack.prod.js",
 		"build-renderer": "webpack --config ./webpack/webpack.prod.renderer.js",
-		"build-preload": "webpack --config ./webpack/webpack.prod.renderer.js",
+		"build-preload": "webpack --config ./webpack/webpack.prod.preload.js",
 		"build-server": "webpack --config ./webpack/webpack.prod.node.js",
 		"dev-electron": "electron src/electron.js development",
 		"build-electron": "electron-builder",
