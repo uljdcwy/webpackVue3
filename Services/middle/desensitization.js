@@ -1,6 +1,6 @@
 // @ts-ignore
 import CryptoJS from "crypto-js"
-import config from "../config.js";
+import config from "../config.json" assert { type: 'json' };
 import { EncryptionType } from "./EncryptionType.ts"
 
 const sercert = config.sercert;

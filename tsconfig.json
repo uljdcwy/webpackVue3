@@ -6,9 +6,10 @@
         "allowJs": true, // TS指向JS有用
         "checkJs": true, // 检查JS中的TS
         "moduleResolution": "NodeNext",
-        "importHelpers": true,
-        "module": "NodeNext",
+        "allowImportingTsExtensions": true,
         "resolveJsonModule": true,
+        "noEmit": true,
+        "module": "NodeNext",
         "paths": {
             "@/*": [
                 "src/*"

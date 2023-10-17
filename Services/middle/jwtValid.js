@@ -1,6 +1,6 @@
 // @ts-ignore
 import Jwt from "jsonwebtoken";
-import config from "./../config.js"
+import config from "./../config.json" assert { type: 'json' };
 
 const secret = config.jwtSercert;
 export const getToken = (/** @type {any} */ loginData, expTime = 14400) => {

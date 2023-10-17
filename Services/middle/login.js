@@ -1,6 +1,6 @@
 import { getToken } from "./jwtValid.js"
 import { findSqlRun } from "./getList.js"
-import config from "Services/config.js";
+import config from "Services/config.json" assert { type: 'json' };
 // @ts-ignore
 import md5 from "md5";
 export const loginMiddle = async (/** @type {{ request: { body: any; }; body: { msg: string; code: number; token?: any; expression?: number; data?: null; }; }} */ ctx,/** @type {any} */ next) => {

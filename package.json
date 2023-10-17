@@ -12,8 +12,7 @@
 		"build-preload": "webpack --config ./webpack/webpack.prod.preload.js",
 		"build-server": "webpack --config ./webpack/webpack.prod.node.js",
 		"dev-electron": "electron src/electron.js development",
-		"build-electron": "electron-builder",
-		"test": "webpack --config ./webpack/webpack.prod.node.js"
+		"build-electron": "electron-builder"
 	},
 	"license": "ISC",
 	"devDependencies": {
