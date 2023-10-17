@@ -6,6 +6,7 @@ const fs = require("fs");
  */
 const webConfig = require('./web.config.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const project = require("./../project.json");
 const TerserPlugin = require("terser-webpack-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
 const path = require("path");
@@ -29,7 +30,7 @@ dirList.map(function (el) {
             filename: el + '.html',
             chunks: [el, 'common'],
             hash: true,
-            title: "车牌识别资料集",
+            title: project.name,
             CDNList: [],
             isStaticCss: []
         }));

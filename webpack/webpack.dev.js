@@ -3,6 +3,7 @@ const webpack = require("webpack");
 const path = require("path");
 const common = require('./webpack.common.js');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const project = require("./../project.json")
 const DevHtml = require("../webpackPlugins/webpack5Dev");
 const fs = require("fs");
 /**
@@ -40,7 +41,7 @@ module.exports = merge(common, webConfig, {
                     filename: el + '.html',
                     chunks: [el],
                     hash: true,
-                    title: "车牌识别资料集",
+                    title: project.name,
                     CDNList: [],
                     isStaticCss: []
                 })

@@ -1,8 +1,13 @@
 import Koa from "koa";
+// @ts-ignore
 import Router from "koa-router";
+// @ts-ignore
 import cors from "koa2-cors";
+// @ts-ignore
 import mount from "koa-mount";
+// @ts-ignore
 import bodyParser from "koa-bodyparser";
+// @ts-ignore
 import staticFiles from "koa-static";
 import config from "./config.json" assert { type: 'json' };
 import { getIP } from "./utils/getIP.js"

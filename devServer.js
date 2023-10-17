@@ -17,5 +17,5 @@ app.use(hotInstance);
 app.use(express.static('./web'))
 
 app.listen(config.port, () => {
-  console.log(`启动开发成功 localhost:${config.port}`); //yellow
+  console.log(`启动开发成功 localhost:${config.port}`);
 })

@@ -1,4 +1,4 @@
-node_modules/**
+**/node_modules/**
 Services/routers/**
 web/**
 node/**

@@ -1,5 +1,6 @@
 const fs = require("fs");
 let basePath = process.cwd();
+const project = require("./../project.json")
 class DevHtml {
   /**
    * @param {{ hooks: { done: { tap: (arg0: string, arg1: (compilation: any, callback: any) => void) => void; }; }; }} compiler
@@ -11,7 +12,7 @@ class DevHtml {
                   <html lang="en" manifest="app.appcache">
                       <head>
                         <meta charset="UTF-8">
-                        <title>场地订阅后台管理</title>
+                        <title>${project.name}</title>
                         <script>try { global } catch (e) { window.global = window; }</script>
     
       `
@@ -34,7 +35,6 @@ class DevHtml {
                     <body></body>
                     
                     </html>`
-                    console.log(basePath + '/web',"basePath")
 
       try {
         fs.accessSync(basePath + '/web', fs.constants.R_OK | fs.constants.W_OK);
