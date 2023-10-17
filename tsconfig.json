@@ -8,6 +8,7 @@
         "moduleResolution": "NodeNext",
         "importHelpers": true,
         "module": "NodeNext",
+        "resolveJsonModule": true,
         "paths": {
             "@/*": [
                 "src/*"
