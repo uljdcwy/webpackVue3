@@ -38,6 +38,7 @@ dirList.map(function (el) {
 
 PLUS.push(new CompressionPlugin())
 module.exports = merge(common, webConfig, {
+    target: "electron-renderer",
     // @ts-ignore
     entry: () => {
         let entryObj = {};
@@ -49,7 +50,10 @@ module.exports = merge(common, webConfig, {
     },
     plugins: PLUS,
     output: {
+        filename: './js/[name].js',
+        path: path.resolve(basePath, "renderer"),
         publicPath: "",
+        clean: true
     },
     mode: "production",
     optimization: {

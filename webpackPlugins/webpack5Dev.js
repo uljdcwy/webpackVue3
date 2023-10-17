@@ -5,7 +5,6 @@ class DevHtml {
    * @param {{ hooks: { done: { tap: (arg0: string, arg1: (compilation: any, callback: any) => void) => void; }; }; }} compiler
    */
   apply(compiler) {
-    console.log(123456)
     compiler.hooks.done.tap('DevHtml ', (/** @type {{ compilation: { assets: any; }; }} */ compilation, /** @type {any} */ callback) => {
       
       let str = `<!doctype html>

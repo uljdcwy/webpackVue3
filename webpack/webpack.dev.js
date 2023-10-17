@@ -16,6 +16,7 @@ const hotScript = 'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=200
  */
 let PLUS = [new DevHtml(), new webpack.HotModuleReplacementPlugin()];
 module.exports = merge(common, webConfig, {
+    // @ts-ignore
     entry: async () => {
         let pages = await new Promise((resolve) => {
             const dirList = fs.readdirSync(path.resolve(basePath + "/pages"));

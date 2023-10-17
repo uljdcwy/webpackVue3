@@ -1,4 +1,3 @@
-const { getEnv } = require("./utils.js");
 const path = require("path");
 let basePath = process.cwd();
 
