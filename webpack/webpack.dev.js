@@ -58,29 +58,25 @@ module.exports = merge(common, webConfig, {
     },
     module: {
         rules: [
-
             {
-                // scss加载
                 test: /\.(sc|sa|)ss$/i,
-                use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
                 exclude: /(node_modules|public)/,
                 include: [
                     path.resolve(basePath, './src')
                 ]
             },
             {
-                // less加载
                 test: /\.less$/i,
-                use: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                use: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader'],
                 exclude: /(node_modules|public)/,
                 include: [
                     path.resolve(basePath, 'src')
                 ]
             },
             {
-                // 静态CSS加载
                 test: /\.css$/i,
-                use: ['style-loader', 'css-loader', 'postcss-loader'],// 'clear-print',
+                use: ['style-loader', 'css-loader', 'postcss-loader'],
             }
         ]
     }

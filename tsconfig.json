@@ -46,6 +46,7 @@
         "Services/",
         "pages/",
         "preloads/",
-        "webpack/"
+        "webpack/",
+        "c/"
     ],
 }

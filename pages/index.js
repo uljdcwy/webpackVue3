@@ -3,9 +3,8 @@ import {
 } from "vue"
 // @ts-ignore
 import App from "@/app.vue";
+import "@/scss/customize.scss"
 const app = createApp(App);
-
-
 
 document.body.onload = function() {
 	let div = document.createElement('div');
