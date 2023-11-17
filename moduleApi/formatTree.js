@@ -1,6 +1,6 @@
-export const formatTree = (elKey, data, parentKEY, parentID = 0 ,root = [], level = 0) => {
-    data = data.filter((el) => el);
-    data.forEach((el, idx) => {
+export const formatTree = (/** @type {string | number} */ elKey, /** @type {any[]} */ data, /** @type {string | number} */ parentKEY, parentID = 0 ,root = [], level = 0) => {
+    data = data.filter((/** @type {any} */ el) => el);
+    data.forEach((/** @type {{ [x: string]: number; level: number; }} */ el, /** @type {any} */ idx) => {
         console.log(el,"el")
         if(el.level === level && parentID === el[parentKEY]){
             data.splice(idx,1,null);

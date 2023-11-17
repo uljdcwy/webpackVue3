@@ -1,2 +1,2 @@
-const test = require("./build/Release/testFoatry.node");
-console.log(test({name: 456}),"test")
+const test = require("./build/Release/testObjFoatry.node");
+console.log(test.CreateObject(123645),"test")

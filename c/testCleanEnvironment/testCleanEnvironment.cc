@@ -1,43 +1,45 @@
 #include <node.h>
 #include <assert.h>
 #include <stdlib.h>
-#include <iostream>
 
-using namespace v8;
-using namespace node;
-using namespace std;
+namespace test {
+    using namespace node;
+    using namespace v8;
 
-static char cookie[] = "test cookie";
-static int cleanup_cb1_int = 0;
-static int cleanup_cb2_int = 0;
+    static char cookie[] = "zhengxiya";
+    static int cb_cout1 = 0;
+    static int cb_cout2 = 0;
 
-static void cleanup_cb1(void* arg){
-    Isolate* isolate = static_cast<Isolate*>(arg);
 
-    HandleScope scope(isolate);
-    Local<Object> obj = Object::New(isolate);
-    assert(!obj.IsEmpty());
-    assert(obj->IsObject());
-    cleanup_cb1_int++;
-    cout << "cleanup_cb1_int" << cleanup_cb1_int << endl;
-}
+    static void clean_cb1(void* arg){
 
-static void cleanup_cb2(void* arg) {
-    assert(arg == static_cast<void*>(cookie));
-    cleanup_cb2_int++;
-    cout << "cleanup_cb2_int" << cleanup_cb2_int << endl;
-}
+        Isolate* isolate = static_cast<Isolate*>(arg);
+        
+        HandleScope scope(isolate);
 
-static void sanCheck(void*){
-    assert(cleanup_cb1_int == 1);
-    assert(cleanup_cb2_int == 1);
-    cout << "sancheck" << endl;
-}
+        Local<Object> obj = Object::New(isolate);
 
-NODE_MODULE_INIT(){
-    Isolate* isolate = context->GetIsolate();
+        assert(!obj.IsEmpty());
+        assert(obj->IsObject());
 
-    AddEnvironmentCleanupHook(isolate, sanCheck, nullptr);
-    AddEnvironmentCleanupHook(isolate, cleanup_cb2, cookie);
-    AddEnvironmentCleanupHook(isolate, cleanup_cb1, isolate);
+        cb_cout1 ++;
+    }
+
+    static void clean_cb2(void*){
+        assert(arg == static_cast<void*>cookie);
+        cb_cout2 ++;
+    }
+
+    static void check(void*){
+        assert(cb_cout1 == 1);
+        assert(cb_cout2 == 1);
+    }
+
+    NODE_MODULE_INIT() {
+        Isolate* isolate = context->GetIsolate();
+
+        AddEnvironmentCleanupHook(isolate, check, nullptr);
+        AddEnvironmentCleanupHook(isolate, clean_cb2, cookie);
+        AddEnvironmentCleanupHook(isolate, clean_cb1, isolate);
+    }
 }

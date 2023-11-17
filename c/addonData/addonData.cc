@@ -1,33 +1,35 @@
 #include <node.h>
 
-using namespace v8;
+namespace test {
+    using namespace v8;
+    using namespace node;
+    class TestS{
+        public:
+            explicit TestS(Isolate* isolate):
+                count(0){
+                    AddEnvironmentCleanupHook(isolate, DeleteInstance, this);
+                }
+                int count;
 
-class AddonData{
-public:
-    explicit AddonData(Isolate* isolate):
-        call_count(0) {
-            node::AddEnvironmentCleanupHook(isolate, DeleteInstance, this);
-        }
-        int call_count;
-        static void DeleteInstance(void *data) {
-            delete static_cast<AddonData*>(data);
-        }
+                static void DeleteInstance(void* data){
+                    delete static_cast<TestS*>(data);
+                }
+    };
 
-};
-static void testFn(const FunctionCallbackInfo<Value>& info) {
-    AddonData *data = reinterpret_cast<AddonData*>(info.Data().As<External>()->Value());
-    data->call_count++;
-    info.GetReturnValue().Set((double)data->call_count);
-}
+    static void one(const FunctionCallbackInfo<Value>& args){
+        Isolate* isolate = args.GetIsolate();
+        TestS* obj = reinterpret_cast<TestS*>(args.Data().As<External>()->Value());
+        obj->count++;
+        args.GetReturnValue().Set((double)obj->count);
+    }
 
-NODE_MODULE_INIT() {
-    Isolate *isolate = context->GetIsolate();
+    NODE_MODULE_INIT() {
+        Isolate* isolate = context->GetIsolate();
 
-    AddonData* data = new AddonData(isolate);
+        TestS* data = new TestS(isolate);
 
-    Local<External> external = External::New(isolate, data);
+        Local<External> external = External::New(isolate, data);
 
-    exports->Set(context, String::NewFromUtf8(isolate, "testFn").ToLocalChecked(),
-                 FunctionTemplate::New(isolate, testFn, external)->GetFunction(context).ToLocalChecked())
-        .FromJust();
+        exports->Set(context, String::NewFromUtf8(isolate, "method").ToLocalChecked(), FunctionTemplate::New(isolate, one, external)->GetFunction(context).ToLocalChecked()).FromJust();
+    }
 }

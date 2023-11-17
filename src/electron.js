@@ -122,7 +122,9 @@ function createWindow() {
 
 // 应用程序加载完成
 app.whenReady().then(() => {
-	
+	/**
+	 * 
+	 */
 	let startPm2 = function(){	
 		
 		function cmdPm2(){

@@ -1,4 +1,3 @@
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
+
 const test = require("./build/Release/testReturn.node");
-console.log(test.testFn(),"test")
+console.log(test.testFn(23456),"test")

@@ -1,9 +1,9 @@
-export const disabledDragPage = (el) => {
+export const disabledDragPage = (/** @type {any[]} */ el) => {
     document.addEventListener('touchmove', diabledDrag, { passive: false });
-    const enbleDrop = (el) => {
+    const enbleDrop = (/** @type {{ addEventListener: (arg0: string, arg1: { (e: any): void; (e: any): void; }) => void; parentNode: { scrollTop: any; scrollHeight: any; }; }} */ el) => {
         let prevY = 0;
         let hasListener = true;
-        el.addEventListener("touchmove", (e) => {
+        el.addEventListener("touchmove", (/** @type {{ touches: { pageY: any; }[]; preventDefault: () => void; }} */ e) => {
             const currentY = e.touches[0].pageY;
             let top = el.parentNode.scrollTop;
             let clientHeight = document.body.clientHeight;
@@ -22,7 +22,7 @@ export const disabledDragPage = (el) => {
             }
             prevY = currentY
         })
-        el.addEventListener("touchend", (e) => {
+        el.addEventListener("touchend", (/** @type {any} */ e) => {
             hasListener = true;
             document.addEventListener('touchmove', diabledDrag, { passive: false });
         })
@@ -33,6 +33,6 @@ export const disabledDragPage = (el) => {
         enbleDrop(el)
     }
 };
-export const diabledDrag = (e) => {
+export const diabledDrag = (/** @type {{ preventDefault: () => void; }} */ e) => {
     e.preventDefault();
 }

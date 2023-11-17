@@ -18,6 +18,7 @@ const wx = new Router();
 
 app.use(bodyParser({}));
 
+
 app.use(staticFiles("./web", {
   maxage: 600000,
   extensions: ['appcache'],
