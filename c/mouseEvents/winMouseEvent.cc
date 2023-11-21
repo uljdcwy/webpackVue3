@@ -21,30 +21,30 @@ namespace monitorMouse
       MSLLHOOKSTRUCT *mouseInfo = (MSLLHOOKSTRUCT *)lParam;
       int x = mouseInfo->pt.x;
       int y = mouseInfo->pt.y;
-      
+
       switch (wParam) {
-      case WM_MOUSEMOVE: {
-        mouseKey = "move";
-        // cout << "Mouse moved to (" << x << ", " << y << ")" << endl;
-      }
-      break;
-      case WM_RBUTTONUP:
-        mouseKey = "right up";
-        // cout << "right up mouse button" << endl;
+        case WM_MOUSEMOVE: {
+          mouseKey = "move";
+          // cout << "Mouse moved to (" << x << ", " << y << ")" << endl;
+        }
         break;
-      case WM_LBUTTONUP:
-        mouseKey = "left up";
-        // cout << "left up mouse button" << endl;
-        break;
-      case WM_LBUTTONDOWN:
-        mouseKey = "left down";
-        // cout << "left down mouse button" << endl;
-        break;
-      case WM_RBUTTONDOWN:
-        mouseKey = "right down";
-        // cout << "right down mouse button" << endl;
-        break;
-        // cout << wParam << ',' << endl;
+        case WM_RBUTTONUP:
+          mouseKey = "right up";
+          // cout << "right up mouse button" << endl;
+          break;
+        case WM_LBUTTONUP:
+          mouseKey = "left up";
+          // cout << "left up mouse button" << endl;
+          break;
+        case WM_LBUTTONDOWN:
+          mouseKey = "left down";
+          // cout << "left down mouse button" << endl;
+          break;
+        case WM_RBUTTONDOWN:
+          mouseKey = "right down";
+          // cout << "right down mouse button" << endl;
+          break;
+          // cout << wParam << ',' << endl;
       }
       // 在回调函数上下文中调用回调函数
       Isolate* isolate = Isolate::GetCurrent();
