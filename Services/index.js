@@ -12,12 +12,13 @@ import staticFiles from "koa-static";
 import config from "./config.json" assert { type: 'json' };
 import { getIP } from "./utils/getIP.js"
 import axios from "axios";
+import { ssrRouter } from "./SSRRouter/index.js";
 
 const app = new Koa();
-const wx = new Router();
 
 app.use(bodyParser({}));
 
+app.use(ssrRouter.routes()).use(ssrRouter.allowedMethods())
 
 app.use(staticFiles("./web", {
   maxage: 600000,
@@ -28,10 +29,6 @@ app.use(staticFiles("./web", {
     }
   }
 }))
-
-
-
-app.use(mount('/wx', wx.middleware())).use(wx.allowedMethods());
 
 app.use(cors({
   origin: function (/** @type {{ header: { origin: any; }; }} */ ctx) {

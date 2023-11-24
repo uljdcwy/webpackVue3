@@ -1,16 +1,24 @@
-import {
-	createApp,
-} from "vue"
-// @ts-ignore
-import App from "@/app.vue";
+import { createApp } from "@/createSSRApp/app.js"
 import "@/scss/customize.scss"
-const app = createApp(App);
+
+window.onbeforeunload = function (e) {
+	e = e || window.event
+	if (e) {
+		e.returnValue = '网站可能不会保存您的修改哦~'
+	}
+	return '网站可能不会保存您的修改哦~'
+}
 
 document.body.onload = function() {
-	let div = document.createElement('div');
-	div.id = "app";
-	document.body.appendChild(div);
-	app.mount(div)
+
+	const { app, routes, store } = createApp();
+	
+	routes.isReady().then(() => {
+		
+		// @ts-ignore
+		let vm = app.mount('#app')
+	})
+
 };
 
 /*#__PURE__*/ moduleHot()

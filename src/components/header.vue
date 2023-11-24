@@ -1,8 +1,7 @@
 <template>
+    <div>header</div>
 </template>
-<script setup >
+<script setup>
 </script>
-<style lang="scss" scoped="scoped">
-
-</style>
+<style lang="scss" scoped="scoped"></style>
   

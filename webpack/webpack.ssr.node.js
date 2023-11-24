@@ -1,5 +1,6 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
+const config = require('./web.config.js');
 /**
  * @type {any}
  */
@@ -7,10 +8,10 @@ const TerserPlugin = require("terser-webpack-plugin");
 const path = require("path");
 let basePath = process.cwd();
 // @ts-ignore
-module.exports = merge(common, {
+module.exports = merge(common, config, {
     // @ts-ignore
     entry: {
-        index: "./Services/index"
+        index: "./Services/index",
     },
     output: {
         filename: '[name].js',
@@ -28,6 +29,20 @@ module.exports = merge(common, {
         splitChunks: {
             chunks: 'all',
             cacheGroups: {
+                SSRPackage: {
+                    test: /[\\/]createSSRApp[\\/]/,
+                    minChunks: 1,
+                    name: 'SSRPackage',
+                    priority: 0,
+                    minSize: 0
+                },
+                SSRRouter: {
+                    test: /[\\/]SSRRouter[\\/]/,
+                    minChunks: 1,
+                    name: 'SSRRouter',
+                    priority: 0,
+                    minSize: 0
+                },
                 verdors: {
                     test: /[\\/]node_modules[\\/]/,
                     /**
@@ -52,4 +67,31 @@ module.exports = merge(common, {
             }
         }
     },
+    module: {
+        rules: [
+            {
+                // scss加载
+                test: /\.(sc|sa|)ss$/i,
+                use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],// 'clear-print',
+                exclude: /(node_modules|public)/,
+                include: [
+                    path.resolve(basePath, './src')
+                ]
+            },
+            {
+                // less加载
+                test: /\.less$/i,
+                use: ['style-loader', 'css-loader', 'less-loader', 'postcss-loader'],// 'clear-print',
+                exclude: /(node_modules|public)/,
+                include: [
+                    path.resolve(basePath, 'src')
+                ]
+            },
+            {
+                // 静态CSS加载
+                test: /\.css$/i,
+                use: ['style-loader', 'css-loader', 'postcss-loader'],// 'clear-print',
+            }
+        ]
+    }
 });
