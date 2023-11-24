@@ -1,13 +1,17 @@
 import { createApp } from "@/createSSRApp/app.js"
 import "@/scss/customize.scss"
 
-window.onbeforeunload = function (e) {
-	e = e || window.event
-	if (e) {
-		e.returnValue = '网站可能不会保存您的修改哦~'
+
+if(process.env.NODE_ENV != "development"){
+	window.onbeforeunload = function (e) {
+		e = e || window.event
+		if (e) {
+			e.returnValue = '网站可能不会保存您的修改哦~'
+		}
+		return '网站可能不会保存您的修改哦~'
 	}
-	return '网站可能不会保存您的修改哦~'
 }
+
 
 document.body.onload = function() {
 

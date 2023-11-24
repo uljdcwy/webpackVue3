@@ -32,7 +32,7 @@ class DevHtml {
                           str += `
                       </head>
       
-                    <body></body>
+                    <body><div id="app"></div></body>
                     
                     </html>`
 

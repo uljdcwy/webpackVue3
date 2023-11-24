@@ -1,11 +1,4 @@
 <template>
-    <div>
-        123456798
-        <button>点击事件</button>
-        {{ ssrData }}  ssrData
-    </div>
-    <router-view></router-view>
-    <com></com>
 </template>
 <script setup>
 import { onMounted, ref, inject } from "vue";

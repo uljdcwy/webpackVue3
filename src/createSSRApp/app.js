@@ -2,7 +2,7 @@ import { createSSRApp } from 'vue';
 // @ts-ignore
 import App from "@/app.vue";
 import { router } from '@/router'
-import store from '@/store'
+import store from '@/store';
 
 export const createApp = () => {
     const app = createSSRApp(App);
