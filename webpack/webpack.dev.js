@@ -59,7 +59,7 @@ module.exports = merge(common, webConfig, {
     module: {
         rules: [
             {
-                test: /\.(sc|sa|)ss$/i,
+                test: /\.(sc|sa)ss$/i,
                 use: ['style-loader', 'css-loader', 'sass-loader', 'postcss-loader'],
                 exclude: /(node_modules|public)/,
                 include: [
@@ -77,6 +77,10 @@ module.exports = merge(common, webConfig, {
             {
                 test: /\.css$/i,
                 use: ['style-loader', 'css-loader', 'postcss-loader'],
+                exclude: /(node_modules|public)/,
+                include: [
+                    path.resolve(basePath, './src')
+                ]
             }
         ]
     }

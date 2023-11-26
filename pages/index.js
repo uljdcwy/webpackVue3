@@ -1,5 +1,7 @@
 import { createApp } from "@/createSSRApp/app.js"
 import "@/scss/customize.scss"
+import "@/scss/theme.scss"
+
 
 
 if(process.env.NODE_ENV != "development"){

@@ -8,11 +8,7 @@ namespace test {
         Isolate* isolate = args.GetIsolate();
         Local<Context> context = isolate->GetCurrentContext();
 
-        Local<String> propsStr = String::NewFromUtf8(isolate, "msg").ToLocalChecked();
-
-        Local<Number> num = Number::New(isolate, 123456);
-
-        args.This()->Set(propsStr, num);
+        args.This()->Set(context, String::NewFromUtf8(isolate, "msg").ToLocalChecked(), Number::New(isolate, 123)).Check();
 
         return args.GetReturnValue().Set(args.This());
     }
@@ -22,8 +18,13 @@ namespace test {
 
         Isolate* isolate = args.GetIsolate();
 
-        return args.GetReturnValue().Set(args.This()->Get(String::NewFromUtf8(isolate, "msg")));
+        Local<Context> context = isolate->GetCurrentContext();
+
+        // return args.GetReturnValue().Set(args.This()->Get(context, String::NewFromUtf8(isolate, "msg").ToLocalChecked()).ToLocalChecked());
     
+        return args.GetReturnValue().Set(Number::New(isolate, 123456789));
+    
+        
     }
 
     void Init(Local<Object> exports) {
@@ -38,11 +39,11 @@ namespace test {
 
         Local<ObjectTemplate> proto = tpl->PrototypeTemplate();
 
-        proto->Set(String::NewFromUtf8(isolate, "get"), FunctionTemplate::New(isolate, ClassGet));
+        proto->Set(String::NewFromUtf8(isolate, "get").ToLocalChecked(), FunctionTemplate::New(isolate, ClassGet));
  
-        exports->Set(String::NewFromUtf8(isolate, "TestClass"), tpl->GetFunction(context));
-
+        exports->Set(context, String::NewFromUtf8(isolate, "TestClass").ToLocalChecked(), tpl->GetFunction(context).ToLocalChecked()).FromJust();
     }
+    
 
     NODE_MODULE(NODE_GYP_MODULE_NAME, Init)
 }

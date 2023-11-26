@@ -1,3 +1,3 @@
 
 const test = require("./build/Release/test.node");
-console.log(test.testFn()(),"test")
+console.log(new test.TestClass().get(),"test")
