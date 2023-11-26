@@ -18,6 +18,8 @@
 </template>
 <script setup>
 import { ref } from "vue";
+
+
 const props = defineProps(["bgUrl", "editData"]);
 
 /**
@@ -50,7 +52,7 @@ const bg = `url(${bgUrl})`;
     display: flex;
     justify-content: space-between;
     background-color: $defaultBGColor;
-
+    box-sizing: border-box;
     .context-text {
         flex: 1;
 
@@ -103,64 +105,25 @@ const bg = `url(${bgUrl})`;
 
 @media screen and (max-width: 640px) {
     .context-block {
-        background-image: v-bind(bg);
         @include margin(10, 0);
         @include padding(10, 0);
     }
 
 
     .main-context {
-        background-color: $defaultBGColor;
         width: 100%;
         display: block;
         @include margin(10);
         .context-text {
-            @include padding(15);
+            @include padding(10, 0);
             @include margin(10);
-            .vice-title {
-                @include font(30);
-                color: $lightColor;
-            }
-
-            .title-describe {
-                @include font(14);
-                @include padding(10, 0)
-            }
-
-            .title-line {
-                display: block;
-                @include width(40);
-                @include height(4);
-                background-color: $redColor;
-            }
-
-            .main-title {
-                @include padding(10, 0, 20);
-                @include font(42);
-            }
-
-            .look-details {
-                @include font(14);
-                color: $linkColor;
-                text-decoration-line: none;
-
-                &:hover {
-                    color: $hoverColor;
-                }
-            }
-
         }
 
         .context-image {
             width: 100%;
-            box-sizing: border-box;
-            @include padding(20);
-
-            img {
-                max-width: 100%;
-            }
         }
         width: auto;
         @include padding(0);
     }
-}</style>
+}
+</style>
