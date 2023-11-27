@@ -22,22 +22,26 @@ const countEl = ref();
 
 const propsData = ref(JSON.parse(JSON.stringify(props.data)));
 
-let run = false;
-
 onMounted(() => {
     let elTop = countEl.value.offsetTop;
-    let startPosition = scrollY + Math.floor(innerHeight/2) + 40;
-    if(startPosition > elTop){
+    let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
+    
+    if (startPosition > elTop) {
         countStart();
-    }else{
-        window.onscroll = () => {
-            startPosition = scrollY + Math.floor(innerHeight/2) + 40;
-            if(startPosition > elTop && !run){
-                countStart();
-            }
-        }
+    } else {
+        window.addEventListener("scroll", eventList)
     }
 });
+
+const eventList = () => {
+    let elTop = countEl.value.offsetTop;
+    let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
+    if (startPosition > elTop) {
+        countStart();
+        window.removeEventListener("scroll", eventList);
+    }
+};
+
 
 const countStart = () => {
     let count = 0;
@@ -45,26 +49,25 @@ const countStart = () => {
     let timer = setInterval(() => {
         count += 50;
 
-        if(count > allCount){
+        if (count > allCount) {
             clearInterval(timer)
-            return ;
+            return;
         }
 
-        
+
         let dataVal = propsData.value;
 
-        
+
 
         dataVal.forEach((/**@type {any} */el) => {
-            el.countVal = Math.floor((el.countNum * (count/allCount)))
+            el.countVal = Math.floor((el.countNum * (count / allCount)))
         });
 
         propsData.value = dataVal;
 
-        console.log(dataVal,"dataVal",propsData.value)
+        console.log(dataVal, "dataVal", propsData.value)
 
     }, 50);
-    run = true;
 }
 
 
@@ -74,14 +77,16 @@ const countStart = () => {
 <style lang="scss" scoped="scoped">
 @import "@/scss/class.scss";
 @import "@/scss/theme.scss";
-.count-block{
-    .main-content{
+
+.count-block {
+    .main-content {
         @include width($mainWidth);
         @include margin(15, -1);
         @include padding(15, 0);
         display: flex;
         justify-content: space-between;
-        .count-item{
+
+        .count-item {
             @include padding(15);
             @include margin(0, 10);
             box-sizing: border-box;
@@ -89,25 +94,43 @@ const countStart = () => {
             max-width: 50%;
             text-align: center;
             flex: 1;
-            .count-image{
+
+            .count-image {
                 @include margin(15, 0);
             }
         }
-        .count-number{
+
+        .count-number {
             font-weight: bold;
             @include font(46);
-            @include margin(0,15,10,15);
+            @include margin(0, 15, 10, 15);
             @include padding(0, 0, 5, 0);
-            @include border(solid, $defaultBGColor, 0,0,1,0)
+            @include border(solid, $defaultBGColor, 0, 0, 1, 0)
         }
-        .count-describe{
+
+        .count-describe {
             @include padding(10, 0);
             @include font(14);
         }
-        .count-unit{
+
+        .count-unit {
             @include font(14);
             font-weight: 500;
         }
     }
 }
-</style>
+
+
+@media screen and (max-width: 640px) {
+    .count-block {
+        .main-content {
+            width: 100%;
+            flex-wrap: wrap;
+            .count-item{
+                flex: none;
+                width: calc(50% - 20px);
+                @include margin(10);
+            }
+        }
+    }
+}</style>
