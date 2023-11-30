@@ -1,7 +1,5 @@
 <template>
-    <swiper-index :data="swiperData"></swiper-index>
-    <item-image-text :editData="editData" bgUrl="http://www.sc-qianye.com/templates/main/images/section5_bg.jpg"></item-image-text>
-    <item-count-block :data="countData"></item-count-block>
+    <online-chat></online-chat>
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
@@ -9,6 +7,7 @@ import { isClient } from "@/utils/utils"
 import swiperIndex from "@/components/swiper/index.vue";
 import itemCountBlock from "@/components/home/itemCountBlock.vue";
 import itemImageText from "@/components/home/itemImageText.vue";
+import onlineChat from "@/components/onlineChat/index.vue";
 
 const countData = [
     {

@@ -99,7 +99,7 @@ const bg = `url(${bgUrl})`;
     }
 
     @include width($mainWidth);
-    @include margin(20, -1);
+    @include margin(20, 1e151);
     @include padding(20)
 }
 

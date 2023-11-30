@@ -1,6 +1,6 @@
 import { createApp } from "@/createSSRApp/app.js"
-import "@/scss/customize.scss"
-import "@/scss/theme.scss"
+import "@/scss/customize.scss";
+import "@/scss/theme.scss";
 
 
 

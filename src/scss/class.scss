@@ -70,13 +70,13 @@
         top: getUnit($t);
     }
     @if $r {
-        top: getUnit($r);
+        right: getUnit($r);
     }
     @if $b {
-        top: getUnit($b);
+        bottom: getUnit($b);
     }
     @if $l {
-        top: getUnit($l);
+        left: getUnit($l);
     }
 }
 
@@ -93,13 +93,19 @@
 }
 
 @function getUnit($n, $unit: px) {
-    @if $n > -1 {
-        @return $n + $unit;
-    } @else {
+    @if $n == 1e15 {
         @return auto;
-    }
+    };
+
+    @if $n {
+        @return $n + $unit;
+    };
 }
 
+
+@mixin boxShadow ( $c: #ccc ,$r: 0, $b: 0, $s: 0, $W: 0, $d: null) {
+    box-shadow: getUnit($r) getUnit($b) getUnit($s) getUnit($W) $c $d;
+}
 
 
 
