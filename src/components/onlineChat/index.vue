@@ -30,12 +30,7 @@
                     <div class="chat-info">
 
                     </div>
-                    <div class="chat-write" @click="focusEl">
-                        <div class="chat-write-content">
-                            <input @input="changeWrite($event)" @keydown="recordKey" type="hide" ref="writeInput"
-                                class="active">
-                        </div>
-                    </div>
+                    <chat-edit></chat-edit>
                 </div>
                 <div class="chat-aside">
                     <div class="adv-img">
@@ -52,161 +47,15 @@
 </template>
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
+import chatEdit from "./chatEdit.vue"
 
-
-const focusStatus = ref();
-
-const writeContent = ref();
-
-/**
- * @type {any}
- */
-let timer = null;
-
-/**
- * @type {any}
- */
-let recordKeyVal = null;
-
-const recordKey = (/** @type {any} */ e) => {
-    recordKeyVal = e.code || e.keyCode;
-    console.log(e, "e");
-}
-
-let delLen = 1;
-
-
-
-const changeWrite = (/** @type {any} */ e) => {
-    let writeData = e.data;
-    let len = String(writeData).length;
-    let inputEl = writeInput.value;
-
-
-    if (recordKeyVal == "Backspace") {
-        console.log(e.code, "e.code")
-        deleteText(inputEl);
-    } else if (len > 1 || (recordKeyVal == "Space" && writeData != ' ')) {
-        // delLen += 1;
-        for (let i = 0; i < delLen; i++) {
-            deleteText(inputEl);
-        }
-        for (let i = 0; i < len; i++) {
-            writeText(inputEl, writeData[i]);
-        }
-        if (recordKeyVal == "Space" && writeData != ' ') {
-            delLen = 1;
-            return ;
-        };
-        delLen = len;
-    } else {
-        writeText(inputEl, writeData);
-    }
-
-    if((recordKeyVal != "Space" && delLen > len)){
-        delLen = 1;
-    }
-    
-    let inputContextLength = inputEl.value.length;
-    let inputElLength = inputEl.parentNode.childNodes.length - 1;
-    console.log(inputContextLength, "内容长度", inputElLength, "元素个数", len, writeData)
-    if ((inputElLength - inputContextLength) >= 1) {
-        console.log("执行删除了")
-        deleteText(inputEl);
-    }
-}
-
-
-const deleteAllText = (/** @type {HTMLElement} */ el) => {
-    /**
-     * @type {any}
-     */
-    let removeEl = el.previousSibling;
-    while (removeEl) {
-        let nextEl = removeEl.previousSibling;
-        if (removeEl.nodeType == 1 && removeEl.nodeName != "INPUT") {
-            console.log(removeEl, "removeEl", removeEl.nodeName)
-            removeEl.parentNode.removeChild(removeEl);
-        }
-        removeEl = nextEl;
-    }
-}
-
-const deleteText = (/** @type {HTMLElement} */ el) => {
-    /**
-     * @type {any}
-     */
-    let removeEl = el.previousSibling;
-    while (removeEl) {
-        if (removeEl.nodeType != 1) {
-            removeEl = removeEl.previousSibling;
-        } else {
-            removeEl.parentNode.removeChild(removeEl);
-            removeEl = null;
-        }
-    }
-}
-
-const resetWrite = () => {
-
-}
-
-/**
- * 
- * @param {HTMLElement} position 
- * @param {string} data 
- */
-const writeText = (position, data) => {
-    let el = document.createElement("span");
-    if(data == ' '){
-        el.innerHTML = "&nbsp;";
-    }else{
-        el.innerText = data;
-    }
-    el.className = "text-span";
-    el.onclick = replaceWrite;
-    return position.parentNode?.insertBefore(el, position)
-}
-
-const replaceWrite = /**
-* @this {any}
-*/function (/** @type {any} */ e) {
-        /**
-         * @type {any}
-         */
-        let that = this;
-        setTimeout(() => {
-            that.parentNode?.insertBefore(writeInput.value, that.nextSibling);
-            writeInput.value.focus();
-        })
-    }
-
-const hideFocus = () => {
-    console.log(writeInput.value, "writeInput.value")
-    focusStatus.value = true;
-};
-
-const hideBlur = () => {
-    focusStatus.value = false;
-}
-
-const focusEl = () => {
-    writeInput.value.parentNode.appendChild(writeInput.value);
-    writeInput.value.focus();
-}
 
 onMounted(() => {
-    writeInput.value.addEventListener("focus", hideFocus);
-    writeInput.value.addEventListener("blur", hideBlur);
 });
 
 onUnmounted(() => {
-    writeInput.value.removeEventListener("focus", hideFocus);
-    writeInput.value.removeEventListener("blur", hideBlur);
-    writeInput.value.blur();
 })
 
-const writeInput = ref();
 
 
 const chatStatus = ref(true);
@@ -239,6 +88,7 @@ const closeChat = () => {
 const openChat = () => {
 
 }
+
 </script>
 <style lang="scss" scoped>
 @import "@/scss/class.scss";
@@ -353,7 +203,7 @@ const openChat = () => {
                 background-color: #000;
                 display: inline-block;
                 animation: flashing 1s infinite;
-                vertical-align: middle;
+                vertical-align: bottom;
             }
         }
     }
