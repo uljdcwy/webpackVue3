@@ -28,7 +28,7 @@ dirList.map(function (el) {
         new HtmlWebpackPlugin({
             template: path.resolve(basePath, './template.html'),
             filename: el + '.html',
-            chunks: [el, 'common'],
+            chunks: [el],
             hash: true,
             title: project.name,
             CDNList: [],
@@ -70,7 +70,7 @@ module.exports = merge(common, webConfig, {
                     minChunks: 1 // 最少复用几次，这里意思是只要用过一次就分割出来
                 },
                 common: {
-                    name: 'common',
+                    name: 'common' + Math.floor(Math.random() * 1000) + '' + Date.now(),
                     minChunks: 2,
                     priority: 0,
                     minSize: 0

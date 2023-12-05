@@ -44,7 +44,7 @@ module.exports = merge(common, {
                     },
                 },
                 common: {
-                    name: 'common',
+                    name: 'common' + Math.floor(Math.random() * 1000) + '' + Date.now(),
                     minChunks: 2,
                     priority: 0,
                     minSize: 0
