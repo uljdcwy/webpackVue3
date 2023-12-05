@@ -13,6 +13,7 @@ module.exports = merge(common, config, {
     entry: {
         index: "./Services/index",
     },
+    cache: false,
     output: {
         filename: '[name].js',
         path: path.resolve(basePath, "node"),

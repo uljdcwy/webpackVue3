@@ -9,16 +9,24 @@ const test = () => import("@/views/test.vue");
 console.log(isClient(), "isClient")
 
 const routes = [
-    { path: '/', component: index },
-    { path: '/test', component: test }
+    { path: '/', component: index, meta: {title: "标题首页"}  },
+    { path: '/test', component: test, meta: {title: "标题测试页"} },
+    { path: '/test1', component: test }
 ];
 
 
 export const router = () => {
-    return createRouter({
-        history: isClient() ? createWebHistory() : createMemoryHistory(),
+    let isClientStatus = isClient();
+    let routers =  createRouter({
+        history: isClientStatus ? createWebHistory() : createMemoryHistory(),
         routes,
     });
+
+    routers.beforeEach((to,from,next) => {
+        next();
+    });
+
+    return routers;
 }
 
 

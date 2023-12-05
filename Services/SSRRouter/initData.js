@@ -20,6 +20,18 @@ const getInitData = () => {
     };
 }
 
+/**
+ * 
+ * @param {string} HTMLTemplate 页面模版
+ * @param {string} title 页面标题
+ * @returns 
+ */
+const updateTitle = (HTMLTemplate, title) => {
+    // 匹配标题正则
+    const titleReg = new RegExp(`<title>[^(</)]*`)
+    return HTMLTemplate.replace(titleReg,`<title>${title}`);
+}
+
 // 初始化 SSR HTML数据
 /**
  * 
@@ -30,24 +42,30 @@ export const initSSRHTML = async (url) => {
     const { app, routes, store } = createApp();
 
     // 设置服务器端 router 的位置
-    console.log(routes.currentRoute,"router")
     routes.push(url);
     // 初始化数据
     let initData = getInitData();
-    console.log(url,"url")
+    
+    // 初始化页面标题
+    let pageTitle = "";
 
     // @ts-ignore
     await new Promise((resolve, reject) => {
         routes.isReady().then(() => {
+            // @ts-ignore
+            pageTitle = routes.currentRoute._value.meta && routes.currentRoute._value.meta.title;
             resolve('')
         }).catch(reject)
-    })
-
+    });
+    console.log(pageTitle,"pageTitle")
     app._props = {
         initData
     };
 
     let html = await renderToString(app);
     html = HTMLTemplate.replace(`<div id="app" data-server-rendered="true"></div>`, `<div id="app" data-server-rendered="true">${html}</div>`);;
+    if(pageTitle){
+        html = updateTitle(html, pageTitle);
+    }
     return updateInitStore(html, store, initData);
 }
