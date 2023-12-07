@@ -1,19 +1,19 @@
 import { createRouter, createWebHashHistory, createMemoryHistory, createRouterMatcher, createWebHistory } from "vue-router";
-import { isClient } from "@/utils/utils"
+import { isClient, importVueFail } from "@/utils/utils";
+// @ts-ignore
+import page404 from "@/components/404/index.vue";
 
 // @ts-ignore
-const index = () => import("@/views/index.vue");
+const index = () => import("@/views/index.vue").catch(importVueFail);
 // @ts-ignore
-const test = () => import("@/views/test.vue");
+const test = () => import("@/views/test.vue").catch(importVueFail);
 
-console.log(isClient(), "isClient")
 
 const routes = [
     { path: '/', component: index, meta: {title: "标题首页"}  },
-    { path: '/test', component: test, meta: {title: "标题测试页"} },
-    { path: '/test1', component: test }
+    { path: '/test', name: "test", component: test, meta: {title: "标题测试页"} },
+    { path: '/404', component: page404 }
 ];
-
 
 export const router = () => {
     let isClientStatus = isClient();
@@ -21,10 +21,15 @@ export const router = () => {
         history: isClientStatus ? createWebHistory() : createMemoryHistory(),
         routes,
     });
-
-    routers.beforeEach((to,from,next) => {
-        next();
-    });
+    if(isClientStatus){
+        routers.beforeEach((to,from,next) => {
+            next();
+        });
+    
+        routers.afterEach((to, from) => {
+            // 路由进入后
+        });
+    }
 
     return routers;
 }

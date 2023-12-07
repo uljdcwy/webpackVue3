@@ -15,59 +15,65 @@
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
+import { isClient } from "@/utils/utils";
 
+const isClientStatus = isClient();
 const props = defineProps(["data"]);
 const countEl = ref();
 
 
-const propsData = ref(JSON.parse(JSON.stringify(props.data)));
-
-onMounted(() => {
-    let elTop = countEl.value.offsetTop;
-    let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
-    
-    if (startPosition > elTop) {
-        countStart();
-    } else {
-        window.addEventListener("scroll", eventList)
-    }
-});
-
-const eventList = () => {
-    let elTop = countEl.value.offsetTop;
-    let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
-    if (startPosition > elTop) {
-        countStart();
-        window.removeEventListener("scroll", eventList);
-    }
-};
+const propsData = ref([]);
 
 
-const countStart = () => {
-    let count = 0;
-    let allCount = 2000;
-    let timer = setInterval(() => {
-        count += 50;
+let eventList,countStart;
+if (isClientStatus) {
+    propsData.value = JSON.parse(JSON.stringify(props.data));
 
-        if (count > allCount) {
-            clearInterval(timer)
-            return;
+
+    onMounted(() => {
+        let elTop = countEl.value.offsetTop;
+        let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
+
+        if (startPosition > elTop) {
+            countStart();
+        } else {
+            window.addEventListener("scroll", eventList)
         }
+    });
+
+    eventList = () => {
+        let elTop = countEl.value.offsetTop;
+        let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
+        if (startPosition > elTop) {
+            countStart();
+            window.removeEventListener("scroll", eventList);
+        }
+    };
+
+    countStart = () => {
+        let count = 0;
+        let allCount = 2000;
+        let timer = setInterval(() => {
+            count += 50;
+
+            if (count > allCount) {
+                clearInterval(timer)
+                return;
+            }
 
 
-        let dataVal = propsData.value;
+            let dataVal = propsData.value;
 
 
 
-        dataVal.forEach((/**@type {any} */el) => {
-            el.countVal = Math.floor((el.countNum * (count / allCount)))
-        });
+            dataVal.forEach((/**@type {any} */el) => {
+                el.countVal = Math.floor((el.countNum * (count / allCount)))
+            });
 
-        propsData.value = dataVal;
+            propsData.value = dataVal;
 
-        console.log(dataVal, "dataVal", propsData.value)
-
-    }, 50);
+        }, 50);
+    }
 }
 
 
@@ -126,11 +132,13 @@ const countStart = () => {
         .main-content {
             width: 100%;
             flex-wrap: wrap;
-            .count-item{
+
+            .count-item {
                 flex: none;
                 width: calc(50% - 20px);
                 @include margin(10);
             }
         }
     }
-}</style>
+}
+</style>

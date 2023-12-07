@@ -5,22 +5,21 @@ import "@/scss/theme.scss";
 
 
 if(process.env.NODE_ENV != "development"){
-	window.onbeforeunload = function (e) {
+	window.addEventListener("beforeunload", (e) => {
 		e = e || window.event
 		if (e) {
 			e.returnValue = '网站可能不会保存您的修改哦~'
 		}
 		return '网站可能不会保存您的修改哦~'
-	}
+	})
 }
 
 
 document.body.onload = function() {
 
 	const { app, routes, store } = createApp();
-	
+
 	routes.isReady().then(() => {
-		
 		// @ts-ignore
 		let vm = app.mount('#app')
 	})

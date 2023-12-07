@@ -8,10 +8,29 @@ import { createStore } from 'vuex';
 const initStore = global._STORE_STATE_ || {};
 
 export default createStore({
-	state () {
+	state() {
 		return {
+			pageLoading: false
 		}
 	},
 	mutations: {
+		/**
+		 * 
+		 * @param {any} state 
+		 * @param {boolean} status 
+		 */
+		setPageLoading(state, status) {
+			state.pageLoading = status;
+		}
+	},
+	getters: {
+		/**
+		  * 
+		  * @param {any} state 
+		  * @returns 
+		  */
+		getPageLoading(state) {
+			return state.pageLoading;
+		}
 	}
 })

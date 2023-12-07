@@ -6,3 +6,7 @@ interface forEach {
 interface filter {
     (el: any): any
 }
+
+interface Window  {
+    routerPath: string;
+}

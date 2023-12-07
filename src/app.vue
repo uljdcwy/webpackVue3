@@ -1,5 +1,8 @@
 <template>
-    <online-chat></online-chat>
+    <a-link href="/test">去测试</a-link>
+    <transition-router-view v-if="clientStatus"></transition-router-view>
+    <router-view v-else></router-view>
+    {{ getters.getPageLoading }}
 </template>
 <script setup>
 import { onMounted, ref } from "vue";
@@ -8,6 +11,15 @@ import swiperIndex from "@/components/swiper/index.vue";
 import itemCountBlock from "@/components/home/itemCountBlock.vue";
 import itemImageText from "@/components/home/itemImageText.vue";
 import onlineChat from "@/components/onlineChat/index.vue";
+import aLink from "@/components/aLink/index.vue";
+import transitionRouterView from "@/components/transitionRouterView/index.vue";
+// @ts-ignore
+import { useStore } from "vuex"
+
+const { getters } = useStore();
+
+const data = {name: 456}
+
 
 const countData = [
     {
@@ -58,8 +70,10 @@ const editData  = {
 // @ts-ignore   获取SSR传过来的初始化的数据
 let ssrData = ref(props.initData || global._INIT_DATA_);
 
+const clientStatus = isClient();
+
 // @ts-ignore
-if (isClient()) {
+if (clientStatus) {
     onMounted(() => {
     })
 }
