@@ -14,7 +14,9 @@ const hotInstance = require('webpack-hot-middleware')(compiler, {
 app.use(instance);
 app.use(hotInstance);
 
-app.use(express.static('./web'))
+app.use(express.static('./web'));
+
+app.use(express.static('./src/components/big-data-screen'))
 
 app.listen(config.port, () => {
   console.log(`启动开发成功 localhost:${config.port}`);

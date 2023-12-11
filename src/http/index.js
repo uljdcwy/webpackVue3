@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const instance = axios.create();
+export const instance = axios.create();
 
 instance.interceptors.request.use(function (/** @type {any} */ config) {
     console.log(config, "config")
