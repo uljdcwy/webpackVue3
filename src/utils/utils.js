@@ -40,7 +40,6 @@ export const goRouter = (event, router, query, params, cb) => {
     goStatus.then((/** @type {any} */ res) => {
         cb(res, path);
     }).catch((/** @type {any} */ err) => {
-        console.log(err,"err")
         router[type]("/404")
         cb(err, path);
     })

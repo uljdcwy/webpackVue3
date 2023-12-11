@@ -5,7 +5,6 @@
 import { useRouter, useRoute } from "vue-router";
 const router = useRouter();
 const route = useRoute();
-console.log(route.query,route.params,"params")
 </script>
 <style lang="scss" scoped="scoped"></style>
   

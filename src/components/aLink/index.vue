@@ -36,6 +36,7 @@ if(isClientStatus){
             }else{
                 emit('success', '');
             }
+            console.log(err,"err")
             store.commit("setPageLoading", false);
         })
     }

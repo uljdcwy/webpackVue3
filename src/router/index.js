@@ -12,7 +12,7 @@ const test = () => import("@/views/test.vue").catch(importVueFail);
 const routes = [
     { path: '/', component: index, meta: {title: "标题首页"}  },
     { path: '/test', name: "test", component: test, meta: {title: "标题测试页"} },
-    { path: '/404', component: page404 }
+    { path: '/:catchAll(.*)', name: '404', component: page404, meta: {title: "页面丢失了"} }
 ];
 
 export const router = () => {

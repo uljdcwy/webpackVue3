@@ -2,16 +2,16 @@
     <div class="context-block">
         <div class="main-context">
             <div class="context-text">
-                <h3 class="vice-title">{{ editData.vice }}</h3>
-                <h2 class="main-title">{{ editData.title }}</h2>
+                <h3 class="vice-title">{{ data.vice }}</h3>
+                <h2 class="main-title">{{ data.title }}</h2>
                 <span class="title-line"></span>
                 <div class="title-describe">
-                    {{ editData.describe }}
+                    {{ data.describe }}
                 </div>
-                <a :href="editData.detailsUrl" class="look-details">了解详情</a>
+                <a :href="data.detailsUrl" class="look-details">了解详情</a>
             </div>
             <div class="context-image">
-                <img :src="editData.imgUrl" :alt="editData.imgAlt">
+                <img :src="data.imgUrl" :alt="data.imgAlt">
             </div>
         </div>
     </div>
@@ -20,17 +20,17 @@
 import { ref } from "vue";
 
 
-const props = defineProps(["bgUrl", "editData"]);
+const props = defineProps(["data"]);
 
 /**
  * @type { String }
  */
-const bgUrl = props.bgUrl;
+const bgUrl = props.data.bgUrl;
 
 /**
  * @type { { vice: string, title: string, describe: string, detailsUrl: string, imgUrl: string, imgAlt: string } }
  */
-const editData = props.editData;
+const data = props.data.data;
 
 const bg = `url(${bgUrl})`;
 
@@ -43,6 +43,8 @@ const bg = `url(${bgUrl})`;
 
 .context-block {
     background-image: v-bind(bg);
+    max-width: 100%;
+    overflow: hidden;
     @include margin(20, 0);
     @include padding(25, 0);
 }
@@ -50,6 +52,7 @@ const bg = `url(${bgUrl})`;
 
 .main-context {
     display: flex;
+    background-color:#f00;
     justify-content: space-between;
     background-color: $defaultBGColor;
     box-sizing: border-box;
@@ -99,7 +102,7 @@ const bg = `url(${bgUrl})`;
     }
 
     @include width($mainWidth);
-    @include margin(20, 1e151);
+    @include margin(20, 1e15);
     @include padding(20)
 }
 

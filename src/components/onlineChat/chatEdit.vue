@@ -23,43 +23,55 @@ let writeStatus = "";
 let writePrev = "";
 let writeCurrent = "";
 let prevNow = 0;
+let isZhReg = /[\u4e00-\u9fa5]/;
+let tempStr = "";
 
 const changeWrite = (/** @type {any} */ e) => {
-    let writeData = e.data;
     let inputEl = writeInput.value;
     let isBackspace = recordKeyVal[0] == "Backspace";
     // 此时输入由输入法控制
-    if(writeStatus == "Process"){
+    if (writeStatus == "Process") {
         writePrev = writeCurrent;
         // 匹配正则
-        let currentData = e.data && e.data.replace(/'/g, '') || ""
+        let currentData = e.data && e.data.replace(/'/g, '') || "";
         let regExpPrev = new RegExp("^" + (writePrev || "") + ".*");
         let regExpCurr = new RegExp("^" + currentData + ".*");
         let isReduce = regExpCurr.test(writePrev);
         // 普通的添加
         let isAdd = regExpPrev.test(currentData);
-        let isZhReg = /[\u4e00-\u9fa5]/;
-        let isZh = isZhReg.test(e.data);
+        let isZh = isZhReg.test(currentData);
         let isLow = /[a-z]+/;
         isReduce = isBackspace && isReduce;
-        console.log(writePrev,"currentData", isReduce, e.data, isAdd);
         // 输入多个中英混输
-        if((currentData && currentData.length > 1) && isZhReg.test(currentData) && isLow.test(currentData)){
+        if ((currentData && currentData.length > 1) && isZhReg.test(currentData) && isLow.test(currentData)) {
             isAdd = true;
-        }
-
+        };
         // 使用正则匹配前一个值如果能配如果匹配成功与输入的是小写字母说明在键入中
-        if(isAdd && isLow.test(currentData) || isReduce || (isZh && isAdd)){
+        if (isAdd && isLow.test(currentData) || isReduce || (isZh && isAdd)) {
             prevNow = 0;
-            writeCurrent = currentData;
-            if((writePrev == e.data || !e.data) && isBackspace){
-                writeCurrent = "";
+            if (isAdd && isLow.test(currentData)) {
+                for (let i = 0; i < writeCurrent.length; i++) {
+                    deleteText(inputEl);
+                }
+
+                for (let i = 0; i < currentData.length; i++) {
+                    writeText(inputEl, currentData[i]);
+                }
+            } else if (isReduce) {
+                deleteText(inputEl);
             }
+
+            writeCurrent = currentData;
+            if ((writePrev == currentData || !currentData) && isBackspace) {
+                writeCurrent = "";
+            };
             // 如果有汉字产生 说明输入完成
-        }else if(isZh) {
+        } else if (isZh) {
             prevNow = 0;
-            
-            for(let i = 0; i < (e.data && e.data.length); i++){
+            for (let i = 0; i < writeCurrent.length; i++) {
+                deleteText(inputEl);
+            }
+            for (let i = 0; i < (e.data && e.data.length); i++) {
                 writeText(inputEl, e.data[i]);
             }
             writeCurrent = "";
@@ -67,18 +79,22 @@ const changeWrite = (/** @type {any} */ e) => {
         } else {
             let defVal = Date.now() - prevNow;
             // 有时键会自动键入两个以时间区分
-            if(defVal > 10){
+            if (defVal > 10) {
                 writeText(inputEl, e.data);
             }
+             // mousePosition
             prevNow = Date.now();
             writeCurrent = "";
         }
         // 此时输入法由键盘控制直接写入内容
-    }else{
+    } else {
         prevNow = 0;
-        if(isBackspace){
+        if (isBackspace) {
             deleteText(inputEl);
-        }else{
+        } else {
+            if(!e.data){
+                return ;
+            }
             writeText(inputEl, e.data);
         }
     }
@@ -92,7 +108,7 @@ const recordKey = (/** @type {any} */ e) => {
     if (recordKeyVal.length == 1) {
         moveInput(recordKeyVal[0]);
     }
-    if(focusStatus.value && recordKeyVal.indexOf("ControlLeft") > -1 && recordKeyVal.indexOf("KeyA") > -1 && recordKeyVal.indexOf("ControlLeft") < recordKeyVal.indexOf("KeyA")){
+    if (focusStatus.value && recordKeyVal.indexOf("ControlLeft") > -1 && recordKeyVal.indexOf("KeyA") > -1 && recordKeyVal.indexOf("ControlLeft") < recordKeyVal.indexOf("KeyA")) {
         selectEvent();
     };
 };
@@ -113,22 +129,35 @@ const selectEvent = () => {
     selectStatus.value = true;
 }
 
-const copyData = () => {
-    copyRun();
+const copyData = (event) => {
+    copyRun(event);
 }
 
-const copyRun = () => {
+const copyRun = (event) => {
+    event.preventDefault();
+    let inputEl = writeInput.value;
     // 创建一个新的Range对象，用于选择文本
-    var range = document.createRange();
-    range.selectNode(writeInput.value);
+    let range = document.createRange();
+    range.selectNode(inputEl);
+    let childNodes = inputEl.parentNode.childNodes;
+    let copyStr = "";
+    childNodes.forEach((el) => {
+        if(/br/i.test(el.nodeName)){
+            copyStr += "\n";
+        }else if(el != inputEl){
+            copyStr += el.innerText;
+        }
+    });
+    console.log(copyStr,"copyStr")
     // @ts-ignore
     window.getSelection().removeAllRanges(); // 清除之前的选择
+    event.clipboardData.setData('text/plain', copyStr);
     // @ts-ignore
     window.getSelection().addRange(range); // 将新的Range对象添加到选择中
     document.execCommand('copy'); // 执行复制命令
 }
 
-const cutData = function(/** @type {any} */ e) {
+const cutData = function (/** @type {any} */ e) {
     copyRun();
     cleanInput();
     writeInput.value.innerText = "";
@@ -137,21 +166,33 @@ const cutData = function(/** @type {any} */ e) {
 
 const cleanInput = () => {
     let inputEl = writeInput.value;
-    while(inputEl){
+    while (inputEl) {
         let nextEl = inputEl.nextElementSibling;
         let prevEl = inputEl.previousElementSibling;
-        if(nextEl){
+        if (nextEl) {
             inputEl.parentNode.removeChild(nextEl);
-        }else if(prevEl){
+        } else if (prevEl) {
             inputEl.parentNode.removeChild(prevEl);
-        }else{
+        } else {
             inputEl = null;
         }
     }
 }
 
 const recordUp = (/** @type {any} */ e) => {
-    recordKeyVal.pop()
+    
+    if(writeStatus == "Process" && recordKeyVal[0] == "Backspace" && writeCurrent.length == 1){
+        console.log("触发删除")
+        deleteText(writeInput.value);
+        writeCurrent = "";
+    };
+
+    if(e.key == "Enter"){
+        let inputEl = writeInput.value;
+        writeBr(inputEl);
+        updateInputVal();
+    }
+    recordKeyVal.pop();
 }
 /**
  * 
@@ -191,8 +232,7 @@ const moveInput = (d) => {
             if (inputEl.previousElementSibling) {
                 let targetEl = inputEl.previousElementSibling;
                 inputEl.parentNode?.insertBefore(inputEl, targetEl);
-                return;
-            }else{
+            } else {
                 inputEl.parentNode?.insertBefore(inputEl, inputEl.parentNode.firstChild);
             };
             writeInput.value.focus();
@@ -227,6 +267,7 @@ const findPositionEl = (left, inputTop, el, Dir) => {
             difT = currentEl.offsetTop - inputTop;
             currentEl = currentEl.previousElementSibling;
         };
+
         if (Math.abs(difT) < 6 && Math.abs(difL) < 6) {
             return currentEl;
             break;
@@ -272,12 +313,21 @@ const deleteText = (/** @type {HTMLElement} */ el) => {
             removeEl.parentNode.removeChild(removeEl);
             removeEl = null;
         }
-    }
+    };
+
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+        updateInputVal();
+    }, 100);
 }
 /**
  * @type { any }
  */
 let timer = null;
+const writeBr = (el) => {
+    let insertEl = document.createElement("br");
+    el.parentNode?.insertBefore(insertEl, el);
+}
 /**
  * 
  * @param {HTMLElement} position 
@@ -287,6 +337,8 @@ const writeText = (position, data) => {
     let el = document.createElement("span");
     if (data == ' ') {
         el.innerHTML = "&nbsp;";
+    } else if(data == "\n"){
+        writeBr(position);
     } else {
         el.innerText = data;
     }
@@ -296,9 +348,9 @@ const writeText = (position, data) => {
     clearTimeout(timer);
     timer = setTimeout(() => {
         updateInputVal();
-    },1000);
+    }, 100);
 }
-
+// 更新输入光标内容为输入里的内容
 const updateInputVal = () => {
     let inputEl = writeInput.value;
     let childNodesList = inputEl.parentNode.childNodes;
@@ -307,18 +359,34 @@ const updateInputVal = () => {
      */
     let textContext = [];
     childNodesList.forEach((/** @type {any} */ el, /** @type {any} */ idx) => {
-        textContext.push(el.innerText)
+        console.log(el,"el")
+        if (el != inputEl) {
+            textContext.push(el.innerText);
+        }
     });
     let text = textContext.join("");
+    let textLen = text.length;
+    // 输入错误
+    if (text != inputEl.innerText) {
+        console.log("输入错误");
+    }
+
+    inputEl.innerHTML = text;
+    if (writeInput.value.firstChild) {
+        moveCursor(writeInput.value.firstChild, textLen);
+    }
+}
+
+const moveCursor = (el, index) => {
     /**
      * @type {any}
      */
     let selection = window.getSelection();
-        // 创建一个 Range 对象
+    // 创建一个 Range 对象
     let range = document.createRange();
-    console.log(text.length,"text")
+
     // 设置 Range 对象的起始位置（这里设置在第 3 个字符之后）
-    range.setStart(writeInput.value.firstChild, 6); // 2 是起始位置，表示第 3 个字符
+    range.setStart(el, index); // 2 是起始位置，表示第 3 个字符
 
     // 折叠 Range 对象，将光标放在起始位置
     range.collapse(true);
@@ -326,36 +394,59 @@ const updateInputVal = () => {
     // 将 Range 对象添加到 Selection 对象中
     selection.removeAllRanges();
     selection.addRange(range);
-    // console.log(childNodesList[0].innerText,"childNodesList",textContext.join(""))
 }
 
-const replaceWrite = /**
-* @this {any}
-*/function (/** @type {any} */ e) {
-        /**
-         * @type {any}
-         */
-        let that = this;
-        setTimeout(() => {
-            that.parentNode?.insertBefore(writeInput.value, that.nextSibling);
-            writeInput.value.focus();
-        })
-    }
+const replaceWrite = function (e) {
+    /**
+     * @type {any}
+     */
+    let that = this;
+    setTimeout(() => {
+        that.parentNode?.insertBefore(writeInput.value, that.nextSibling);
+        writeInput.value.focus();
+    })
+}
 
 const hideFocus = () => {
     writeInput.value.addEventListener("paste", pasteData);
     writeInput.value.addEventListener("copy", copyData);
     writeInput.value.addEventListener("cut", cutData);
+    if (writeInput.value.firstChild) {
+        moveCursor(writeInput.value.firstChild, writeInput.value.innerText.length);
+    }
     selectStatus.value = false;
     focusStatus.value = true;
 };
 
 const hideBlur = () => {
-    writeInput.value.removeEventListener("paste", pasteData);
-    writeInput.value.removeEventListener("copy", copyData);
-    writeInput.value.removeEventListener("cut", cutData);
+    let inputEl = writeInput.value;
+    inputEl.removeEventListener("paste", pasteData);
+    inputEl.removeEventListener("copy", copyData);
+    inputEl.removeEventListener("cut", cutData);
     selectStatus.value = false;
     focusStatus.value = false;
+
+    if(mousePosition == "inner"){
+        for (let i = 0; i < writeCurrent.length; i++) {
+            deleteText(inputEl);
+        }
+        writeCurrent = "";
+    }
+}
+
+let mousePosition = "inner";
+
+const removeEventListLeave = (e) => {
+    mousePosition = "outer"
+}
+
+const removeEventListEnter = (e) => {
+    mousePosition = "inner"
+}
+
+
+
+const winBlur = () => {
 }
 
 const focusEl = () => {
@@ -366,13 +457,21 @@ const focusEl = () => {
 onMounted(() => {
     writeInput.value.addEventListener("focus", hideFocus);
     writeInput.value.addEventListener("blur", hideBlur);
+    window.addEventListener("blur", winBlur);
+    window.document.addEventListener("mouseenter", removeEventListEnter);
+    window.document.addEventListener("mouseleave", removeEventListLeave);
 });
 
 onUnmounted(() => {
     writeInput.value.blur();
     writeInput.value.removeEventListener("focus", hideFocus);
     writeInput.value.removeEventListener("blur", hideBlur);
-})
+    window.removeEventListener("blur", winBlur);
+    window.document.removeEventListener("mouseenter", removeEventListEnter);
+    window.document.removeEventListener("mouseleave", removeEventListLeave);
+});
+
+const inputHeight =  ref("16px")
 
 </script>
 <style lang="scss" scoped>
@@ -381,6 +480,7 @@ onUnmounted(() => {
 
 :deep(.text-span) {
     display: inline-block;
+    user-select: none;
 }
 
 .chat-write {
@@ -391,13 +491,15 @@ onUnmounted(() => {
     @include padding(10, 0);
     overflow: hidden;
     word-break: break-word;
-    :deep(.select-text){
-        .text-span{
+
+    :deep(.select-text) {
+        .text-span {
             user-select: none;
             background-color: $chatSelectBG;
             color: $chatSelectColor
         }
     }
+
     .chat-write-content {
         @include position(relative, 0, 0, 0, 0);
         @include padding(0, 10);
@@ -405,23 +507,25 @@ onUnmounted(() => {
         width: calc(100% + 18px);
         box-sizing: border-box;
         max-height: 100%;
-        .active{
-            /**animation: flashing 1s infinite; */
+
+        .active {
+            animation: flashing 1s infinite;
         }
+
         .input-box {
             text-wrap: nowrap;
             user-select: none;
             overflow: hidden;
-            color: #fff;
-            
-            /** opacity: 0; */
+            color: transparent;
+            opacity: 0;
             background-color: #000;
-            @include width(200);
+            height: v-bind(inputHeight);
+            @include width(2);
             @include margin(0, -1);
             outline: none;
-            overflow: hidden;
             border: none;
             @include padding(0);
+            overflow: hidden;
             background-color: #000;
             display: inline-block;
             vertical-align: bottom;

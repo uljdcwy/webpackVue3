@@ -21,8 +21,12 @@ const isClientStatus = isClient();
 const props = defineProps(["data"]);
 const countEl = ref();
 
+/**
+ * @type {any[]}
+ */
+let defaultData = [];
 
-const propsData = ref([]);
+const propsData = ref(defaultData);
 
 
 let eventList,countStart;

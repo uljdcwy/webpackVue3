@@ -12,17 +12,7 @@ ssrRouter.get("/", async (ctx, next) => {
     ctx.body = await initSSRHTML(ctx.url);
 });
 
-ssrRouter.get("/:test", async (/** @type {{ body: string; }} */ ctx, /** @type {any} */ next) => {
-    // @ts-ignore
-    console.log(ctx.url,"ctx.url");
-    // @ts-ignore
-    ctx.body = await initSSRHTML(ctx.url);
-});
-
-ssrRouter.get("/test/:name", async (/** @type {{ body: string; }} */ ctx, /** @type {any} */ next) => {
-    // @ts-ignored 路由名称
-
-    let name = ctx.params.name
+ssrRouter.get("/:route", async (/** @type {{ body: string; }} */ ctx, /** @type {any} */ next) => {
     // @ts-ignore
     ctx.body = await initSSRHTML(ctx.url);
 });
