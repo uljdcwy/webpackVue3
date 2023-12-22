@@ -12,6 +12,12 @@ class DevHtml {
                   <html lang="en" manifest="app.appcache">
                       <head>
                         <meta charset="UTF-8">
+                        <meta http-equiv="Window-target" content="_top">
+                        <meta http-equiv="content-Type" content="text/html; charset=utf-8">
+                        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                        <meta http-equiv="Pragma" content="no-cache" />
+                        <meta http-equiv="Expires" content="0" />
+                        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
                         <title>${project.name}</title>
                         <script>try { global } catch (e) { window.global = window; }</script>
     

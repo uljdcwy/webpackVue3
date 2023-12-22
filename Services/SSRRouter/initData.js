@@ -4,6 +4,7 @@ import fs from "fs";
 import { updateInitStore } from "./store.js";
 // server.js (不相关的代码省略)
 import { createApp } from '@/createSSRApp/app.js';
+import data from '@/vueI18n/data.js';
 /**
  * @type { string } HTML字符串
  */
@@ -39,7 +40,9 @@ const updateTitle = (HTMLTemplate, title) => {
  * @returns 
  */
 export const initSSRHTML = async (url) => {
-    const { app, routes, store } = createApp();
+    const { app, routes, store, i18n } = createApp(data);
+
+    console.log(i18n,"i18n")
 
     // 设置服务器端 router 的位置
     routes.push(url);
@@ -67,5 +70,5 @@ export const initSSRHTML = async (url) => {
     if(pageTitle){
         html = updateTitle(html, pageTitle);
     }
-    return updateInitStore(html, store, initData);
+    return updateInitStore(html, store, initData, data);
 }

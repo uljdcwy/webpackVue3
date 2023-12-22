@@ -1,5 +1,5 @@
 <template>
-    <a @click="goUrl($event)">
+    <a class="a-link" @click="goUrl($event)">
         <slot></slot>
     </a>
 </template>
@@ -35,8 +35,7 @@ if(isClientStatus){
                 emit('fail', err);
             }else{
                 emit('success', '');
-            }
-            console.log(err,"err")
+            };
             store.commit("setPageLoading", false);
         })
     }

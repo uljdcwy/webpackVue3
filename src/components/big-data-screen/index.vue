@@ -1,6 +1,6 @@
 <template>
     <div class="big-data-screen">
-        <div id="main" style="height: 300px;width: 300px;"></div>
+        <div id="main" style="height: 100%;width: 100%;"></div>
     </div>
 </template>
 <script setup>
@@ -20,5 +20,7 @@ if(isClientStatus){
 </script>
 
 <style lang="scss" scoped="scoped">
-    
+    .big-data-screen{
+        height: 100%
+    }
 </style>

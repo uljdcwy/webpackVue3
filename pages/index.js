@@ -1,6 +1,7 @@
 import { createApp } from "@/createSSRApp/app.js"
 import "@/scss/customize.scss";
 import "@/scss/theme.scss";
+// import VConsole from 'vconsole';
 
 
 
@@ -12,6 +13,8 @@ if(process.env.NODE_ENV != "development"){
 		}
 		return '网站可能不会保存您的修改哦~'
 	})
+	
+	// const vConsole = new VConsole();
 }
 
 

@@ -5,7 +5,7 @@ export const generateXHRCancelKey = function(){
 
 export const isClient = () => {
     // @ts-ignore
-    return Boolean(global.navigation);
+    return (typeof window !== 'undefined');
 }
 
 /**

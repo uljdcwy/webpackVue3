@@ -37,6 +37,7 @@
     "include": [
         "@types/Service/sqlRun.d.ts",
         "@types/Service/EncryptionType.d.ts",
+        "@types/vue-data.d.ts",
         "@types/utils.d.ts",
         "@types/router/index.d.ts", // 引入类型文件
         "@types/es.d.ts", // 引入类型文件
