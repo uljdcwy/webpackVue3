@@ -33,6 +33,19 @@ const updateTitle = (HTMLTemplate, title) => {
     return HTMLTemplate.replace(titleReg,`<title>${title} - `);
 }
 
+const updateMeta = (/** @type {string} */ html, /** @type {string} */ keywords, /** @type {string} */ description, /** @type {string} */ author) => {
+    // 匹配标题正则
+    const titleReg = new RegExp(`</title>`)
+    return HTMLTemplate.replace(titleReg,`
+        </title>
+        <meta name ="keywords" content="${keywords}">
+        <meta name ="keywords" content="${description}">
+        <meta name="author" content="${author}">
+    `);
+
+}
+
+
 // 初始化 SSR HTML数据
 /**
  * 
@@ -40,10 +53,9 @@ const updateTitle = (HTMLTemplate, title) => {
  * @param {string} lang 默认的语返回的语言
  * @returns 
  */
-export const 
-initSSRHTML = async (url, lang) => {
+export const initSSRHTML = async (url, lang) => {
     const { app, routes, store, i18n } = createApp(data, lang);
-    console.log(url,"url")
+    
     // 设置服务器端 router 的位置
     routes.push(url);
     // 初始化数据
@@ -51,12 +63,19 @@ initSSRHTML = async (url, lang) => {
     
     // 初始化页面标题
     let pageTitle = "";
+    let keywords = ""; 
+    let description = ""; 
+    let author = "";
 
     // @ts-ignore
     await new Promise((resolve, reject) => {
         routes.isReady().then(() => {
             // @ts-ignore
-            pageTitle = routes.currentRoute._value.meta && routes.currentRoute._value.meta.title;
+            let meta = routes.currentRoute._value.meta;
+            pageTitle = meta && meta.title;
+            keywords = meta && meta.keywords;
+            description = meta && meta.description;
+            author = meta && meta.author;
             resolve('')
         }).catch(reject)
     });
@@ -67,8 +86,9 @@ initSSRHTML = async (url, lang) => {
 
     let html = await renderToString(app);
     html = HTMLTemplate.replace(`<div id="app" data-server-rendered="true"></div>`, `<div id="app" data-server-rendered="true">${html}</div>`);;
-    if(pageTitle){
+    if(pageTitle) {
         html = updateTitle(html, pageTitle);
+        html = updateMeta(html, keywords, description, author);
     }
     const htmlStr = updateInitStore(html, store, initData, data, lang);
     

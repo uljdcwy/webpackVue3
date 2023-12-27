@@ -27,7 +27,6 @@ export const router = () => {
                 localStorage.setItem("lang", to.query.lang.toString());
                 window.i18n.global.locale = to.query.lang;
             }
-            console.log(to, from, next,"to, from, next")
             next();
         });
     
