@@ -3,24 +3,18 @@ import "@/scss/customize.scss";
 import "@/scss/theme.scss";
 // import VConsole from 'vconsole';
 
-
-
-if(process.env.NODE_ENV != "development"){
-	window.addEventListener("beforeunload", (e) => {
-		e = e || window.event
-		if (e) {
-			e.returnValue = '网站可能不会保存您的修改哦~'
-		}
-		return '网站可能不会保存您的修改哦~'
-	})
-	
+if(process.env.NODE_ENV == "development"){
+	window._INIT_LANG_ = "zh"
 	// const vConsole = new VConsole();
 }
 
 
-document.body.onload = function() {
 
-	const { app, routes, store } = createApp();
+document.body.onload = function () {
+
+	const { app, routes, store, i18n } = createApp();
+
+	window.i18n = i18n;
 
 	routes.isReady().then(() => {
 		// @ts-ignore

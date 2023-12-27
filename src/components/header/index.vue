@@ -6,8 +6,8 @@
                 <ul class="nav-list">
                     <template v-for="(item, index) in JSON.parse(decodeURIComponent($t('vueHeader.navList')))">
                         <li class="nav-item" @mouseenter="enterChildNavHeight(item, index)"
-                            @mouseleave="leaveChildNavHeight((item, index))">
-                            <a-link class="nav-link" :href="item.link">{{ item.title }}</a-link>
+                            @mouseleave="leaveChildNavHeight()">
+                            <a-link :query="item.query" :params="item.params" class="nav-link" :href="item.link">{{ item.title }}</a-link>
                             <i v-if="item.childList" class="iconfont icon-arrow"
                                 :class="(defaultChildNavHeight != '0px' && currentOpenIndex == index) ? 'arrow-down' : ''"
                                 @click="switchChildNav(item.childList, index)"></i>
@@ -18,7 +18,7 @@
                                     <dl class="child-nav">
                                         <dt v-if="childItem.title" class="child-title">{{ childItem.title }}</dt>
                                         <template v-for="(childItemContent, idx) in childItem.childNav">
-                                            <dd class="child-link"><a-link href="">{{ childItemContent.title }}</a-link>
+                                            <dd class="child-link"><a-link :query="childItemContent.query" :params="childItemContent.params" :href="childItemContent.link">{{ childItemContent.title }}</a-link>
                                             </dd>
                                         </template>
                                     </dl>
@@ -36,11 +36,11 @@
                         </template>
                     </select>
                 </div>
-                <div @mouseenter="showInput" @mouseleave="hideInput" :class="searchShow ? 'show-input' : ''"
+                <div @mouseenter="showInput" :class="searchShow ? 'show-input' : ''"
                     class="search-icon">
                     <input ref="inputEl" :placeholder="$t('vueHeader.searchPlaceholder')" @blur="phoneBlurHide"
                         v-model="searchInput" type="text" class="serach-input" @keyup.enter="keyupEnter">
-                    <i @click="searchStart" @touchend="phoneSearchStart" class="iconfont icon-sousuo"></i>
+                    <i @click="searchStart" @touchstart="phoneSearchStart" class="iconfont icon-sousuo"></i>
                 </div>
                 <div class="tel">
                     {{ $t('vueHeader.tel') }}
@@ -60,13 +60,18 @@ import { ref, onMounted, onUnmounted } from "vue";
 import aLink from "@/components/aLink/index.vue";
 import { useI18n } from "vue-i18n";
 import { langList } from "@/vueI18n/data.js";
-import { isClient } from "@/utils/utils.js"
+import { isClient } from "@/utils/utils.js";
+import { useRoute, useRouter } from 'vue-router';
+
 
 const t = useI18n();
-const lang = ref("zh");
+const lang = ref();
 const emits = defineEmits(['search']);
 const isPhone = ref(false);
 const searchShow = ref(false);
+
+const route = useRoute();
+const router = useRouter();
 
 const inputEl = ref();
 
@@ -77,13 +82,14 @@ const isOpen = ref(false);
 const currentOpenIndex = ref(-1);
 
 
-const changeI18n = (e) => {
+const changeI18n = (/** @type {any} */ e) => {
     t.locale.value = lang.value;
+    router.replace({ path: route.path, query: { lang:  lang.value} })
     localStorage.setItem("lang", lang.value);
 };
 
-const showInput = (event) => {
-    if (isPhone) return;
+const showInput = (/** @type {any} */ event) => {
+    if (isPhone.value) return;
     searchShow.value = true;
     inputEl.value.focus();
 }
@@ -99,18 +105,17 @@ const keyupEnter = () => {
 }
 
 const hideInput = () => {
-    if (isPhone) return;
+    if (isPhone.value) return;
     searchShow.value = false;
     inputEl.value.blur();
 }
 
 const searchStart = () => {
-    if (isPhone) return;
+    if (isPhone.value) return;
     emits('search', searchInput.value);
 }
 
 const phoneSearchStart = () => {
-    console.log(searchShow.value,"searchShow.value",isPhone.value)
     if (searchShow.value) {
         emits('search', searchInput.value);
     } else {
@@ -119,8 +124,8 @@ const phoneSearchStart = () => {
     }
 }
 
-const enterChildNavHeight = (item, idx) => {
-    if (!isPhone && item.childList) {
+const enterChildNavHeight = (/** @type {{ childList: any; }} */ item, /** @type {number} */ idx) => {
+    if (!isPhone.value && item.childList) {
         defaultChildNavHeight.value = "300px";
     }
     currentOpenIndex.value = idx;
@@ -140,15 +145,15 @@ const switchOpen = () => {
     isOpen.value = !isOpen.value;
 };
 
-const switchChildNav = (childNavList, idx) => {
+const switchChildNav = (/** @type {any[]} */ childNavList, /** @type {number} */ idx) => {
     if (parseInt(defaultChildNavHeight.value) > 0) {
         defaultChildNavHeight.value = 0 + "px";
         currentOpenIndex.value = -1;
     } else {
         let childNavHeight = 0;
-        childNavList.forEach((el) => {
+        childNavList.forEach((/** @type {{ childNav: any[]; }} */ el) => {
             childNavHeight += 33;
-            el.childNav.forEach((elem) => {
+            el.childNav.forEach((/** @type {any} */ elem) => {
                 childNavHeight += 22;
             })
         });
@@ -157,6 +162,7 @@ const switchChildNav = (childNavList, idx) => {
     }
 };
 
+// @ts-ignore
 const disabledScale = (event) => {
     if (event.touches.length > 1) {
         event.preventDefault();
@@ -165,14 +171,9 @@ const disabledScale = (event) => {
 }
 
 onMounted(() => {
-
-    if (!isClient()) {
-        return;
-    };
-    if (lang.value !== localStorage.getItem("lang") && localStorage.getItem("lang")) {
-        lang.value = localStorage.getItem("lang");
-        t.locale.value = localStorage.getItem("lang");
-    }
+    const langStr = localStorage.getItem("lang") || window._INIT_LANG_;
+    t.locale.value = langStr;
+    lang.value = langStr;
     isPhone.value = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     document.body.addEventListener('touchmove', disabledScale, false);
 })
@@ -201,6 +202,7 @@ onUnmounted(() => {
         background-color: $phoneFixedBg;
         @include position(fixed, 0, 0, 1e15, 0);
         @include border(solid, $borderColor, 0, 0, 1, 0);
+        z-index: 100;
     }
 }
 

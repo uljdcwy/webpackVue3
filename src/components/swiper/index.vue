@@ -1,5 +1,8 @@
 <template>
-    <swiper :modules="modules" effect="fade" :spaceBetween="30" :navigation="true" :pagination="{
+    <swiper :modules="modules" :autoplay="{
+      delay: 2500,
+      disableOnInteraction: false,
+    }" effect="fade" :spaceBetween="30" :navigation="true" :pagination="{
         clickable: true,
     }" :loop="true" @swiper="onSwiper" @slideChange="onSlideChange">
         <template v-for="(item, index) in data">
@@ -13,7 +16,7 @@ import { isClient } from "@/utils/utils"
 // @ts-ignore
 import { Swiper, SwiperSlide } from 'swiper/vue';
 // @ts-ignore
-import { Navigation, EffectFade, Pagination } from 'swiper/modules';
+import { Navigation, EffectFade, Pagination, Autoplay } from 'swiper/modules';
 
 const props = defineProps(['data']);
 
@@ -30,7 +33,7 @@ const onSlideChange = () => {
 const onSwiper = (/** @type {any} */ swiper) => {
 };
 
-const modules = [EffectFade, Navigation, Pagination];
+const modules = [EffectFade, Navigation, Pagination, Autoplay];
 
 // @ts-ignore
 if (isClient()) {
@@ -44,6 +47,15 @@ if (isClient()) {
     .swiper-img{
         width: 100%;
         height: auto;
+    }
+}
+
+
+
+@media screen and (max-width: 640px) {
+    :deep(.swiper-button-next),
+    :deep(.swiper-button-prev){
+        display: none;
     }
 }
 </style>

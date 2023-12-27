@@ -47,11 +47,15 @@ export default {
             navList: encodeURIComponent(JSON.stringify([
                 {
                     title: "首页",
-                    link: ""
+                    link: "/?lang=zh",
+                    name: "",
+                    query: {lang: 'zh'},
                 },
                 {
                     title: "产品中心",
-                    link: "",
+                    link: "/test?lang=zh",
+                    name: "",
+                    query: {lang: 'zh'},
                     childList: [
                         {
                             title: "标题",
@@ -97,7 +101,9 @@ export default {
                 },
                 {
                     title: "解决方案",
-                    link: ""
+                    link: "/other?lang=zh",
+                    name: "",
+                    query: {lang: 'zh'}
                 },
                 {
                     title: "工程案例",
@@ -163,7 +169,7 @@ export default {
             navList: encodeURIComponent(JSON.stringify([
                 {
                     title: "home",
-                    link: ""
+                    link: "/?lang=zh"
                 },
                 {
                     title: "Product Center",
@@ -213,7 +219,7 @@ export default {
                 },
                 {
                     title: "solution",
-                    link: ""
+                    link: "/?lang=en"
                 },
                 {
                     title: "Project cases",

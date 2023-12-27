@@ -6,6 +6,8 @@ module.exports = {
   output: {
       filename: './js/[name].js',
       path: path.resolve(basePath, "web"),
+      publicPath: "/",
+      chunkFilename: "[name].[hash:6].js",
       clean: true,
   },
   plugins: [new VueLoaderPlugin()],
@@ -20,7 +22,7 @@ module.exports = {
           },
         },
         generator: {
-          filename: 'images/[hash][ext][query]',
+          filename: 'images/[hash][ext][query]'
         },
       },
       {

@@ -29,21 +29,21 @@ const getInitData = () => {
  */
 const updateTitle = (HTMLTemplate, title) => {
     // 匹配标题正则
-    const titleReg = new RegExp(`<title>[^(</)]*`)
-    return HTMLTemplate.replace(titleReg,`<title>${title}`);
+    const titleReg = new RegExp(`<title>`)
+    return HTMLTemplate.replace(titleReg,`<title>${title} - `);
 }
 
 // 初始化 SSR HTML数据
 /**
  * 
  * @param {string} url 当前路由的路径 
+ * @param {string} lang 默认的语返回的语言
  * @returns 
  */
-export const initSSRHTML = async (url) => {
-    const { app, routes, store, i18n } = createApp(data);
-
-    console.log(i18n,"i18n")
-
+export const 
+initSSRHTML = async (url, lang) => {
+    const { app, routes, store, i18n } = createApp(data, lang);
+    console.log(url,"url")
     // 设置服务器端 router 的位置
     routes.push(url);
     // 初始化数据
@@ -60,7 +60,7 @@ export const initSSRHTML = async (url) => {
             resolve('')
         }).catch(reject)
     });
-    console.log(pageTitle,"pageTitle")
+    
     app._props = {
         initData
     };
@@ -70,5 +70,7 @@ export const initSSRHTML = async (url) => {
     if(pageTitle){
         html = updateTitle(html, pageTitle);
     }
-    return updateInitStore(html, store, initData, data);
+    const htmlStr = updateInitStore(html, store, initData, data, lang);
+    
+    return htmlStr;
 }

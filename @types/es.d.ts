@@ -9,5 +9,7 @@ interface filter {
 
 interface Window  {
     routerPath: string;
-    _INIT_I18N_: any
+    _INIT_I18N_: any,
+    _INIT_LANG_: string,
+    i18n: any
 }

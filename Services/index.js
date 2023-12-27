@@ -18,17 +18,21 @@ const app = new Koa();
 
 app.use(bodyParser({}));
 
-app.use(ssrRouter.routes()).use(ssrRouter.allowedMethods())
+app.use(ssrRouter.routes()).use(ssrRouter.allowedMethods());
 
 app.use(staticFiles("./web", {
   maxage: 600000,
   extensions: ['appcache'],
-  setHeaders: (/** @type {{ setHeader: (arg0: string, arg1: string) => void; }} */ res, /** @type {string} */ path) => {
+  // @ts-ignore
+  setHeaders: async (res, path, next) => {
     if(path.search(/.appcache/) > -1){
       res.setHeader('Content-Type', 'text/cache-manifest')
     }
   }
-}))
+}));
+
+
+
 
 app.use(cors({
   origin: function (/** @type {{ header: { origin: any; }; }} */ ctx) {

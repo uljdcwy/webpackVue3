@@ -17,7 +17,7 @@ module.exports = merge(common, config, {
     output: {
         filename: '[name].js',
         path: path.resolve(basePath, "node"),
-        publicPath: "",
+        publicPath: "/",
         clean: true,
     },
     target: "node",

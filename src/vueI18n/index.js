@@ -5,15 +5,16 @@ import devData from '@/vueI18n/data.js';
 
 /**
  * 
- * @param {string} locale 默认的语种 
+ * @param {string} lang 默认的语种 
  * @param {any} data 默认的数据
  * @returns 
  */
-export const getI18n = (locale, data = null) => {
+export const getI18n = (lang, data = null) => {
   let initData = data;
 
   if (isClient()) {
     initData = window._INIT_I18N_ || data;
+    lang = window._INIT_LANG_;
   }
 
   if(process.env.NODE_ENV == "development"){
@@ -21,7 +22,7 @@ export const getI18n = (locale, data = null) => {
   }
 
   return createI18n({
-    locale: 'zh',
+    locale: lang,
     allowComposition: true,
     messages: initData
   })

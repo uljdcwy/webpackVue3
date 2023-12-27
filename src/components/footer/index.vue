@@ -3,7 +3,7 @@
         <div class="footer-content">
             <ul class="nav-footer-list">
                 <li class="nav-footer-item" v-for="(item, index) in JSON.parse(decodeURIComponent($t('vueFooter.navList')))">
-                    <a-link class="item-link" :href="item.link">{{item.title}}</a-link>
+                    <a-link  :query="item.query" :params="item.params" class="item-link" :href="item.link">{{item.title}}</a-link>
                 </li>
                 <li class="nav-footer-item">
                     {{ $t('vueFooter.navTips') }}
@@ -110,7 +110,7 @@ const goTop = () => {
 }
  * 
  */
-let footerBg = props.bg;
+let footerBg = `url(${props.bg})`;
 const inputVal = ref();
 const goSerach = () => {
     emits('search', inputVal.value)
@@ -135,6 +135,7 @@ onMounted(() => {
     background-repeat: no-repeat;
     background-position: 50% 50%;
     background-Attachment: fixed;
+    background-size: cover;
 }
 
 .footer-content {

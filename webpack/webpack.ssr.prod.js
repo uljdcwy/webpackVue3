@@ -51,7 +51,7 @@ module.exports = merge(common, webConfig, {
     cache: false,
     plugins: PLUS,
     output: {
-        publicPath: "",
+        publicPath: "/",
     },
     mode: "production",
     optimization: {

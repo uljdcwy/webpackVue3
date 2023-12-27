@@ -7,14 +7,17 @@ export const ssrRouter = new Router();
 // @ts-ignore
 ssrRouter.get("/", async (ctx, next) => {
     // @ts-ignore
-    console.log(ctx.url,"ctx.url");
-    // @ts-ignore
-    ctx.body = await initSSRHTML(ctx.url);
+    ctx.body = await initSSRHTML(ctx.url, ctx.query.lang || 'zh');
 });
 
-ssrRouter.get("/:route", async (/** @type {{ body: string; }} */ ctx, /** @type {any} */ next) => {
-    // @ts-ignore
-    ctx.body = await initSSRHTML(ctx.url);
+// @ts-ignore
+ssrRouter.get("/:router", async (ctx, next) => {
+    if(/\..+$/.test(ctx.url)){
+        await next()
+    }else{
+        // @ts-ignore
+        ctx.body = await initSSRHTML(ctx.url, ctx.query.lang || 'zh');
+    }
 });
 
 

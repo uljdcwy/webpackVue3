@@ -1,4 +1,4 @@
-export const generateXHRCancelKey = function(){
+export const generateXHRCancelKey = function () {
     let random = 1000000 * Math.random();
     return Math.floor(random);
 }
@@ -21,6 +21,7 @@ export const goRouter = (event, router, query, params, cb) => {
      */
     let aLinkEl = event.target;
     let path = aLinkEl.pathname;
+    console.log(path, "path", aLinkEl)
     window.routerPath = path;
     /**
      * @type {string}
@@ -40,9 +41,13 @@ export const goRouter = (event, router, query, params, cb) => {
     goStatus.then((/** @type {any} */ res) => {
         cb(res, path);
     }).catch((/** @type {any} */ err) => {
-        router[type]("/404")
+        console.log("路由进入导航失败")
+        router.push({
+            path: "/404",
+            query: query
+        });
         cb(err, path);
-    })
+    });
     event.preventDefault();
     return false;
 }
