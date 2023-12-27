@@ -28,19 +28,15 @@ const getInitData = () => {
  * @returns 
  */
 const updateTitle = (HTMLTemplate, title) => {
-    // 匹配标题正则
-    const titleReg = new RegExp(`<title>`)
-    return HTMLTemplate.replace(titleReg,`<title>${title} - `);
+    return HTMLTemplate.replace("<title>",`<title>${title} - `);
 }
 
 const updateMeta = (/** @type {string} */ html, /** @type {string} */ keywords, /** @type {string} */ description, /** @type {string} */ author) => {
     // 匹配标题正则
-    const titleReg = new RegExp(`</title>`)
-    return HTMLTemplate.replace(titleReg,`
-        </title>
+    return html.replace("<body>",`
         <meta name ="keywords" content="${keywords}">
-        <meta name ="keywords" content="${description}">
-        <meta name="author" content="${author}">
+        <meta name ="description" content="${description}">
+        <meta name="author" content="${author}"></body>
     `);
 
 }
@@ -89,7 +85,7 @@ export const initSSRHTML = async (url, lang) => {
     if(pageTitle) {
         html = updateTitle(html, pageTitle);
         html = updateMeta(html, keywords, description, author);
-    }
+    };
     const htmlStr = updateInitStore(html, store, initData, data, lang);
     
     return htmlStr;
