@@ -34,14 +34,15 @@ module.exports = merge(common, webConfig, {
             resolve(entryObj);
         });
 
-        Object.keys(pages).map(function (el) {
+        Object.keys(pages).map(function (el, idx) {
+            console.log(project[idx].name,"project[idx].name")
             PLUS.push(
                 new HtmlWebpackPlugin({
                     template: path.resolve(basePath, './template.html'),
                     filename: el + '.html',
                     chunks: [el],
                     hash: true,
-                    title: project.name,
+                    title: project[idx].name,
                     CDNList: [],
                     isStaticCss: []
                 })
