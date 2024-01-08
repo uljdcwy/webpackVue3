@@ -13,12 +13,23 @@ import config from "./config.json" assert { type: 'json' };
 import { getIP } from "./utils/getIP.js"
 import axios from "axios";
 import { ssrRouter } from "./SSRRouter/index.js";
+import { indexRouter } from "./router/index.js"
+import { uploadFile } from "./router/upload.js"
 
 const app = new Koa();
 
+
+app.use(cors({
+  origin: function (/** @type {{ header: { origin: any; }; }} */ ctx) {
+    return  "*";// ctx.header.origin || "";
+  }
+}));
+
 app.use(bodyParser({}));
 
+app.use(uploadFile.routes()).use(uploadFile.allowedMethods());
 app.use(ssrRouter.routes()).use(ssrRouter.allowedMethods());
+app.use(indexRouter.routes()).use(indexRouter.allowedMethods());
 
 app.use(staticFiles("./web", {
   maxage: 600000,
@@ -32,13 +43,12 @@ app.use(staticFiles("./web", {
 }));
 
 
-
-
-app.use(cors({
-  origin: function (/** @type {{ header: { origin: any; }; }} */ ctx) {
-    return ctx.header.origin || "";
-  }
+app.use(staticFiles("./public", {
+  maxage: 600000,
 }));
+
+
+
 
 app.listen(config.port, () => {
   console.log(`服务启用中 ${getIP()}:${config.port}`)

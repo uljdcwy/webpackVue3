@@ -27,3 +27,15 @@ export const getI18n = (lang, data = null) => {
     messages: initData
   })
 } 
+
+export const getAdminI18n = () => {
+  return createI18n({
+    locale: "zh",
+    allowComposition: true,
+    messages: {
+      zh: {
+        test: "查看数据是否正常展示"
+      }
+    }
+  })
+}

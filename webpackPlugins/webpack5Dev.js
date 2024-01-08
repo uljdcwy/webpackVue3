@@ -7,54 +7,43 @@ class DevHtml {
    */
   apply(compiler) {
     compiler.hooks.done.tap('DevHtml ', (/** @type {{ compilation: { assets: any; }; }} */ compilation, /** @type {any} */ callback) => {
-      
-      let str = `<!doctype html>
-                  <html lang="en" manifest="app.appcache">
-                      <head>
-                        <meta charset="UTF-8">
-                        <meta http-equiv="Window-target" content="_top">
-                        <meta http-equiv="content-Type" content="text/html; charset=utf-8">
-                        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-                        <meta http-equiv="Pragma" content="no-cache" />
-                        <meta http-equiv="Expires" content="0" />
-                        <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-                        <title> - </title>
-                        <script>try { global } catch (e) { window.global = window; }</script>
-    
-      `
-                          for (let key in compilation.compilation.assets) {
-                            if (key.indexOf('hot-update') > -1) {
-                              return;
-                            }
-                            if (key.indexOf('wasm') > -1) {
-                              continue;
-                            }
-                            if (key.indexOf('.js') && key.indexOf('.map') < 0) {
-                              str += `<script defer="defer" src="${key}"></script>\t\n`
-                            } else if (key.indexOf('.css') && key.indexOf('.map') < 0) {
-                              str += `<link href="${key}" rel="stylesheet"></link>\t\n`;
-                            }
-                          }
-                          str += `
-                      </head>
-      
-                    <body><div id="app"></div></body>
-                    
-                    </html>`
+      for (let key of compilation.compilation.entries.keys()) {
 
-      try {
-        fs.accessSync(basePath + '/web', fs.constants.R_OK | fs.constants.W_OK);
-      } catch (err) {
-        if (err) {
-          fs.mkdirSync(basePath + "/web")
+
+
+        let str = `<!doctype html>
+      <html lang="en" manifest="app.appcache">
+          <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="Window-target" content="_top">
+            <meta http-equiv="content-Type" content="text/html; charset=utf-8">
+            <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+            <meta http-equiv="Pragma" content="no-cache" />
+            <meta http-equiv="Expires" content="0" />
+            <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+            <title> - </title>
+            <script>try { global } catch (e) { window.global = window; }</script>
+            <script defer="defer" src="./js/${key}.js"></script>
+          </head>
+
+        <body><div id="app"></div></body>
+        
+        </html>`
+
+        try {
+          fs.accessSync(basePath + '/web', fs.constants.R_OK | fs.constants.W_OK);
+        } catch (err) {
+          if (err) {
+            fs.mkdirSync(basePath + "/web")
+          }
         }
+
+        fs.writeFile(basePath + `/web/${key}.html`, str, function (/** @type {any} */ err, /** @type {any} */ data) {
+          if (err) {
+            return console.error(err);
+          }
+        });
       }
-
-      fs.writeFile(basePath + '/web/index.html', str, function (/** @type {any} */ err, /** @type {any} */ data) {
-        if (err) {
-          return console.error(err);
-        }
-      });
     })
   }
 }

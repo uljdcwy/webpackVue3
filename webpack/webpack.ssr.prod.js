@@ -31,7 +31,7 @@ dirList.map(function (el, idx) {
             filename: el + '.html',
             chunks: [el],
             hash: true,
-            title: project[idx].name,
+            title: "",
             CDNList: [],
             isStaticCss: []
         }));

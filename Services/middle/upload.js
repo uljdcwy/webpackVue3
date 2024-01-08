@@ -60,7 +60,7 @@ export const upload = async (/** @type {{ req: any; body: any; }} */ ctx, /** @t
             writerStream.on("error", () => {
                 reject({
                     "errno": 1,
-                    "message": "写入失败"
+                    "message": ""
                 })
             })
 
@@ -70,7 +70,7 @@ export const upload = async (/** @type {{ req: any; body: any; }} */ ctx, /** @t
                     "errno": 0,
                     "data": {
                         "url": uuidFileName,
-                        "alt": "车牌识别资料集",
+                        "alt": "",
                         "href": "javascript:void();"
                     }
                 })

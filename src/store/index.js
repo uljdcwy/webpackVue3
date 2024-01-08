@@ -7,7 +7,7 @@ import { createStore } from 'vuex';
 // @ts-ignore
 const initStore = global._STORE_STATE_ || {};
 
-export default createStore({
+export const store =  createStore({
 	state() {
 		return {
 			pageLoading: false
@@ -33,4 +33,4 @@ export default createStore({
 			return state.pageLoading;
 		}
 	}
-})
+});

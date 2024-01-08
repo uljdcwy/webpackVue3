@@ -1,24 +1,41 @@
-import axios from "axios";
+import { instance } from "./instance.js";
 
-export const instance = axios.create();
-
-instance.interceptors.request.use(function (/** @type {any} */ config) {
-    console.log(config, "config")
-    return config;
-}, function (/** @type {any} */ error) {
-    return Promise.reject(error);
-});
-
-instance.interceptors.response.use(function (/** @type {any} */ response) {
-    return response;
-}, function (/** @type {any} */ error) {
-    return Promise.reject(error);
-});
-
-export const asyncRequest = function () {
-    return instance({
-        method: "post",
-        url: "",
-    });
+/**
+ * 
+ * @param {any} url 
+ * @param {any} data 
+ * @returns 
+ */
+export const POST =  (url, data) => {
+    return instance.post(url, data);
 }
 
+/**
+ * 
+ * @param {any} url 
+ * @param {any} data 
+ * @returns {Promise<any>}
+ */
+export const GET =  (url, data) => {
+    let str = "";
+    
+    Object.keys(data).map((el) => {
+        if(!str){
+            str += "?" + el + "=" + data[el];
+        }else{
+            str += "&" + el + "=" + data[el];
+        }
+    })
+
+    return instance.get(url + str);
+}
+
+/**
+ * 
+ * @param {*} url 
+ * @param {*} data 
+ * @returns 
+ */
+export const uploadFile = (url, data) => {
+    return instance.post(url, data);
+}

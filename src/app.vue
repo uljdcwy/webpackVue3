@@ -5,6 +5,8 @@
     <div style="height: 800px">
     123456</div>
     {{ searchValue }}
+
+    {{ $t("vueIndex.title") }}
     <vue-footer @search="searchContent" bg="https://th.wallhaven.cc/lg/zy/zy2x7v.jpg"></vue-footer>
 </template>
 <script setup>

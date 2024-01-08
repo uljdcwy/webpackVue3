@@ -4,7 +4,11 @@ import fs from "fs";
 import { updateInitStore } from "./store.js";
 // server.js (不相关的代码省略)
 import { createApp } from '@/createSSRApp/app.js';
-import data from '@/vueI18n/data.js';
+import baseData from '@/vueI18n/data.js';
+
+import { getUrl, getPageI18nName } from "@/utils/getI18nData.js";
+import axios from "axios";
+
 /**
  * @type { string } HTML字符串
  */
@@ -28,7 +32,7 @@ const getInitData = () => {
  * @returns 
  */
 const updateTitle = (HTMLTemplate, title) => {
-    return HTMLTemplate.replace("<title>",`<title>${title} - `);
+    return HTMLTemplate.replace("<title>",`<title>${title}`);
 }
 
 const updateMeta = (/** @type {string} */ html, /** @type {string} */ keywords, /** @type {string} */ description, /** @type {string} */ author) => {
@@ -50,7 +54,55 @@ const updateMeta = (/** @type {string} */ html, /** @type {string} */ keywords, 
  * @returns 
  */
 export const initSSRHTML = async (url, lang) => {
-    const { app, routes, store, i18n } = createApp(data, lang);
+    const dataUrl = getUrl(url);
+    let i18nData = baseData;
+    /**
+     * @type {any}
+     */
+    let json = {};
+    
+    if(dataUrl) {
+        const { data: { data: data } } = await axios.get("http://127.0.0.1:10016" + dataUrl);
+        
+        /**
+         * @type { any }
+         */
+        let obj = {};
+
+        const i18nName = getPageI18nName(url);
+    
+        data.forEach((/** @type {any} */ el) => {
+            const jsonData = JSON.parse(JSON.stringify(el.json));
+            if(el.type == 'seoblock') {
+                json = el.json && el.json[lang] || {};
+    
+                Object.keys(jsonData).map((elem) => {
+                    // 初始化语言
+                    obj[elem] = obj[elem] || {};
+                    // 更新值
+                    obj[elem][i18nName] = Object.assign(obj[elem][i18nName] || {}, jsonData[elem]);
+                })
+            }else{
+                Object.keys(jsonData).map((elem) => {
+                    // 初始化语言
+                    obj[elem] = obj[elem] || {};
+                    const assignObj = Array.isArray(jsonData[elem]) ? encodeURIComponent(JSON.stringify(jsonData[elem])) : jsonData[elem];
+                    // 更新值
+                    obj[elem][i18nName] = Object.assign(obj[elem][i18nName] || {}, {[el.type]: assignObj});
+                })
+            }
+
+        });
+
+
+        for(let key in i18nData) {
+            // @ts-ignore
+            i18nData[key] = Object.assign(i18nData[key], obj[key]);
+        };
+        
+    };
+
+    const { app, routes, store, i18n } = createApp(i18nData, lang);
     
     // 设置服务器端 router 的位置
     routes.push(url);
@@ -58,20 +110,13 @@ export const initSSRHTML = async (url, lang) => {
     let initData = getInitData();
     
     // 初始化页面标题
-    let pageTitle = "";
-    let keywords = ""; 
-    let description = ""; 
-    let author = "";
-
+    let pageTitle =  json.title;
+    let keywords = json.keywords; 
+    let description = json.description; 
+    let author = json.author;
     // @ts-ignore
     await new Promise((resolve, reject) => {
-        routes.isReady().then(() => {
-            // @ts-ignore
-            let meta = routes.currentRoute._value.meta;
-            pageTitle = meta && meta.title;
-            keywords = meta && meta.keywords;
-            description = meta && meta.description;
-            author = meta && meta.author;
+        routes.isReady().then(async () => {
             resolve('')
         }).catch(reject)
     });
@@ -86,7 +131,7 @@ export const initSSRHTML = async (url, lang) => {
         html = updateTitle(html, pageTitle);
         html = updateMeta(html, keywords, description, author);
     };
-    const htmlStr = updateInitStore(html, store, initData, data, lang);
+    const htmlStr = updateInitStore(html, store, initData, i18nData, lang);
     
     return htmlStr;
 }

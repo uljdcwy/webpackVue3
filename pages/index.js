@@ -26,6 +26,7 @@ document.body.onload = function () {
 /*#__PURE__*/ moduleHot()
 
 function /*#__PURE__*/ moduleHot() {
+	console.log("开始热替换 index")
 	// @ts-ignore
 	if (module?.hot) {
 		// @ts-ignore

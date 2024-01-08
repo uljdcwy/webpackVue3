@@ -5,25 +5,22 @@
     }" effect="fade" :spaceBetween="30" :navigation="true" :pagination="{
         clickable: true,
     }" :loop="true" @swiper="onSwiper" @slideChange="onSlideChange">
-        <template v-for="(item, index) in data">
-            <swiper-slide class="swiper-item"><img class="swiper-img" :src="item.src" :alt="item.alt"></swiper-slide>
+        <template v-for="(item, index) in JSON.parse(decodeURIComponent($t('vueIndex.bannerblock')))">
+            <swiper-slide class="swiper-item"><img class="swiper-img" :src="item.imageUrl" :alt="item.alt"></swiper-slide>
         </template>
     </swiper>
 </template>
 <script setup>
-import { onMounted, ref, inject } from "vue";
+import { onMounted, ref } from "vue";
 import { isClient } from "@/utils/utils"
 // @ts-ignore
 import { Swiper, SwiperSlide } from 'swiper/vue';
+import { useI18n } from "vue-i18n";
 // @ts-ignore
 import { Navigation, EffectFade, Pagination, Autoplay } from 'swiper/modules';
 
-const props = defineProps(['data']);
 
-/**
- * @type { {alt: string, src: string}[] }
- */
-const data = props.data;
+const t = useI18n();
 
 const onSlideChange = () => {
 

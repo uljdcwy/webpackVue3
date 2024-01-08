@@ -4,7 +4,7 @@ import aLink from "@/components/aLink/index.vue";
 // @ts-ignore
 import App from "@/app.vue";
 import { router } from '@/router'
-import store from '@/store';
+import { store } from '@/store';
 import { getI18n } from "@/vueI18n/index"
 
 export const createApp = (data = {}, /** @type {string} */ lang) => {

@@ -21,7 +21,7 @@ const PLUS = [
         filename: './css/[name].css',
     })
 ]
-dirList.map(function (el) {
+dirList.map(function (el, idx) {
     // @ts-ignore
     el = /(.+)\.js$/.exec(el)[1];
     PLUS.push(
@@ -30,7 +30,7 @@ dirList.map(function (el) {
             filename: el + '.html',
             chunks: [el],
             hash: true,
-            title: project.name,
+            title: project[idx].name,
             CDNList: [],
             isStaticCss: []
         }));

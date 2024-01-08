@@ -58,21 +58,21 @@ export const findSqlRun = async (params, ctx) => {
 
   if (params.pageIndex !== undefined || params.pageSize !== undefined) {
     pageIndex = Number(params.pageIndex) || 0, pageSize = Number(params.pageSize) || 10;
-    let [{ recordCount }] = await execute(sqlStr.replace("*", "COUNT(*) as recordCount"));
+    let [{ recordCount }] = await execute(sqlStr.replace("*", "COUNT(*) as recordCount"), []);
     count = recordCount;
     let startPosition = pageIndex * pageSize;
     sqlStr += ` LIMIT ${pageSize} offset ${startPosition}`;
     return {
       code: 1,
       count: count,
-      data: await execute(sqlStr),
+      data: await execute(sqlStr, []),
       msg: '',
     }
   }
 
   return {
     code: 1,
-    data: await execute(sqlStr),
+    data: await execute(sqlStr, []),
     msg: '',
   }
 }

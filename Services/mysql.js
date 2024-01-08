@@ -1,7 +1,7 @@
 import mysql2 from "mysql2";
 import config from "./config.json" assert { type: 'json' };
 
-const pool = mysql2.createPool(config);
+const pool = mysql2.createPool(config.dbData);
 /**
  * 
  */

@@ -1,8 +1,15 @@
 // @ts-ignore
 import logo from "@public/logo.png";
+// @ts-ignore
+import banner1 from "@public/banner1.jpg";
+// @ts-ignore
+import banner2 from "@public/banner2.jpg";
+// @ts-ignore
+import banner3 from "@public/banner3.jpg";
+
+
 export default {
     zh: {
-        test: "测试",
         vueFooter: {
             Filing: `©2022 xxxxxxxx有限公司 版权所有 备案号：粤ICP备xxxxxx号 技术支持：<a href="javascript:;">曾细亚</a>`,
             telTips: "24小时服务热线",
@@ -49,13 +56,13 @@ export default {
                     title: "首页",
                     link: "/?lang=zh",
                     name: "",
-                    query: {lang: 'zh'},
+                    query: { lang: 'zh' },
                 },
                 {
                     title: "产品中心",
                     link: "/test?lang=zh",
                     name: "",
-                    query: {lang: 'zh'},
+                    query: { lang: 'zh' },
                     childList: [
                         {
                             title: "标题",
@@ -103,7 +110,7 @@ export default {
                     title: "解决方案",
                     link: "/other?lang=zh",
                     name: "",
-                    query: {lang: 'zh'}
+                    query: { lang: 'zh' }
                 },
                 {
                     title: "工程案例",
@@ -121,10 +128,49 @@ export default {
             tel: "0755-23646330",
             logoUrl: logo,
             searchPlaceholder: "请输入搜索关键词",
+        },
+        vueIndex: {
+            title: '标题',
+            author: ' 曾细亚',
+            keywords: '细亚',
+            description: '内容块加内容显示',
+            bannerblock: encodeURIComponent(JSON.stringify([
+                {
+                    alt: "测试图片",
+                    src: banner1,
+                },
+                {
+                    alt: "测试地址",
+                    src: banner2,
+                },
+                {
+                    alt: "测试路径",
+                    src: banner3,
+                }
+            ]))
         }
     },
     en: {
-        test: "test",
+        vueIndex: {
+            title: 'title ',
+            author: 'xiya',
+            keywords: 'xiya',
+            description: 'description content',
+            bannerblock: encodeURIComponent(JSON.stringify([
+                {
+                    alt: "test image",
+                    src: banner1,
+                },
+                {
+                    alt: "test image",
+                    src: banner2,
+                },
+                {
+                    alt: "test path",
+                    src: banner3,
+                }
+            ]))
+        },
         vueFooter: {
             Filing: `Co., Ltd. All rights reserved Registration number: Guangdong ICP No. xxxxxx Technical support：<a href="javascript:;">Zeng Xiya</a>`,
             telTips: "24-hour service hotline",

@@ -1,5 +1,5 @@
 import * as echarts from 'echarts';
-import { instance } from "@/http/index.js"
+import { GET } from "@/http/index.js"
 
 export const initMap = () => {
 
@@ -266,14 +266,14 @@ export const initMap = () => {
 
 
 const getChina = () => {
-    return instance.get("https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json")
+    return GET("https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json")
 }
 const getProvince = (adcode) => {
-    return instance.get(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`);
+    return GET(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`);
 }
 const getCounty = (adcode) => {
-    return instance.get(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`);
+    return GET(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`);
 }
 const getCitys = (adcode) => {
-    return instance.get(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`);
+    return GET(`https://geo.datav.aliyun.com/areas_v3/bound/${adcode}_full.json`);
 }
