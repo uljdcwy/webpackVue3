@@ -1,7 +1,7 @@
 <template>
     <div ref="countEl" class="count-block">
         <div class="main-content">
-            <template v-for="(item, index) in propsData">
+            <template v-for="(item, index) in defaultData">
                 <div class="count-item">
                     <img class="count-image" :src="item.iconUrl" alt="">
                     <div class="count-number">
@@ -18,20 +18,15 @@ import { onMounted, ref } from "vue";
 import { isClient } from "@/utils/utils";
 
 const isClientStatus = isClient();
-const props = defineProps(["data"]);
 const countEl = ref();
 
 /**
  * @type {any[]}
  */
-let defaultData = [];
-
-const propsData = ref(defaultData);
-
+let defaultData = ref([]);
 
 let eventList,countStart;
 if (isClientStatus) {
-    propsData.value = JSON.parse(JSON.stringify(props.data));
 
 
     onMounted(() => {
@@ -66,7 +61,7 @@ if (isClientStatus) {
             }
 
 
-            let dataVal = propsData.value;
+            let dataVal = JSON.parse(JSON.stringify(defaultData.value));
 
 
 
@@ -74,7 +69,7 @@ if (isClientStatus) {
                 el.countVal = Math.floor((el.countNum * (count / allCount)))
             });
 
-            propsData.value = dataVal;
+            defaultData.value = dataVal;
 
         }, 50);
     }
