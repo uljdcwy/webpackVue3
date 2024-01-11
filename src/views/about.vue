@@ -10,5 +10,7 @@ const router = useRouter();
 const route = useRoute();
 const t = useI18n();
 </script>
-<style lang="scss" scoped="scoped"></style>
+<style lang="scss" scoped="scoped">
+    
+</style>
   

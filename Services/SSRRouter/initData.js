@@ -5,6 +5,7 @@ import { updateInitStore } from "./store.js";
 // server.js (不相关的代码省略)
 import { createApp } from '@/createSSRApp/app.js';
 import baseData from '@/vueI18n/data.js';
+import config from "../config.json" assert { type: 'json' };
 
 import { getUrl, getPageI18nName } from "@/utils/getI18nData.js";
 import axios from "axios";
@@ -62,7 +63,7 @@ export const initSSRHTML = async (url, lang) => {
     let json = {};
     
     if(dataUrl) {
-        const { data: { data: data } } = await axios.get("http://127.0.0.1:10016" + dataUrl);
+        const { data: { data: data } } = await axios.get("http://localhost:" + config.port + dataUrl);
         
         /**
          * @type { any }
@@ -91,21 +92,19 @@ export const initSSRHTML = async (url, lang) => {
                     obj[elem][i18nName] = Object.assign(obj[elem][i18nName] || {}, {[el.type]: assignObj});
                 })
             }
-
         });
-
 
         for(let key in i18nData) {
             // @ts-ignore
             i18nData[key] = Object.assign(i18nData[key], obj[key]);
         };
-        
     };
 
     const { app, routes, store, i18n } = createApp(i18nData, lang);
     
     // 设置服务器端 router 的位置
     routes.push(url);
+
     // 初始化数据
     let initData = getInitData();
     

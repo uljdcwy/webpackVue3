@@ -18,7 +18,7 @@ const dirList = fs.readdirSync(path.resolve(basePath + "/pages"));
  */
 const PLUS = [
     new MiniCssExtractPlugin({
-        filename: './css/[name].css',
+        filename: './css/[name][hash:6].css',
     })
 ]
 

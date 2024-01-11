@@ -8,12 +8,12 @@ import page404 from "@/components/404/index.vue";
 // @ts-ignore
 const index = () => import("@/views/index.vue").catch(importVueFail);
 // @ts-ignore
-const test = () => import("@/views/test.vue").catch(importVueFail);
+const about = () => import("@/views/about.vue").catch(importVueFail);
 
 
 const routes = [
     { path: '/', name: "index", component: index },
-    { path: '/test', name: "test", component: test },
+    { path: '/about', name: "about", component: about },
     { path: '/:catchAll(.*)', name: '404', component: page404 }
 ];
 

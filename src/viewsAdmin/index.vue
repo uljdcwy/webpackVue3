@@ -15,7 +15,7 @@
                 <template v-for="(itemFrom, idx) in formData">
                     <n-tab-pane :name="idx" :tab="idx">
                         <template v-for="(item, idxChild) in itemFrom">
-                            <n-form-item v-if="currentType != 'bannerblock'" :label="item.label">
+                            <n-form-item v-if="currentType == 'seoblock'" :label="item.label">
                                 <n-input :type="item.type || 'text'" v-model:value="item.value"
                                     :placeholder="item.placeholder" />
                             </n-form-item>
@@ -27,7 +27,17 @@
                                         {{ item.imageUrl ? '重新上传' : '上传图片' }}
                                     </n-button>
                                 </n-upload>
-
+                            </n-form-item>
+                            <n-form-item v-if="currentType == 'countblock'" :label="'计数值' + idxChild">
+                                <n-input-number min="0" v-model:value="item.countNum" placeholder="计数值" style="width: 240px;text-align: center;" />
+                                <n-input type="text" style="width: 160px;text-align: center;" v-model:value="item.unit" placeholder="单位" />
+                                <n-input type="text" v-model:value="item.describe" placeholder="请选择描述内容" />
+                                <n-upload :default-upload="false" @change="customRequest($event, idx, idxChild)"
+                                    accept=".jpg,.png,.jpeg" style="width: 120px" :show-file-list="false">
+                                    <n-button>
+                                        {{ item.imageUrl ? '重新上传' : '上传图片' }}
+                                    </n-button>
+                                </n-upload>
                             </n-form-item>
                         </template>
                     </n-tab-pane>
@@ -49,7 +59,7 @@ import { ref, h, reactive, onMounted } from "vue";
 import { langList } from "@/vueI18n/data.js";
 import { POST, GET, uploadFile } from "@/http/index.js";
 import { CloudUploadOutline, AddCircle, RemoveCircleSharp } from '@vicons/ionicons5'
-import { NLayoutContent, NLayoutHeader, NEl, NDataTable, NButton, NModal, NForm, NFormItem, NInput, NTabs, NTabPane, NSelect, NDynamicInput, NIcon, NUpload } from "naive-ui";
+import { NLayoutContent, NLayoutHeader, NEl, NDataTable, NButton, NModal, NForm, NFormItem, NInput, NTabs, NTabPane, NSelect, NDynamicInput, NIcon, NUpload, NInputNumber } from "naive-ui";
 
 const columns = [
     {
@@ -141,6 +151,10 @@ const selectTypes = [
     {
         label: "轮播图内容块",
         value: "bannerblock"
+    },
+    {
+        label: "计数器内容块",
+        value: "countblock"
     }
 ];
 
@@ -201,7 +215,10 @@ const selectTypeChange = (/** @type {any} */ e) => {
                 submitI18n[elem.text] = JSON.parse(JSON.stringify(bannerFrom))
             });
             break;
-        case 3:
+        case "countblock":
+            langList.forEach((elem) => {
+                submitI18n[elem.text] = JSON.parse(JSON.stringify(countFrom))
+            });
             break;
     };
     formData.value = submitI18n;
@@ -253,6 +270,34 @@ const bannerFrom = [
     {
         alt: "",
         imageUrl: ""
+    }
+];
+
+
+const countFrom = [
+    {
+        countNum: "",
+        imageUrl: "",
+        unit: "",
+        describe: ""
+    },
+    {
+        countNum: "",
+        imageUrl: "",
+        unit: "",
+        describe: ""
+    },
+    {
+        countNum: "",
+        imageUrl: "",
+        unit: "",
+        describe: ""
+    },
+    {
+        countNum: "",
+        imageUrl: "",
+        unit: "",
+        describe: ""
     }
 ];
 
@@ -313,7 +358,7 @@ const submitContent = () => {
             });
             sendObj[langObj[elem]] = obj;
         })
-    } else if (currentType.value == "bannerblock") {
+    } else if (currentType.value == "bannerblock" || currentType.value == "countblock") {
         Object.keys(formData.value).map((elem) => {
             let obj = []
             formData.value[elem].forEach((el) => {

@@ -134,6 +134,27 @@ export default {
             author: ' 曾细亚',
             keywords: '细亚',
             description: '内容块加内容显示',
+            countBlock: encodeURIComponent(JSON.stringify([{
+                countNum: 10,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            },{
+                countNum: 50,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            },{
+                countNum: 80,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            },{
+                countNum: 100,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            }])),
             bannerblock: encodeURIComponent(JSON.stringify([
                 {
                     alt: "测试图片",
@@ -156,6 +177,27 @@ export default {
             author: 'xiya',
             keywords: 'xiya',
             description: 'description content',
+            countBlock: encodeURIComponent(JSON.stringify([{
+                countNum: 10,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            },{
+                countNum: 50,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            },{
+                countNum: 80,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            },{
+                countNum: 100,
+                iconUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            }])),
             bannerblock: encodeURIComponent(JSON.stringify([
                 {
                     alt: "test image",

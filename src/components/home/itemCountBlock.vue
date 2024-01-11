@@ -1,11 +1,11 @@
 <template>
     <div ref="countEl" class="count-block">
         <div class="main-content">
-            <template v-for="(item, index) in defaultData">
+            <template v-for="(item, index) in JSON.parse(decodeURIComponent($t('vueIndex.countblock')))">
                 <div class="count-item">
-                    <img class="count-image" :src="item.iconUrl" alt="">
+                    <img class="count-image" :src="item.imageUrl" alt="">
                     <div class="count-number">
-                        {{ item.countVal || '00' }}<span class="count-unit">{{ item.unit }}</span>
+                        <span ref="countNumberEl">{{ item.countNum }}</span><span class="count-unit">{{ item.unit }}</span>
                     </div>
                     <div class="count-describe">{{ item.describe }}</div>
                 </div>
@@ -14,24 +14,31 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, onBeforeMount, ref, effect } from "vue";
 import { isClient } from "@/utils/utils";
+import { useI18n } from "vue-i18n";
 
 const isClientStatus = isClient();
 const countEl = ref();
+const t = useI18n();
+
+
+const countNumberEl = ref();
 
 /**
- * @type {any[]}
- */
-let defaultData = ref([]);
-
+* @type {{ (this: Window, ev: Event): any; (): void; (this: Window, ev: Event): any; }}
+*/
+/**
+* @type {() => void}
+*/
 let eventList,countStart;
 if (isClientStatus) {
-
-
+    const countArr = [];
     onMounted(() => {
         let elTop = countEl.value.offsetTop;
-        let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
+        let startPosition = scrollY + Math.floor(innerHeight / 2) + 200;
+
+        console.log(countNumberEl,"countNumberEl")
 
         if (startPosition > elTop) {
             countStart();
@@ -42,7 +49,7 @@ if (isClientStatus) {
 
     eventList = () => {
         let elTop = countEl.value.offsetTop;
-        let startPosition = scrollY + Math.floor(innerHeight / 2) + 40;
+        let startPosition = scrollY + Math.floor(innerHeight / 2) + 200;
         if (startPosition > elTop) {
             countStart();
             window.removeEventListener("scroll", eventList);
@@ -50,6 +57,12 @@ if (isClientStatus) {
     };
 
     countStart = () => {
+        countNumberEl.value.forEach((el, idx) => {
+            countArr.push(Number(el.innerText));
+        });
+
+        console.log(countArr,"countArr")
+
         let count = 0;
         let allCount = 2000;
         let timer = setInterval(() => {
@@ -61,15 +74,10 @@ if (isClientStatus) {
             }
 
 
-            let dataVal = JSON.parse(JSON.stringify(defaultData.value));
-
-
-
-            dataVal.forEach((/**@type {any} */el) => {
-                el.countVal = Math.floor((el.countNum * (count / allCount)))
+            countArr.forEach((/**@type {any} */el, idx) => {
+                countNumberEl.value[idx].innerText = Math.floor((countArr[idx] * (count / allCount)));
             });
 
-            defaultData.value = dataVal;
 
         }, 50);
     }

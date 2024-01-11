@@ -7,9 +7,11 @@
     {{ searchValue }}
 
     {{ $t("vueIndex.title") }}
-    <vue-footer @search="searchContent" bg="https://th.wallhaven.cc/lg/zy/zy2x7v.jpg"></vue-footer>
+    <vue-footer @search="searchContent" :bg="bg"></vue-footer>
 </template>
 <script setup>
+// @ts-ignore
+import bg from "@public/bg.jpg";
 import { isClient } from "@/utils/utils";
 import vueFooter from "@/components/footer/index.vue"
 import vueHeader from "@/components/header/index.vue";
