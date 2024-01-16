@@ -4,7 +4,7 @@ let basePath = process.cwd();
 module.exports = {
   target: "web",
   output: {
-      filename: './js/[name].js',
+      filename: './js/[name].[hash:6].js',
       path: path.resolve(basePath, "web"),
       publicPath: "/",
       chunkFilename: "[name].[hash:6].js",

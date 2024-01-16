@@ -48,7 +48,7 @@ export const router = () => {
                 window.i18n.global.locale = lang;
                 try{document.title = messages[defaultLang][toI18nName].title;}catch(e){}
                 next();
-            } else {
+            } else if(toI18nName) {
                 getData(to.name).then((res) => {
                     /** @type {any} */
                     let mergeData = {};
@@ -84,8 +84,12 @@ export const router = () => {
                         next();
                         return;
                     }
+                    document.title = "页面丢失了";
                     next("/404")
                 });
+            }else{
+                document.title = "页面丢失了";
+                next();
             };
         });
 
