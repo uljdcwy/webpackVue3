@@ -42,4 +42,43 @@ indexRouter.post("/adminIndex/deleteData", async (ctx, next) => {
 indexRouter.get("/adminIndex/getData", async (ctx, next) => {
     ctx.dbName = "adminindex";
     await next();
+}, getListMiddle);
+
+
+// @ts-ignore
+indexRouter.post("/adminAbout/addData", async (ctx, next) => {
+    ctx.dbName = "adminabout";
+    const findVal = await findSqlRun({
+        type: ctx.request.body.type
+    }, ctx);
+    if(findVal.data[0]){
+        ctx.body = {
+            code: 0,
+            msg: "该数据已添加",
+            data: null
+        }
+        return ;
+    }
+    await next();
+}, addMiddle)
+
+// @ts-ignore
+indexRouter.post("/adminAbout/updateData", async (ctx, next) => {
+    ctx.dbName = "adminabout";
+    ctx.mainKey = "id";
+    await next();
+}, updateMiddle);
+
+// @ts-ignore
+indexRouter.post("/adminAbout/deleteData", async (ctx, next) => {
+    ctx.dbName = "adminabout";
+    ctx.mainKey = "id";
+    await next();
+}, deleteMiddle);
+
+
+// @ts-ignore 获取关于我们的数据
+indexRouter.get("/adminAbout/getData", async (ctx, next) => {
+    ctx.dbName = "adminabout";
+    await next();
 }, getListMiddle)

@@ -7,7 +7,9 @@ import { GET } from "@/http/index.js"
  * @returns { Promise<any> }
  */
 export const getData = (routeName) => {
-    return GET(getUrl(routeName), '');
+    let url = getUrl(routeName);
+    console.log(url, "url")
+    return GET(url, '');
 }
 
 /**
@@ -18,13 +20,17 @@ export const getData = (routeName) => {
 export const getUrl = (routeName) => {
     let url = "";
     routeName = routeName.split('?')[0];
-    switch(routeName) {
+    switch (routeName) {
         case "/":
         case "index":
             url = "/adminIndex/getData";
             break;
+        case "/about":
+        case "about":
+            url = "/adminAbout/getData";
+            break;
     };
-    console.log(url,"url")
+    console.log(url, "url")
     return url;
 }
 
@@ -34,13 +40,17 @@ export const getUrl = (routeName) => {
  * @returns 
  */
 export const getPageI18nName = (routeUrl) => {
-    let url = "";
+    let name = "";
     routeUrl = routeUrl.split('?')[0];
-    switch(routeUrl) {
+    switch (routeUrl) {
         case "/":
         case "index":
-            url = "vueIndex";
+            name = "vueIndex";
+            break;
+        case "/about":
+        case "about":
+            name = "vueAbout";
             break;
     };
-    return url;
+    return name;
 }

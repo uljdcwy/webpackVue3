@@ -17,7 +17,7 @@ export const getI18n = (lang, data = null) => {
     lang = window._INIT_LANG_;
   }
 
-  if(process.env.NODE_ENV == "development"){
+  if(process.env.NODE_ENV == "development") {
     initData = devData
   }
 

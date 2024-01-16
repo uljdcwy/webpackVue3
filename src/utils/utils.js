@@ -21,7 +21,6 @@ export const goRouter = (event, router, query, params, cb) => {
      */
     let aLinkEl = event.target;
     let path = aLinkEl.pathname;
-    console.log(path, "path", aLinkEl)
     window.routerPath = path;
     /**
      * @type {string}

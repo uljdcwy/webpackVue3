@@ -56,7 +56,8 @@ const updateMeta = (/** @type {string} */ html, /** @type {string} */ keywords, 
  */
 export const initSSRHTML = async (url, lang) => {
     const dataUrl = getUrl(url);
-    let i18nData = baseData;
+    let i18nData = JSON.parse(JSON.stringify(baseData));
+    
     /**
      * @type {any}
      */
@@ -87,7 +88,7 @@ export const initSSRHTML = async (url, lang) => {
                 Object.keys(jsonData).map((elem) => {
                     // 初始化语言
                     obj[elem] = obj[elem] || {};
-                    const assignObj = Array.isArray(jsonData[elem]) ? encodeURIComponent(JSON.stringify(jsonData[elem])) : jsonData[elem];
+                    const assignObj = jsonData[elem];
                     // 更新值
                     obj[elem][i18nName] = Object.assign(obj[elem][i18nName] || {}, {[el.type]: assignObj});
                 })

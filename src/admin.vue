@@ -9,11 +9,10 @@
             </n-layout-header>
             <n-layout has-sider class="main-content">
                 <n-layout-sider content-style="padding: 10px;border-right: 1px solid #ccc">
-                    <n-menu :collapsed="collapsed" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions"
-                        :render-label="renderMenuLabel" :render-icon="renderMenuIcon" :expand-icon="expandIcon" />
+                    <n-menu :collapsed="collapsed" :collapsed-width="64" :collapsed-icon-size="22" :options="menuOptions" :render-icon="renderMenuIcon" :expand-icon="expandIcon" />
                 </n-layout-sider>
                 <n-layout>
-                  <router-view></router-view>
+                    <router-view></router-view>
                 </n-layout>
             </n-layout>
         </n-layout>
@@ -24,6 +23,13 @@
 import logo from "@public/logo.png"
 import { useI18n } from "vue-i18n";
 import { ref, h } from "vue";
+import { RouterLink } from "vue-router";
+import {
+  BookOutline as BookIcon,
+  PersonOutline as PersonIcon,
+  WineOutline as WineIcon,
+  HomeOutline as HomeIcon
+} from '@vicons/ionicons5'
 // @ts-ignore
 import { Exit, BookmarkOutline, CaretDownOutline } from '@vicons/ionicons5'
 import { zhCN, dateZhCN, NConfigProvider, NButton, NLayoutFooter, NLayout, NLayoutContent, NLayoutHeader, NImage, NEl, NIcon, NLayoutSider, NMenu } from "naive-ui";
@@ -40,27 +46,41 @@ const renderMenuIcon = function (option) {
 };
 
 const menuOptions = [
-  {
-    label: '首页',
-    key: 'index',
-    href: '/admin.html'
-  }
-]
-
-/**
- * 
- * @param {any} option 
- */
-const renderMenuLabel = function (option) {
-    if ('href' in option) {
-        return h(
-            'a',
-            { href: option.href, target: '_blank' },
-            option.label
-        )
+    {
+        label: () =>
+            h(
+                RouterLink,
+                {
+                    to: {
+                        name: 'adminIndex'
+                    }
+                },
+                { default: () => '首页' }
+            ),
+        key: 'adminIndex',
+        icon: renderIcon(HomeIcon)
+    },
+    {
+        label: () =>
+            h(
+                RouterLink,
+                {
+                    to: {
+                        name: 'adminAbout'
+                    }
+                },
+                { default: () => '关于我们' }
+            ),
+        key: 'adminAbout',
+        icon: renderIcon(HomeIcon)
     }
-    return option.label
-};
+];
+
+// @ts-ignore
+function renderIcon (icon) {
+  return () => h(NIcon, null, { default: () => h(icon) })
+}
+
 const expandIcon = function () {
     return h(NIcon, null, { default: () => h(CaretDownOutline) })
 }

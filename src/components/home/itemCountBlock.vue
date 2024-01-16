@@ -1,5 +1,5 @@
 <template>
-    <div ref="countEl" class="count-block">
+    <div ref="countEl" v-if="$t('vueIndex.countblock')" class="count-block">
         <div class="main-content">
             <template v-for="(item, index) in JSON.parse(decodeURIComponent($t('vueIndex.countblock')))">
                 <div class="count-item">
@@ -17,6 +17,7 @@
 import { onMounted, onBeforeMount, ref, effect } from "vue";
 import { isClient } from "@/utils/utils";
 import { useI18n } from "vue-i18n";
+import { onUnmounted } from "vue";
 
 const isClientStatus = isClient();
 const countEl = ref();
@@ -31,14 +32,12 @@ const countNumberEl = ref();
 /**
 * @type {() => void}
 */
-let eventList,countStart;
+let eventList,countStart,timer;
 if (isClientStatus) {
     const countArr = [];
     onMounted(() => {
         let elTop = countEl.value.offsetTop;
         let startPosition = scrollY + Math.floor(innerHeight / 2) + 200;
-
-        console.log(countNumberEl,"countNumberEl")
 
         if (startPosition > elTop) {
             countStart();
@@ -61,11 +60,9 @@ if (isClientStatus) {
             countArr.push(Number(el.innerText));
         });
 
-        console.log(countArr,"countArr")
-
         let count = 0;
         let allCount = 2000;
-        let timer = setInterval(() => {
+        timer = setInterval(() => {
             count += 50;
 
             if (count > allCount) {
@@ -80,7 +77,11 @@ if (isClientStatus) {
 
 
         }, 50);
-    }
+    };
+
+    onUnmounted(() => {
+        clearInterval(timer);
+    });
 }
 
 

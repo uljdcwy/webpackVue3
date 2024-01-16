@@ -19,26 +19,35 @@
                                 <n-input :type="item.type || 'text'" v-model:value="item.value"
                                     :placeholder="item.placeholder" />
                             </n-form-item>
-                            <n-form-item v-if="currentType == 'bannerblock'" :label="'轮播图' + idxChild">
-                                <n-input type="text" v-model:value="item.alt" placeholder="请输入banner图提示" />
-                                <n-upload :default-upload="false" @change="customRequest($event, idx, idxChild)"
-                                    accept=".jpg,.png,.jpeg" style="width: 120px" :show-file-list="false">
-                                    <n-button>
-                                        {{ item.imageUrl ? '重新上传' : '上传图片' }}
-                                    </n-button>
-                                </n-upload>
-                            </n-form-item>
-                            <n-form-item v-if="currentType == 'countblock'" :label="'计数值' + idxChild">
-                                <n-input-number min="0" v-model:value="item.countNum" placeholder="计数值" style="width: 240px;text-align: center;" />
-                                <n-input type="text" style="width: 160px;text-align: center;" v-model:value="item.unit" placeholder="单位" />
-                                <n-input type="text" v-model:value="item.describe" placeholder="请选择描述内容" />
-                                <n-upload :default-upload="false" @change="customRequest($event, idx, idxChild)"
-                                    accept=".jpg,.png,.jpeg" style="width: 120px" :show-file-list="false">
-                                    <n-button>
-                                        {{ item.imageUrl ? '重新上传' : '上传图片' }}
-                                    </n-button>
-                                </n-upload>
-                            </n-form-item>
+                            <template v-if="currentType == 'mainblock'">
+                                <n-form-item label="描述">
+                                    <n-input type="text" v-model:value="item.welcomeDescribe" placeholder="请输入欢迎描述" />
+                                </n-form-item>
+                                <n-form-item label="标题">
+                                    <n-input type="text" v-model:value="item.title" placeholder="请输入页面标题" />
+                                </n-form-item>
+                                <n-form-item label="主要信息">
+                                    <n-input type="text" v-model:value="item.mainInfo" placeholder="请输入主要信息" />
+                                </n-form-item>
+                                <n-form-item label="二维码1">
+                                    <n-input type="text" v-model:value="item.QRCode1Tip" placeholder="请输入二维码1提示" />
+                                    <n-upload :default-upload="false" @change="customRequestQR($event, idx, 'QRCode1')"
+                                        accept=".jpg,.png,.jpeg" style="width: 120px" :show-file-list="false">
+                                        <n-button>
+                                            {{ item.QRCode1 ? '重新上传' : '上传图片' }}
+                                        </n-button>
+                                    </n-upload>
+                                </n-form-item>
+                                <n-form-item label="二维码2">
+                                    <n-input type="text" v-model:value="item.QRCode2Tip" placeholder="请输入二维码2提示" />
+                                    <n-upload :default-upload="false" @change="customRequestQR($event, idx, 'QRCode2')"
+                                        accept=".jpg,.png,.jpeg" style="width: 120px" :show-file-list="false">
+                                        <n-button>
+                                            {{ item.QRCode2 ? '重新上传' : '上传图片' }}
+                                        </n-button>
+                                    </n-upload>
+                                </n-form-item>
+                            </template>
                         </template>
                     </n-tab-pane>
                 </template>
@@ -82,16 +91,8 @@ const columns = [
                     onClick: () => {
                         addModal();
                         const rowJson = row.json;
-                        let defaultLang = Object.keys(rowJson)[0];
-                        if(decodeURIComponent(rowJson[defaultLang]) != rowJson[defaultLang] && (typeof rowJson[defaultLang]) == 'string'){
-                            Object.keys(rowJson).map((el) => {
-                                rowJson[el] = JSON.parse(decodeURIComponent(rowJson[el]));
-                            })
-                        }
-
-                        console.log(rowJson,"rowJson")
-
                         currentType.value = row.type;
+                        /** @type {any} */
                         let submitI18n = {};
                         editId.value = row.id;
                         if (row.type == "seoblock") {
@@ -100,6 +101,10 @@ const columns = [
                                     el.value = rowJson[elem.lang][el.key];
                                 });
                                 submitI18n[elem.text] = JSON.parse(JSON.stringify(SEOForm))
+                            });
+                        } else if(row.type == "mainblock") {
+                            langList.forEach((elem) => {
+                                submitI18n[elem.text] = [rowJson[elem.lang]]
                             });
                         } else {
                             langList.forEach((elem) => {
@@ -124,7 +129,7 @@ const columns = [
                             positiveText: '确定',
                             negativeText: '取消',
                             onPositiveClick: () => {
-                                POST("adminIndex/deleteData", {
+                                POST("adminAbout/deleteData", {
                                     id: row.id
                                 }).then((res) => {
                                     if (res.data.code == "1") {
@@ -158,12 +163,8 @@ const selectTypes = [
         value: "seoblock"
     },
     {
-        label: "轮播图内容块",
-        value: "bannerblock"
-    },
-    {
-        label: "计数器内容块",
-        value: "countblock"
+        label: "主要内容",
+        value: "mainblock"
     }
 ];
 
@@ -172,20 +173,20 @@ const formRef = ref();
 const modalShowStatus = ref(false);
 
 const pagination = reactive({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50],
-  onChange: (page) => {
-    pagination.page = page;
-    getData();
-  },
-  onUpdatePageSize: (pSize) => {
-    pagination.page = 1;
-    pagination.pageSize = pSize;
-    getData();
-  }
+    page: 1,
+    pageSize: 10,
+    itemCount: 0,
+    showSizePicker: true,
+    pageSizes: [10, 20, 50],
+    onChange: (page) => {
+        pagination.page = page;
+        getData();
+    },
+    onUpdatePageSize: (pSize) => {
+        pagination.page = 1;
+        pagination.pageSize = pSize;
+        getData();
+    }
 });
 
 const tableData = ref([]);
@@ -202,6 +203,18 @@ const customRequest = (e, lang, idx) => {
     })
 }
 
+const customRequestQR = (e, lang, type) => {
+    const file = e.file;
+    const sendData = new FormData();
+    sendData.append(file.name, file.file);
+
+    uploadFile("upload/uploadImage", sendData).then((res) => {
+        let formDataVal = formData.value;
+        formDataVal[lang][0][type] = res.data.data.url;
+        formData.value = formDataVal;
+    })
+}
+
 
 const addModal = () => {
     editId.value = "";
@@ -211,6 +224,7 @@ const addModal = () => {
 
 
 const selectTypeChange = (/** @type {any} */ e) => {
+    /** @type {any} */
     let submitI18n = {};
     editId.value = "";
     switch (e) {
@@ -219,14 +233,9 @@ const selectTypeChange = (/** @type {any} */ e) => {
                 submitI18n[elem.text] = JSON.parse(JSON.stringify(SEOForm))
             });
             break;
-        case "bannerblock":
+        case "mainblock":
             langList.forEach((elem) => {
-                submitI18n[elem.text] = JSON.parse(JSON.stringify(bannerFrom))
-            });
-            break;
-        case "countblock":
-            langList.forEach((elem) => {
-                submitI18n[elem.text] = JSON.parse(JSON.stringify(countFrom))
+                submitI18n[elem.text] = JSON.parse(JSON.stringify(mainFrom))
             });
             break;
     };
@@ -263,50 +272,15 @@ const SEOForm = [
     }
 ];
 
-const bannerFrom = [
+const mainFrom = [
     {
-        alt: "",
-        imageUrl: ""
-    },
-    {
-        alt: "",
-        imageUrl: ""
-    },
-    {
-        alt: "",
-        imageUrl: ""
-    },
-    {
-        alt: "",
-        imageUrl: ""
-    }
-];
-
-
-const countFrom = [
-    {
-        countNum: "",
-        imageUrl: "",
-        unit: "",
-        describe: ""
-    },
-    {
-        countNum: "",
-        imageUrl: "",
-        unit: "",
-        describe: ""
-    },
-    {
-        countNum: "",
-        imageUrl: "",
-        unit: "",
-        describe: ""
-    },
-    {
-        countNum: "",
-        imageUrl: "",
-        unit: "",
-        describe: ""
+        welcomeDescribe: "",
+        title: "",
+        mainInfo: "",
+        QRCode1: "",
+        QRCode1Tip: "",
+        QRCode2: "",
+        QRCode2Tip: ""
     }
 ];
 
@@ -317,7 +291,7 @@ const resetData = () => {
 
 
 const getData = () => {
-    GET("adminIndex/getData", {
+    GET("adminAbout/getData", {
         pageIndex: pagination.page - 1,
         pageSize: pagination.pageSize
     }).then((res) => {
@@ -367,19 +341,18 @@ const submitContent = () => {
             });
             sendObj[langObj[elem]] = obj;
         })
-    } else if (currentType.value == "bannerblock" || currentType.value == "countblock") {
+    } else if (currentType.value == "mainblock") {
         Object.keys(formData.value).map((elem) => {
-            let obj = []
-            formData.value[elem].forEach((el) => {
-                if (el.imageUrl) {
-                    obj.push(el);
-                }
+            let obj = null;
+            Object.entries(formData.value[elem]).forEach((el) => {
+                obj = JSON.parse(JSON.stringify(el[1]))
             });
-            sendObj[langObj[elem]] = encodeURIComponent(JSON.stringify(obj));
-        })
-    }
+            sendObj[langObj[elem]] = obj;
+        });
+    };
+    
     if (editId.value && editId.value !== 0) {
-        POST("adminIndex/updateData", {
+        POST("adminAbout/updateData", {
             id: editId.value,
             type: currentType.value,
             json: sendObj
@@ -393,7 +366,7 @@ const submitContent = () => {
             }
         });
     } else {
-        POST("adminIndex/addData", {
+        POST("adminAbout/addData", {
             type: currentType.value,
             json: sendObj
         }).then((res) => {
