@@ -44,7 +44,8 @@ export const router = () => {
 
             // @ts-ignore
             const toI18nName = getPageI18nName(to.path);
-            if (messages[defaultLang][toI18nName]) {
+            console.log(toI18nName,"toI18nName", to.path)
+            if (messages[defaultLang][toI18nName] || process.env.NODE_ENV == "development") {
                 window.i18n.global.locale = lang;
                 try{document.title = messages[defaultLang][toI18nName].title;}catch(e){}
                 next();
@@ -72,6 +73,9 @@ export const router = () => {
                         });
                         
                     });
+
+                    console.log(mergeData,"mergeData")
+
                     // @ts-ignore
                     Object.keys(messages).map((elem, idx) => {
                         window.i18n.global.mergeLocaleMessage(elem, mergeData[elem]);
@@ -83,7 +87,7 @@ export const router = () => {
                     if (process.env.NODE_ENV == "development") {
                         next();
                         return;
-                    }
+                    };
                     document.title = "页面丢失了";
                     next("/404")
                 });

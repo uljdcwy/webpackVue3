@@ -8,7 +8,7 @@ import banner2 from "@public/banner2.jpg";
 import banner3 from "@public/banner3.jpg";
 
 
-export default {
+ const data = {
     zh: {
         vueFooter: {
             Filing: `©2022 xxxxxxxx有限公司 版权所有 备案号：粤ICP备xxxxxx号 技术支持：<a href="javascript:;">曾细亚</a>`,
@@ -129,90 +129,64 @@ export default {
             logoUrl: logo,
             searchPlaceholder: "请输入搜索关键词",
         },
-        // vueIndex: {
-        //     title: '标题',
-        //     author: ' 曾细亚',
-        //     keywords: '细亚',
-        //     description: '内容块加内容显示',
-        //     countblock: encodeURIComponent(JSON.stringify([{
-        //         countNum: 10,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "年",
-        //         describe: "这是一个描述，描述的内容是自定义内容。",
-        //     },{
-        //         countNum: 50,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "年",
-        //         describe: "这是一个描述，描述的内容是自定义内容。",
-        //     },{
-        //         countNum: 80,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "年",
-        //         describe: "这是一个描述，描述的内容是自定义内容。",
-        //     },{
-        //         countNum: 100,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "年",
-        //         describe: "这是一个描述，描述的内容是自定义内容。",
-        //     }])),
-        //     bannerblock: encodeURIComponent(JSON.stringify([
-        //         {
-        //             alt: "测试图片",
-        //             src: banner1,
-        //         },
-        //         {
-        //             alt: "测试地址",
-        //             src: banner2,
-        //         },
-        //         {
-        //             alt: "测试路径",
-        //             src: banner3,
-        //         }
-        //     ]))
-        // }
+        vueIndex: {
+            title: '标题',
+            author: ' 曾细亚',
+            keywords: '细亚',
+            description: '内容块加内容显示',
+            countblock: encodeURIComponent(JSON.stringify([{
+                countNum: 10,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            }, {
+                countNum: 50,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            }, {
+                countNum: 80,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            }, {
+                countNum: 100,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "年",
+                describe: "这是一个描述，描述的内容是自定义内容。",
+            }])),
+            bannerblock: encodeURIComponent(JSON.stringify([
+                {
+                    alt: "测试图片",
+                    src: banner1,
+                },
+                {
+                    alt: "测试地址",
+                    src: banner2,
+                },
+                {
+                    alt: "测试路径",
+                    src: banner3,
+                }
+            ]))
+        },
+        vueAbout: {
+            "title": "关于我们",
+            "author": "块",
+            "keywords": "块",
+            "description": "块",
+            "mainblock": {
+                "title": "标题",
+                "QRCode1": "1705290359821.jpg",
+                "QRCode2": "1705290361711.jpg",
+                "mainInfo": "主要信息",
+                "QRCode1Tip": "二维码描述1",
+                "QRCode2Tip": "二维码描述2",
+                "welcomeDescribe": "欢迎描述"
+            }
+        }
     },
     en: {
-        // vueIndex: {
-        //     title: 'title ',
-        //     author: 'xiya',
-        //     keywords: 'xiya',
-        //     description: 'description content',
-        //     countblock: encodeURIComponent(JSON.stringify([{
-        //         countNum: 10,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "en",
-        //         describe: "en",
-        //     },{
-        //         countNum: 50,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "en",
-        //         describe: "en",
-        //     },{
-        //         countNum: 80,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "en",
-        //         describe: "en",
-        //     },{
-        //         countNum: 100,
-        //         imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
-        //         unit: "en",
-        //         describe: "en",
-        //     }])),
-        //     bannerblock: encodeURIComponent(JSON.stringify([
-        //         {
-        //             alt: "test image",
-        //             src: banner1,
-        //         },
-        //         {
-        //             alt: "test image",
-        //             src: banner2,
-        //         },
-        //         {
-        //             alt: "test path",
-        //             src: banner3,
-        //         }
-        //     ]))
-        // },
         vueFooter: {
             Filing: `Co., Ltd. All rights reserved Registration number: Guangdong ICP No. xxxxxx Technical support：<a href="javascript:;">Zeng Xiya</a>`,
             telTips: "24-hour service hotline",
@@ -325,9 +299,67 @@ export default {
             tel: "0755-23446330",
             logoUrl: logo,
             searchPlaceholder: "Enter search keywords",
+        },
+        vueIndex: {
+            title: 'title ',
+            author: 'xiya',
+            keywords: 'xiya',
+            description: 'description content',
+            countblock: encodeURIComponent(JSON.stringify([{
+                countNum: 10,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            }, {
+                countNum: 50,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            }, {
+                countNum: 80,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            }, {
+                countNum: 100,
+                imageUrl: "http://www.sc-qianye.com/templates/main/images/section1_icon1.png",
+                unit: "en",
+                describe: "en",
+            }])),
+            bannerblock: encodeURIComponent(JSON.stringify([
+                {
+                    alt: "test image",
+                    src: banner1,
+                },
+                {
+                    alt: "test image",
+                    src: banner2,
+                },
+                {
+                    alt: "test path",
+                    src: banner3,
+                }
+            ]))
+        },
+        vueAbout: {
+            "title": "block",
+            "author": "block",
+            "keywords": "block",
+            "description": "block",
+            "mainblock": {
+                "title": "title ",
+                "QRCode1": "1705290481369.jpg",
+                "QRCode2": "1705290483435.jpg",
+                "mainInfo": "mainInfo",
+                "QRCode1Tip": "qr1",
+                "QRCode2Tip": "qr2",
+                "welcomeDescribe": "main"
+            }
         }
     }
 }
+
+export default data;
 
 export const langList = [
     {

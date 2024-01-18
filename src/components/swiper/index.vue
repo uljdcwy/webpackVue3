@@ -49,7 +49,7 @@ if (isClient()) {
 
 
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 1024px) {
     :deep(.swiper-button-next),
     :deep(.swiper-button-prev){
         display: none;

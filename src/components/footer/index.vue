@@ -140,7 +140,7 @@ onMounted(() => {
 
 .footer-content {
     width: getUnit($mainWidth);
-    @include margin(20, 1e15, 0);
+    @include margin(0, 1e15);
 
     .item-link {
     }
@@ -238,7 +238,7 @@ onMounted(() => {
 }
 
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 1024px) {
     .nav-footer-list{
         display: none;
     }

@@ -2,6 +2,7 @@
     <n-layout-header class="opera-header">
         <n-button type="primary" @click="addModal">新增</n-button>
     </n-layout-header>
+    <rich-content></rich-content>
     <n-layout-content content-style="padding: 24px;">
         <n-data-table remote :columns="columns" :data="tableData" :pagination="pagination" :bordered="false" />
     </n-layout-content>
@@ -26,9 +27,6 @@
                                 <n-form-item label="标题">
                                     <n-input type="text" v-model:value="item.title" placeholder="请输入页面标题" />
                                 </n-form-item>
-                                <n-form-item label="主要信息">
-                                    <n-input type="text" v-model:value="item.mainInfo" placeholder="请输入主要信息" />
-                                </n-form-item>
                                 <n-form-item label="二维码1">
                                     <n-input type="text" v-model:value="item.QRCode1Tip" placeholder="请输入二维码1提示" />
                                     <n-upload :default-upload="false" @change="customRequestQR($event, idx, 'QRCode1')"
@@ -46,6 +44,9 @@
                                             {{ item.QRCode2 ? '重新上传' : '上传图片' }}
                                         </n-button>
                                     </n-upload>
+                                </n-form-item>
+                                <n-form-item label="主要信息">
+                                    <n-input type="text" v-model:value="item.mainInfo" placeholder="请输入主要信息" />
                                 </n-form-item>
                             </template>
                         </template>
@@ -67,7 +68,7 @@
 import { ref, h, reactive, onMounted } from "vue";
 import { langList } from "@/vueI18n/data.js";
 import { POST, GET, uploadFile } from "@/http/index.js";
-import { CloudUploadOutline, AddCircle, RemoveCircleSharp } from '@vicons/ionicons5'
+import richContent from "@/components/richContent/index.vue";
 import { NLayoutContent, NLayoutHeader, NEl, NDataTable, NButton, NModal, NForm, NFormItem, NInput, NTabs, NTabPane, NSelect, NDynamicInput, NIcon, NUpload, NInputNumber } from "naive-ui";
 
 const columns = [

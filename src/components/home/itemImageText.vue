@@ -106,7 +106,7 @@ const bg = `url(${bgUrl})`;
     @include padding(20)
 }
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 1024px) {
     .context-block {
         @include margin(10, 0);
         @include padding(10, 0);

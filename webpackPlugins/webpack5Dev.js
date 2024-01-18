@@ -7,43 +7,44 @@ class DevHtml {
    */
   apply(compiler) {
     compiler.hooks.done.tap('DevHtml ', (/** @type {{ compilation: { assets: any; }; }} */ compilation, /** @type {any} */ callback) => {
-      for (let key of compilation.compilation.entries.keys()) {
 
+      Object.keys(compilation.compilation.assets).map((el, idx) => {
+        if (el.indexOf("/js/") > -1 && el.indexOf(".map") < 0) {
+          let str = `<!doctype html>
+          <html lang="en" manifest="app.appcache">
+              <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="Window-target" content="_top">
+                <meta http-equiv="content-Type" content="text/html; charset=utf-8">
+                <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+                <meta http-equiv="Pragma" content="no-cache" />
+                <meta http-equiv="Expires" content="0" />
+                <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+                <title> - </title>
+                <script>try { global } catch (e) { window.global = window; }</script>
+                <script defer="defer" src="${el}"></script>
+                <script defer="defer" src="${el}.map"></script>
+              </head>
+    
+            <body><div id="app"></div></body>
+            
+            </html>`
 
-
-        let str = `<!doctype html>
-      <html lang="en" manifest="app.appcache">
-          <head>
-            <meta charset="UTF-8">
-            <meta http-equiv="Window-target" content="_top">
-            <meta http-equiv="content-Type" content="text/html; charset=utf-8">
-            <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-            <meta http-equiv="Pragma" content="no-cache" />
-            <meta http-equiv="Expires" content="0" />
-            <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
-            <title> - </title>
-            <script>try { global } catch (e) { window.global = window; }</script>
-            <script defer="defer" src="./js/${key}.js"></script>
-          </head>
-
-        <body><div id="app"></div></body>
-        
-        </html>`
-
-        try {
-          fs.accessSync(basePath + '/web', fs.constants.R_OK | fs.constants.W_OK);
-        } catch (err) {
-          if (err) {
-            fs.mkdirSync(basePath + "/web")
+          try {
+            fs.accessSync(basePath + '/web', fs.constants.R_OK | fs.constants.W_OK);
+          } catch (err) {
+            if (err) {
+              fs.mkdirSync(basePath + "/web")
+            }
           }
+
+          fs.writeFile(basePath + `/web/${/\/js\/([a-z]+)/.exec(el)[1]}.html`, str, function (/** @type {any} */ err, /** @type {any} */ data) {
+            if (err) {
+              return console.error(err);
+            }
+          });
         }
-
-        fs.writeFile(basePath + `/web/${key}.html`, str, function (/** @type {any} */ err, /** @type {any} */ data) {
-          if (err) {
-            return console.error(err);
-          }
-        });
-      }
+      })
     })
   }
 }

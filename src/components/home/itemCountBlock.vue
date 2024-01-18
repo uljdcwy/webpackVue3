@@ -47,8 +47,8 @@ if (isClientStatus) {
     });
 
     eventList = () => {
-        let elTop = countEl.value.offsetTop;
-        let startPosition = scrollY + Math.floor(innerHeight / 2) + 200;
+        let elTop = countEl.value.offsetTop + (countEl.value.offsetHeight / 2 ) - 15;
+        let startPosition = scrollY + innerHeight;
         if (startPosition > elTop) {
             countStart();
             window.removeEventListener("scroll", eventList);
@@ -81,6 +81,7 @@ if (isClientStatus) {
 
     onUnmounted(() => {
         clearInterval(timer);
+        window.removeEventListener("scroll", eventList);
     });
 }
 
@@ -135,7 +136,7 @@ if (isClientStatus) {
 }
 
 
-@media screen and (max-width: 640px) {
+@media screen and (max-width: 1024px) {
     .count-block {
         .main-content {
             width: 100%;
@@ -143,8 +144,12 @@ if (isClientStatus) {
 
             .count-item {
                 flex: none;
-                width: calc(50% - 20px);
-                @include margin(10);
+                width: calc(50% - 10px);
+                @include margin(5);
+                @include padding(5);
+                .count-image {
+                    @include margin(5, 0);
+                }
             }
         }
     }

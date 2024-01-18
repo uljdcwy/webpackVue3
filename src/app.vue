@@ -1,12 +1,6 @@
 <template>
     <vue-header @search="searchContent"></vue-header>
     <router-view></router-view>
-    123{{ searchValue }}
-    <div style="height: 800px">
-    123456</div>
-    {{ searchValue }}
-
-    {{ $t("vueIndex.title") }}
     <vue-footer @search="searchContent" :bg="bg"></vue-footer>
 </template>
 <script setup>
