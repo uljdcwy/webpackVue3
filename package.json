@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"description": "VUE打包",
 	"private": true,
-	"author": "宿舍管理系统",
+	"author": "playAudio",
 	"main": "src/electron.js",
 	"scripts": {
 		"dev": "node devServer.js",
@@ -67,7 +67,7 @@
 	},
 	"build": {
 		"extraResources": [],
-		"productName": "宿舍管理系统",
+		"productName": "playAudio",
 		"appId": "com.itTiger|electron",
 		"directories": {
 			"buildResources": ""

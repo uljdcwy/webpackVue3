@@ -42,10 +42,11 @@ function createWindow() {
     const eventHandler = function (type) {
         switch (type) {
             case 'mouseclick right':
-                console.log('mouse is click! right')
+                console.log('mouse is click! right');
                 break;
             case 'mouseclick left':
                 console.log('mouse is click! left')
+                win.webContents.send('reply',1);
                 break;
         }
     }
@@ -93,15 +94,21 @@ function createWindow() {
 
     setTimeout(() => {
         win.hide();
-    },50)
+    },500)
 
     // 载入托盘菜单
     tray.setContextMenu(contextMenu);
     // 双击触发
     tray.on('double-click', () => {
         // 双击通知区图标实现应用的显示或隐藏
-        win.isVisible() ? win.hide() : win.show()
-        win.isVisible() ? win.setSkipTaskbar(false) : win.setSkipTaskbar(true);
+        if(win.isVisible()){
+            win.hide();
+            win.setSkipTaskbar(false)
+        }else{
+            win.show();
+            win.setSize(400, 300);
+            win.setSkipTaskbar(true);
+        }
     });
 
 
@@ -113,8 +120,11 @@ function createWindow() {
     });
     // 第三个参数为加载URL地址
     if (process.argv[3]) {
-        win.loadURL(process.argv[3]);
+        console.log(1)
+        win.loadFile("./index.html");
+        // win.loadFile("./index.html");
     } else {
+        console.log(2)
         // 读取渲染进程文件
         win.loadFile("./index.html");
     }
