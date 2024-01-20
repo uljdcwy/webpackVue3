@@ -114,10 +114,11 @@
 	},
 	"dependencies": {
 		"@dataview/datav-vue3": "^0.0.0-test.1672506674342",
-		"@textbus/adapter-vue": "^4.0.0-alpha.23",
+		"@wangeditor/editor-for-vue": "^5.1.12",
 		"child_process": "^1.0.2",
 		"element3": "^0.0.40",
 		"iconv-lite": "^0.6.3",
+		"slate": "^0.72.8",
 		"sudo-prompt": "^9.2.1",
 		"swiper": "^11.0.5",
 		"vue": "^3.2.47",
