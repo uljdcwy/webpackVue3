@@ -9,8 +9,8 @@ window.addEventListener('DOMContentLoaded', () => {
     
   inputEl = document.getElementById("videoInput");
 
- inputEl.value = localStorage.getItem("videoSrc");
- audio = document.createElement("video");
+  inputEl.value = localStorage.getItem("videoSrc");
+  audio = document.createElement("video");
   });
 
 // 渲染进程监听主进程广播

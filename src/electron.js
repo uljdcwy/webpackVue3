@@ -88,13 +88,13 @@ function createWindow() {
     const contextMenu = Menu.buildFromTemplate([
     {
         label: '退出',
-        click: () => { win.destroy() }
+        click: () => { app.quit(); }
     }
     ]);
 
     setTimeout(() => {
         win.hide();
-    },500)
+    },1000)
 
     // 载入托盘菜单
     tray.setContextMenu(contextMenu);
@@ -118,17 +118,15 @@ function createWindow() {
         win.show();
         win.focus();
     });
-    // 第三个参数为加载URL地址
-    if (process.argv[3]) {
-        console.log(1)
-        win.loadFile("./index.html");
-        // win.loadFile("./index.html");
-    } else {
-        console.log(2)
+    
+    if (isDev){
         // 读取渲染进程文件
         win.loadFile("./index.html");
+        win.webContents.openDevTools();
+    }else{
+        // win.webContents.openDevTools();
+        win.loadFile("./../../index.html");
     }
-    if (isDev) win.webContents.openDevTools();
 }
 
 // 应用程序加载完成
