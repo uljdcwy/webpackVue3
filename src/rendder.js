@@ -9,6 +9,10 @@ window.addEventListener('DOMContentLoaded', () => {
     
   inputEl = document.getElementById("videoInput");
 
+  inputEl.onchange = () => {
+    localStorage.setItem("videoSrc", inputEl.value);
+  }
+
   inputEl.value = localStorage.getItem("videoSrc");
   audio = document.createElement("video");
   });
