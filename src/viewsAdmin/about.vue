@@ -71,6 +71,7 @@ import { POST, GET, uploadFile } from "@/http/index.js";
 import richContent from "@/components/richContent/index.vue";
 import { NLayoutContent, NLayoutHeader, NEl, NDataTable, NButton, NModal, NForm, NFormItem, NInput, NTabs, NTabPane, NSelect, NDynamicInput, NIcon, NUpload, NInputNumber } from "naive-ui";
 
+
 const columns = [
     {
         title: '类型',

@@ -2,38 +2,25 @@
     <div class="context-block">
         <div class="main-context">
             <div class="context-text">
-                <h3 class="vice-title">{{ data.vice }}</h3>
-                <h2 class="main-title">{{ data.title }}</h2>
+                <h3 class="vice-title">{{ $t('vueIndex.imageTextBlock.vice') }}</h3>
+                <h2 class="main-title">{{ $t('vueIndex.imageTextBlock.title') }}</h2>
                 <span class="title-line"></span>
                 <div class="title-describe">
-                    {{ data.describe }}
+                    {{ $t('vueIndex.imageTextBlock.describe') }}
                 </div>
-                <a :href="data.detailsUrl" class="look-details">了解详情</a>
+                <a :href="$t('vueIndex.imageTextBlock.detailsUrl')" class="look-details">{{ $t('vueIndex.imageTextBlock.detailsTip') }}</a>
             </div>
             <div class="context-image">
-                <img :src="data.imgUrl" :alt="data.imgAlt">
+                <img :src="$t('vueIndex.imageTextBlock.imgUrl')" :alt="$t('vueIndex.imageTextBlock.imgAlt')">
             </div>
         </div>
     </div>
 </template>
 <script setup>
 import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 
-
-const props = defineProps(["data"]);
-
-/**
- * @type { String }
- */
-const bgUrl = props.data.bgUrl;
-
-/**
- * @type { { vice: string, title: string, describe: string, detailsUrl: string, imgUrl: string, imgAlt: string } }
- */
-const data = props.data.data;
-
-const bg = `url(${bgUrl})`;
-
+const t = useI18n();
 
 </script>
 
@@ -42,7 +29,7 @@ const bg = `url(${bgUrl})`;
 @import "@/scss/theme.scss";
 
 .context-block {
-    background-image: v-bind(bg);
+    background-image: v-bind(t('vueIndex.imageTextBlock.bgUrl'));
     max-width: 100%;
     overflow: hidden;
     @include margin(20, 0);
