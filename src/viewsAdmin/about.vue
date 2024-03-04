@@ -64,6 +64,7 @@
         </n-form>
     </n-modal>
 </template>
+
 <script setup>
 import { ref, h, reactive, onMounted } from "vue";
 import { langList } from "@/vueI18n/data.js";
@@ -83,7 +84,6 @@ const columns = [
         width: 200,
         align: "center",
         render: (/** @type {any} */ row, /** @type {any} */ index) => {
-            console.log(row, "row")
             return [h(
                 NButton,
                 {
@@ -104,7 +104,7 @@ const columns = [
                                 });
                                 submitI18n[elem.text] = JSON.parse(JSON.stringify(SEOForm))
                             });
-                        } else if(row.type == "mainblock") {
+                        } else if (row.type == "mainblock") {
                             langList.forEach((elem) => {
                                 submitI18n[elem.text] = [rowJson[elem.lang]]
                             });
@@ -352,7 +352,7 @@ const submitContent = () => {
             sendObj[langObj[elem]] = obj;
         });
     };
-    
+
     if (editId.value && editId.value !== 0) {
         POST("adminAbout/updateData", {
             id: editId.value,
@@ -388,6 +388,7 @@ const closeModal = () => {
 }
 
 </script>
+
 <style lang="scss" scoped="scoped">
 .opera-header {
     padding: 10px 20px;
@@ -406,4 +407,3 @@ const closeModal = () => {
     text-align: center;
 }
 </style>
-  

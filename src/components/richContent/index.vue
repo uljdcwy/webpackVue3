@@ -1,57 +1,60 @@
 <template>
-    <div contentEditable="true" id="testEdit" @keypress="pringKey" style="height: 300px;">
+    <div id="toolbar"></div>
+    <div id="editMain" contenteditable="true" @keydown="clearKeyUpKey" @keyup="getEditorJson" style="height: 120px;background-color: #f00;">
     </div>
 </template>
 
 <script setup>
-import * as slate from 'slate';
-import {
-  init,
-  toVNode,
-  classModule,
-  propsModule,
-  styleModule,
-  eventListenersModule,
-  h
-} from "snabbdom";
-import { onMounted } from 'vue';
+import { effect, onMounted, onUnmounted } from 'vue';
+import { getDomJson, stringJson } from "./editor.js";
+/** @type { any } */
+let editMain;
+let agentStart = false;
+const getEditorJson = (e) => {
+  window.upKey = e.keyCode;
+  if(agentStart) return;
+  setTimeout(() => {
+    getDomJson(editMain)
+  })
+};
 
-const pringKey = (event) => {
-  console.log(event)
-   return false;
+const clearKeyUpKey = () => {
+  window.upKey = null;
+};
+
+const startAgentFn = () => {
+    agentStart = true;
+}
+const endAgentFn = () => {
+    agentStart = false;
 }
 
-const patch = init([
-  // Init patch function with chosen modules
-  classModule, // makes it easy to toggle classes
-  propsModule, // for setting properties on DOM elements
-  styleModule, // handles styling on elements with support for animations
-  eventListenersModule // attaches event listeners
-]);
-
-console.log(slate,"slate")
 
 onMounted(() => {
+  editMain = document.getElementById("editMain");
+  getDomJson(editMain);
 
-  const container = document.getElementById("testEdit");
+  editMain.addEventListener("compositionstart", startAgentFn);
+  editMain.addEventListener("compositionend", endAgentFn)
+});
 
-  const editEl = toVNode(container);
-
-  editEl.children = [h('p#container.two.classes', { }, [
-    h('span', { style: { fontWeight: 'bold' } }, 'This is bold'),
-    ' and this is just normal text',
-    h('a', { props: { href: '/foo' } }, "I'll take you places!")
-  ])];
-  console.log(editEl,"editEl")
-  // Patch into empty DOM element – this modifies the DOM as a side effect
-  patch(container, editEl);
-
-  
-  const updateEl = toVNode(document.getElementById("testEdit"));
-  console.log(updateEl,"updateEl")
+onUnmounted(() => {
+  editMain.removeEventListener("compositionstart", startAgentFn);
+  editMain.removeEventListener("compositionend", endAgentFn)
 })
+
+
+
+
 
 </script>
 
 <style lang="scss" scoped>
+  #edit-main,
+  #toolbar{
+    width: 100%;
+  }
+  #edit-main{
+    min-height: 30px;
+  }
 </style>

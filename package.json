@@ -57,8 +57,6 @@
 		"postcss-loader": "^7.0.1",
 		"sass": "^1.58.3",
 		"sass-loader": "^13.2.0",
-		"slate": "^0.60.17",
-		"snabbdom": "^3.6.0",
 		"speed-measure-webpack-plugin": "^1.5.0",
 		"style-loader": "^3.3.1",
 		"terser-webpack-plugin": "^5.3.6",
@@ -116,7 +114,6 @@
 	},
 	"dependencies": {
 		"@dataview/datav-vue3": "^0.0.0-test.1672506674342",
-		"@wangeditor/editor-for-vue": "^5.1.12",
 		"child_process": "^1.0.2",
 		"element3": "^0.0.40",
 		"iconv-lite": "^0.6.3",

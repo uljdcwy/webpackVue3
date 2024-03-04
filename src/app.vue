@@ -1,6 +1,7 @@
 <template>
     <vue-header @search="searchContent"></vue-header>
     <router-view></router-view>
+    <rich-content></rich-content>
     <vue-footer @search="searchContent" :bg="bg"></vue-footer>
 </template>
 <script setup>
@@ -9,6 +10,7 @@ import bg from "@public/bg.jpg";
 import { isClient } from "@/utils/utils";
 import vueFooter from "@/components/footer/index.vue"
 import vueHeader from "@/components/header/index.vue";
+import richContent from "@/components/richContent/index.vue";
 import { useI18n } from "vue-i18n";
 import bigDataScreen from "@/components/big-data-screen/index.vue";
 import { nextTick } from "vue";
