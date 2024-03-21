@@ -1,12 +1,13 @@
 <template>
     <div id="toolbar"></div>
+    <button class="bold-text" @click="boldSelects">加粗文本</button>
     <div id="editMain" contenteditable = "true" @keyup="getEditorJson" style="height: 120px;background-color: #f00;">
     </div>
 </template>
 
 <script setup>
 import { effect, onMounted, onUnmounted } from 'vue';
-import { getDomJson, patch, getSelectContent } from "./editor.js";
+import { getDomJson, patch, getSelectContent, bold } from "./editor.js";
 /** @type { any } */
 let editMain;
 let agentStart = false;
@@ -18,9 +19,15 @@ const getEditorJson = (/** @type {any} */ e) => {
   if(agentStart) return;
   setTimeout(() => {
     // @ts-ignore
-    patch(astDom, getDomJson(editMain))
+    patch(astDom, getDomJson(editMain));
+    console.log(astDom,"astDom")
   })
 };
+
+const boldSelects = () => {
+  bold();
+  // patch(astDom, getDomJson(editMain));
+}
 
 const startAgentFn = () => {
     agentStart = true;
@@ -43,7 +50,7 @@ const mouseup = () => {
   editMain.removeEventListener("mousemove", mousemove);
   if(selected){
     // get select && add select arr Dom
-    getSelectContent();
+    getSelectContent(astDom);
   };
   selected = false;
 };
@@ -53,7 +60,7 @@ const mousemove = (/** @type {any} */ e) => {
 };
 
 const dblclick = (/** @type {any} */ e) => {
-  getSelectContent();
+  getSelectContent(astDom);
 }
 
 
@@ -91,5 +98,9 @@ onUnmounted(() => {
   }
   #edit-main{
     min-height: 30px;
+  }
+  #editMain{
+    min-height: 160px;
+    overflow-y: scroll;
   }
 </style>
