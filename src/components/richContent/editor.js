@@ -27,8 +27,8 @@ export const stringJson = (/** @type {{ children: any; attrs: { [x: string]: str
 };
 // 更新
 export const patch = (/** @type {any[]} */ oldVdom, /** @type {any[]} */ newVdom) => {
+    console.log(oldVdom, newVdom);
     // 比较旧的VDOM与新的VDOM将有差异的收集到数组，后更新数组数据，在初次比较时更新特殊标签的处理
-    console.log(newVdom,"newVdom")
     // @ts-ignore
     newVdom && newVdom.nodeType == "text" && newVdom && replaceSpecify(newVdom);
     if (oldVdom && newVdom) {
@@ -38,15 +38,15 @@ export const patch = (/** @type {any[]} */ oldVdom, /** @type {any[]} */ newVdom
         let newP = newVdom.parent;
         // @ts-ignore
         let hasChildren = Array.isArray(newVdom.children);
-        
+
         // @ts-ignore
         patchAttrs(oldVdom, newVdom);
 
         // @ts-ignore
         if (oldP && newP) {
-            
+
             // @ts-ignore
-            if (oldVdom.tag != newVdom.tag || (!hasChildren && newVdom.children != oldVdom.children)) {
+            if (oldVdom.tag != newVdom.tag || (!hasChildren && newVdom.children != oldVdom.children) || oldVdom.children.length != newVdom.children.length) {
                 // @ts-ignore
                 patchJson(oldVdom, newVdom);
             };
@@ -56,12 +56,12 @@ export const patch = (/** @type {any[]} */ oldVdom, /** @type {any[]} */ newVdom
         hasChildren && newVdom.children.forEach((/** @type {any} */ el, /** @type {any} */ idx) => {
             // @ts-ignore
             let status = patch(oldVdom.children[idx], el);
-            if(status == "add"){
+            if (status == "add") {
                 // @ts-ignore
                 oldVdom.children = Array.isArray(oldVdom.children) ? oldVdom.children : [];
                 // @ts-ignore
                 oldVdom.children.push(el);
-            }else if(status == "remove") {
+            } else if (status == "remove") {
                 // @ts-ignore
                 oldVdom.children[idx] = null;
             }
@@ -152,6 +152,7 @@ const breadthCycle = (deepArr = [], /** @type {HTMLElement} */ domEl, root = [],
         position: deepPositionArr,
         children: [],
         parent: parent,
+        key: getuuid(24),
         attrs: getAttrs(domEl, nodeType),
         selected: []
     };
@@ -197,7 +198,7 @@ const getTextContent = (/** @type {{ innerText: string; nodeValue: string; }} */
  */
 const replaceSpecify = (elVDom) => {
     let hasParagraphElem = hasParagraph(elVDom);
-    
+    console.log(elVDom,"elVDom")
     if (elVDom.parent && elVDom.parent.tag == "div") {
         replacePToDIVElement(elVDom);
     } else if (hasParagraphElem) {
@@ -205,7 +206,7 @@ const replaceSpecify = (elVDom) => {
             // @ts-ignore
             replaceSpanToTextElement(elVDom);
         }
-    } else if(!hasParagraphElem) {
+    } else if (!hasParagraphElem) {
         // @ts-ignore
         addParagraph(elVDom);
     }
@@ -272,9 +273,9 @@ const patchJson = (/** @type {{ tag?: any; parent?: { tag: string; } | { el: Nod
  * @param {*} newJson 
  */
 const updateJsonParentEl = (oldJson, newJson) => {
-    if(oldJson.parent && newJson.parent && newJson.parent.el && oldJson.parent.el){
+    if (oldJson.parent && newJson.parent && newJson.parent.el && oldJson.parent.el) {
         oldJson.parent.el = newJson.parent.el;
-        if(newJson.parent.parent){
+        if (newJson.parent.parent) {
             updateJsonParentEl(oldJson.parent, newJson.parent)
         }
     }
@@ -340,7 +341,7 @@ const patchAttrs = (/** @type {any[]} */ oldVdom, /** @type {{ attrs: any; }} */
             // @ts-ignore
             oldVdom.el.setAttribute(key, newAttr[key]);
             delete newAttr[key];
-        } else if(oldAttr[key] == newAttr[key]){
+        } else if (oldAttr[key] == newAttr[key]) {
             delete newAttr[key];
             continue;
         } else {
@@ -420,6 +421,7 @@ export const jsonStrToAst = (str) => {
             position: [runObj.offsetLeft],
             children: [],
             parent: null,
+            key: getuuid(24),
             attrs: null,
             selected: []
         };
@@ -471,7 +473,7 @@ export const jsonStrToAst = (str) => {
         runObj.offsetLeft += subStrLen;
     }
     return runObj;
-}
+};
 /**
 * @this {any}
 */
@@ -481,7 +483,7 @@ const mountToEl = function (/** @type {string} */ idName) {
         // @ts-ignore
         appendChild(idElement, el.el);
     })
-}
+};
 
 // 判断是自闭合标签
 /**
@@ -527,61 +529,179 @@ export const getSelectContent = (astDom) => {
     let endTextEl = selects.focusNode;
     let endOffset = selects.focusOffset;
 
-    
     // 选择
-    if(startTextEl == astDom.el) {return ;}
+    if (startTextEl == astDom.el) { return; }
     // @ts-ignore
     let startDeepArr = getDeepArr(astDom.el, startTextEl);
     let endDeepArr = getDeepArr(astDom.el, endTextEl);
 
-    let startBig = endDeepArr[0] >= startDeepArr[0];
+    updateAstSelect(astDom, startDeepArr, startTextEl, startOffset, endDeepArr, endTextEl, endOffset);
 
-    let selectCount;
 
-    let initCount;
-        // 移动方向 结束位置大小起始位置 也就是向下选择
-    if(startBig){
-        initCount = startDeepArr[0];
-        selectCount = endDeepArr[0];
-    }else{
-        // 向上选择
-        initCount = endDeepArr[0];
-        selectCount = startDeepArr[0];
-    }
+    // for(let i = initCount; i <= selectCount; i ++){
+    //     selectAst.push(astDom.children[i])
+    // };
 
-    for(let i = initCount; i <= selectCount; i ++){
-        selectAst.push(astDom.children[i])
-    }
 
-    console.log(selectAst,"selectAst", startDeepArr, endDeepArr, selects)
+
+    // console.log(selectAst,"selectAst", startDeepArr, endDeepArr, selects)
     // selectAst.push();
+};
+
+/**
+ * 
+ * @param {*} astDom 
+ * @param {*} startDeepArr 
+ * @param {*} startTextEl 
+ * @param {*} startOffset 
+ * @param {*} endDeepArr 
+ * @param {*} endTextEl 
+ * @param {*} endOffset 
+ */
+const updateAstSelect = (astDom, startDeepArr, startTextEl, startOffset, endDeepArr, endTextEl, endOffset) => {
+
+    let startElem = getSelectAst(astDom, startDeepArr);
+
+
+    let endElem = getSelectAst(astDom, endDeepArr);
+    
+    let direction, selectLeaf = [];
+
+    // 移动方向 结束位置大小起始位置 也就是向下选择
+    endDeepArr.some((/** @type {number} */ el, /** @type {string | number} */ idx) => {
+        if(el > startDeepArr[idx]){
+            direction = "down";
+            return true;
+        }else if(el < startDeepArr[idx]){
+            direction = "up";
+            return true
+        }
+    });
+
+    if(startElem.position[1] == endElem.position[1]) {
+        // let selectAst = getMiddleSelectAst(startDeepArr, startElem, direction);
+        let endAst = getMiddleSelectAst(endDeepArr, endElem, direction);
+        // selectAst = selectAst.concat(getMiddleSelectAst(startDeepArr, endElem, direction == "down" ? "up" : "down"));
+        console.log(endAst,"endAst")
+    } else {
+
+    }
+
+
+};
+/**
+ * 
+ * @param {*} deepArr 
+ * @param {*} childAstVDom 
+ * @param {*} direction 
+ */
+const getMiddleSelectAst = (deepArr, childAstVDom, direction) => {
+    let deepArrLen = deepArr.length;
+    let deepCopyArr = Array.from(deepArr);
+
+
+    /**
+     * @type {any[]}
+     */
+    let returnSelectAst = [];
+    let idx = deepCopyArr.pop();
+    while ((idx || idx === 0) && childAstVDom.parent) {
+        let childrens = childAstVDom.parent.children;
+        let childLen = childrens.length;
+        let deepCopyArrLen = deepCopyArr.length;
+        if (deepCopyArrLen == (deepArrLen - 1)) {
+            if (childLen > 1) {
+                returnSelectAst = returnSelectAst.concat(childrens);
+            } else {
+                returnSelectAst.push(childAstVDom.parent);
+            };
+        } else if (childLen > 1) {
+            
+            // 如果索引为0时并且 当前节点的父节点有子节点数量为1为选中当前节点
+            // 如果索引不为0且相邻节点数据大于0 此时需要判断是向上选择或都向下选择
+            childrens.map && childrens.map((/** @type {any} */ el, /** @type {any} */ idxChild) => {
+                if(direction == "up" && idx < idxChild) return ;
+                if(direction == "down" && idx > idxChild) return ;
+                
+                if(idxChild !== idx){
+                    returnSelectAst = returnSelectAst.concat(getChildTreeAst([], el));
+                }
+            });
+        };
+        idx = deepCopyArr.pop();
+        childAstVDom = childAstVDom.parent;
+    };
+    return returnSelectAst;
+};
+
+/**
+ * 
+ * @param {*} collectArr 
+ * @param {*} astDom 
+ */
+const getChildTreeAst = (collectArr, astDom) => {
+    if (astDom.tag == 'span') {
+        collectArr = collectArr.concat(astDom);
+    } else {
+        astDom.children && astDom.children.map && astDom.children.map((/** @type {any} */ el, /** @type {any} */ idx) => {
+            collectArr = collectArr.concat(getChildTreeAst(collectArr, el));
+        });
+    }
+
+    return collectArr;
+}
+
+/**
+ * 
+ * @param {*} astDom 
+ * @param {*} deepArr 
+ * @returns 
+ */
+const getSelectAst = (astDom, deepArr) => {
+    let copyDeepArr = Array.from(deepArr);
+    let startPosition = copyDeepArr.shift();
+    let childrens = astDom.children;
+    let startElemAst;
+    while (startPosition || startPosition === 0) {
+        startElemAst = childrens[startPosition];
+        childrens = startElemAst.children;
+        startPosition = copyDeepArr.shift();
+    };
+    return startElemAst;
+};
+
+const clearAstSelect = () => {
+
+};
+
+export const resetSelectPosition = () => {
 };
 
 // 加粗选中文本
 export const bold = () => {
     boldText(selectAst);
-}
+};
+
 
 /**
  * 
  * @param {*} selectAst 
  */
 const boldText = (selectAst) => {
-    console.log(selectAst,"selectAst")
     // @ts-ignore
     selectAst.map && selectAst.map((elem) => {
-        if(elem.nodeType == "text"){
-            if(elem.parent.tag == "strong") {
+        if (elem.nodeType == "text") {
+            if (elem.parent.tag == "strong") {
                 return;
             };
             let strong = createElement("strong");
             replaceChild(elem.parent.el, strong, elem.el);
-            appendChild(strong,elem.el);
-        }else{
+            appendChild(strong, elem.el);
+        } else {
             boldText(elem.children);
         }
     })
-}
+};
 
 /**
  * 
@@ -590,7 +710,7 @@ const boldText = (selectAst) => {
  */
 const createElement = (elName) => {
     return document.createElement(elName);
-}
+};
 
 /**
  * 
@@ -599,7 +719,7 @@ const createElement = (elName) => {
  */
 const append = (parentNode, childNode) => {
     parentNode.append(childNode)
-}
+};
 
 /**
  * 
@@ -607,13 +727,12 @@ const append = (parentNode, childNode) => {
  * @param {*} status 
  */
 const cloneNode = (oldElem, status) => {
-    console.log(oldElem.nodeType,"oldElem.el")
-    if(oldElem.nodeType == "3"){
+    if (oldElem.nodeType == "3") {
         return createTextNode(oldElem.nodeValue);
-    }else{
+    } else {
         return oldElem.el.cloneNode(status);
     }
-}
+};
 
 /**
  * 
@@ -622,7 +741,7 @@ const cloneNode = (oldElem, status) => {
  */
 const appendChild = (parentNode, childNode) => {
     return parentNode.appendChild(childNode);
-}
+};
 
 /**
  * 
@@ -632,7 +751,7 @@ const appendChild = (parentNode, childNode) => {
  */
 const replaceChild = (parentElem, newNode, oldNode) => {
     return parentElem.replaceChild(newNode, oldNode);
-}
+};
 
 /**
  * 
@@ -640,13 +759,13 @@ const replaceChild = (parentElem, newNode, oldNode) => {
  */
 const createTextNode = (string) => {
     return document.createTextNode(string);
-}
+};
 
 
 // 解除加粗选中文本
 const unBoldText = () => {
 
-}
+};
 
 /**
  * 
@@ -657,20 +776,20 @@ const unBoldText = () => {
 const getDeepArr = (root, findPositionEl, deepArr = []) => {
     let childIdx = null;
     let childres = findPositionEl.parentNode.childNodes;
-    for(let i = 0; i < childres.length; i++){
-        if(findPositionEl == childres[i]){
+    for (let i = 0; i < childres.length; i++) {
+        if (findPositionEl == childres[i]) {
             childIdx = i;
             break;
         }
     };
-    if(findPositionEl.parentNode != root){
+    if (findPositionEl.parentNode != root) {
         deepArr.unshift(childIdx);
         getDeepArr(root, findPositionEl.parentNode, deepArr);
-    }else{
+    } else {
         deepArr.unshift(childIdx);
     };
     return deepArr;
-}
+};
 
 // 更新 字符串 AST 到 DOM
 

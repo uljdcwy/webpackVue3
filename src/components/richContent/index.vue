@@ -7,7 +7,7 @@
 
 <script setup>
 import { effect, onMounted, onUnmounted } from 'vue';
-import { getDomJson, patch, getSelectContent, bold } from "./editor.js";
+import { getDomJson, patch, getSelectContent, bold, resetSelectPosition } from "./editor.js";
 /** @type { any } */
 let editMain;
 let agentStart = false;
@@ -26,7 +26,8 @@ const getEditorJson = (/** @type {any} */ e) => {
 
 const boldSelects = () => {
   bold();
-  // patch(astDom, getDomJson(editMain));
+  patch(astDom, getDomJson(editMain));
+  resetSelectPosition();
 }
 
 const startAgentFn = () => {
