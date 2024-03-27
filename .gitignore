@@ -2,7 +2,6 @@
 Services/routers/**
 web/**
 node/**
-pages/**
 electron-renderer/**
 electron-preload/**
 mysql/**
