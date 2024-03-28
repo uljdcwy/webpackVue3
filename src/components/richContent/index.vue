@@ -25,8 +25,9 @@ const getEditorJson = (/** @type {any} */ e) => {
 };
 
 const boldSelects = () => {
-  bold();
+  bold(astDom);
   patch(astDom, getDomJson(editMain));
+  console.log(astDom,"astDom")
   resetSelectPosition();
 }
 
@@ -85,10 +86,6 @@ onUnmounted(() => {
   editMain.removeEventListener("mousedown", mousedown);
   editMain.removeEventListener("dblclick", dblclick);
 });
-
-
-
-
 
 </script>
 

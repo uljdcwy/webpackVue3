@@ -14,7 +14,10 @@ import { getIP } from "./utils/getIP.js"
 import axios from "axios";
 import { ssrRouter } from "./SSRRouter/index.js";
 import { indexRouter } from "./router/index.js"
-import { uploadFile } from "./router/upload.js"
+import { uploadFile } from "./router/upload.js";
+
+// @ts-ignore
+global.__VUE_PROD_DEVTOOLS__ = false;
 
 const app = new Koa();
 

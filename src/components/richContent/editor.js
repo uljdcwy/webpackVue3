@@ -27,7 +27,6 @@ export const stringJson = (/** @type {{ children: any; attrs: { [x: string]: str
 };
 // 更新
 export const patch = (/** @type {any[]} */ oldVdom, /** @type {any[]} */ newVdom) => {
-    console.log(oldVdom, newVdom);
     // 比较旧的VDOM与新的VDOM将有差异的收集到数组，后更新数组数据，在初次比较时更新特殊标签的处理
     // @ts-ignore
     newVdom && newVdom.nodeType == "text" && newVdom && replaceSpecify(newVdom);
@@ -154,7 +153,7 @@ const breadthCycle = (deepArr = [], /** @type {HTMLElement} */ domEl, root = [],
         parent: parent,
         key: getuuid(24),
         attrs: getAttrs(domEl, nodeType),
-        selected: []
+        selected: null
     };
 
     if (childrens.length > 0) {
@@ -198,7 +197,6 @@ const getTextContent = (/** @type {{ innerText: string; nodeValue: string; }} */
  */
 const replaceSpecify = (elVDom) => {
     let hasParagraphElem = hasParagraph(elVDom);
-    console.log(elVDom,"elVDom")
     if (elVDom.parent && elVDom.parent.tag == "div") {
         replacePToDIVElement(elVDom);
     } else if (hasParagraphElem) {
@@ -411,9 +409,7 @@ export const jsonStrToAst = (str) => {
             return "";
         });
         let nodeType;
-
-
-
+        
         /** @type {any} */
         let initObject = {
             nodeType: 1,
@@ -423,7 +419,7 @@ export const jsonStrToAst = (str) => {
             parent: null,
             key: getuuid(24),
             attrs: null,
-            selected: []
+            selected: null
         };
 
         if (isEndTag) {
@@ -508,22 +504,14 @@ const isSelfClosing = (tag) => {
 };
 
 /**
- * @type {*}
- */
-let selectAst = [];
-
-/**
  * 
  * @param {*} astDom 
  */
 export const getSelectContent = (astDom) => {
-    selectAst = [];
     /**
      * @type {*}
      */
     let selects = window.getSelection();
-
-
     let startTextEl = selects.anchorNode;
     let startOffset = startTextEl.length - selects.anchorOffset;
     let endTextEl = selects.focusNode;
@@ -535,67 +523,71 @@ export const getSelectContent = (astDom) => {
     let startDeepArr = getDeepArr(astDom.el, startTextEl);
     let endDeepArr = getDeepArr(astDom.el, endTextEl);
 
-    updateAstSelect(astDom, startDeepArr, startTextEl, startOffset, endDeepArr, endTextEl, endOffset);
-
-
-    // for(let i = initCount; i <= selectCount; i ++){
-    //     selectAst.push(astDom.children[i])
-    // };
-
-
-
-    // console.log(selectAst,"selectAst", startDeepArr, endDeepArr, selects)
-    // selectAst.push();
+    let selectAst = updateAstSelect(astDom, startDeepArr, startOffset, endDeepArr, endOffset);
+    return selectAst;
 };
 
 /**
  * 
  * @param {*} astDom 
  * @param {*} startDeepArr 
- * @param {*} startTextEl 
  * @param {*} startOffset 
  * @param {*} endDeepArr 
- * @param {*} endTextEl 
  * @param {*} endOffset 
  */
-const updateAstSelect = (astDom, startDeepArr, startTextEl, startOffset, endDeepArr, endTextEl, endOffset) => {
-
+const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffset) => {
     let startElem = getSelectAst(astDom, startDeepArr);
-
-
     let endElem = getSelectAst(astDom, endDeepArr);
-    
     let direction, selectLeaf = [];
-
+    /**
+     * @type {any}
+     */
+    let selectAst = [];
     // 移动方向 结束位置大小起始位置 也就是向下选择
     endDeepArr.some((/** @type {number} */ el, /** @type {string | number} */ idx) => {
-        if(el > startDeepArr[idx]){
+        if (el > startDeepArr[idx]) {
             direction = "down";
             return true;
-        }else if(el < startDeepArr[idx]){
+        } else if (el < startDeepArr[idx]) {
             direction = "up";
             return true
         }
     });
 
-    if(startElem.position[1] == endElem.position[1]) {
-        // let selectAst = getMiddleSelectAst(startDeepArr, startElem, direction);
-        let endAst = getMiddleSelectAst(endDeepArr, endElem, direction);
-        // selectAst = selectAst.concat(getMiddleSelectAst(startDeepArr, endElem, direction == "down" ? "up" : "down"));
-        console.log(endAst,"endAst")
+    let startAst = getMiddleSelectAst(startDeepArr, startElem, direction, startOffset, "start");
+    let endAst = getMiddleSelectAst(endDeepArr, endElem, direction == "up" ? "down" : "up", endOffset, "end");
+
+    if (startElem.position[1] == endElem.position[1]) {
+        startAst.forEach((el, idx) => {
+            if (endAst.indexOf(el) < 0) {
+                startAst.splice(idx, 1, null);
+            }
+        });
+        selectAst = startAst.filter(e => e);
     } else {
-
-    }
-
-
+        selectAst = startAst.concat(endAst);
+        let paragraphLists = astDom.children;
+        let startIdx = startElem.position[1];
+        let endIdx = endElem.position[1];
+        if (direction == "down") {
+            endIdx = startElem.position[1];
+            startIdx = endElem.position[1];
+        }
+        for (let i = endIdx + 1; i < startIdx; i++) {
+            selectAst = selectAst.concat(getChildTreeAst([], paragraphLists[i]));
+        }
+    };
+    return selectAst;
 };
 /**
  * 
  * @param {*} deepArr 
  * @param {*} childAstVDom 
  * @param {*} direction 
+ * @param {*} offset
+ * @param {*} position
  */
-const getMiddleSelectAst = (deepArr, childAstVDom, direction) => {
+const getMiddleSelectAst = (deepArr, childAstVDom, direction, offset, position) => {
     let deepArrLen = deepArr.length;
     let deepCopyArr = Array.from(deepArr);
 
@@ -612,22 +604,27 @@ const getMiddleSelectAst = (deepArr, childAstVDom, direction) => {
         if (deepCopyArrLen == (deepArrLen - 1)) {
             if (childLen > 1) {
                 returnSelectAst = returnSelectAst.concat(childrens);
+                if (direction == "up") {
+                    childrens[childrens.length - 1].selected = position == "start" ? [0, childAstVDom.children.length - offset] : [offset, childAstVDom.children.length];
+                } else {
+                    childrens[0].selected = position == "start" ? [0, childAstVDom.children.length - offset] : [offset, childAstVDom.children.length];
+                }
             } else {
+                childAstVDom.selected = position == "start" ? [0, childAstVDom.children.length - offset] : [offset, childAstVDom.children.length];
                 returnSelectAst.push(childAstVDom.parent);
             };
         } else if (childLen > 1) {
-            
             // 如果索引为0时并且 当前节点的父节点有子节点数量为1为选中当前节点
             // 如果索引不为0且相邻节点数据大于0 此时需要判断是向上选择或都向下选择
             childrens.map && childrens.map((/** @type {any} */ el, /** @type {any} */ idxChild) => {
-                if(direction == "up" && idx < idxChild) return ;
-                if(direction == "down" && idx > idxChild) return ;
-                
-                if(idxChild !== idx){
+                if (direction == "up" && idx < idxChild) return;
+                if (direction == "down" && idx > idxChild) return;
+                if (idxChild !== idx) {
                     returnSelectAst = returnSelectAst.concat(getChildTreeAst([], el));
                 }
             });
         };
+        if (deepCopyArrLen < 2) { break; };
         idx = deepCopyArr.pop();
         childAstVDom = childAstVDom.parent;
     };
@@ -644,7 +641,7 @@ const getChildTreeAst = (collectArr, astDom) => {
         collectArr = collectArr.concat(astDom);
     } else {
         astDom.children && astDom.children.map && astDom.children.map((/** @type {any} */ el, /** @type {any} */ idx) => {
-            collectArr = collectArr.concat(getChildTreeAst(collectArr, el));
+            collectArr = getChildTreeAst(collectArr, el);
         });
     }
 
@@ -678,7 +675,12 @@ export const resetSelectPosition = () => {
 };
 
 // 加粗选中文本
-export const bold = () => {
+/**
+ * 
+ * @param {*} astDom 
+ */
+export const bold = (astDom) => {
+    let selectAst = getSelectContent(astDom);
     boldText(selectAst);
 };
 
@@ -695,6 +697,9 @@ const boldText = (selectAst) => {
                 return;
             };
             let strong = createElement("strong");
+
+            console.log(elem.parent.selected, "elem.parent.selected")
+
             replaceChild(elem.parent.el, strong, elem.el);
             appendChild(strong, elem.el);
         } else {
