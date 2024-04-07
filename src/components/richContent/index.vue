@@ -7,7 +7,7 @@
 
 <script setup>
 import { effect, onMounted, onUnmounted } from 'vue';
-import { getDomJson, patch, getSelectContent, bold, resetSelectPosition } from "./editor.js";
+import { getDomJson, patch, getSelectContent, bold } from "./editor.js";
 /** @type { any } */
 let editMain;
 let agentStart = false;
@@ -15,20 +15,23 @@ let agentStart = false;
  * @type {any[]}
  */
 let astDom;
+/**@type {*} */
+const selectAst = [];
 const getEditorJson = (/** @type {any} */ e) => {
   if(agentStart) return;
   setTimeout(() => {
     // @ts-ignore
     patch(astDom, getDomJson(editMain));
-    console.log(astDom,"astDom")
   })
 };
 
 const boldSelects = () => {
-  bold(astDom);
+  if(!selectAst[0]){
+    selectAst.push(...getSelectContent(astDom, selectAst));
+  }
+  bold(selectAst);
   patch(astDom, getDomJson(editMain));
   console.log(astDom,"astDom")
-  resetSelectPosition();
 }
 
 const startAgentFn = () => {
@@ -50,20 +53,15 @@ const mousedown = (/** @type {any} */ e) => {
 
 const mouseup = () => {
   editMain.removeEventListener("mousemove", mousemove);
-  if(selected){
-    // get select && add select arr Dom
-    getSelectContent(astDom);
-  };
+  console.log(selectAst,"selectAst")
+  selectAst.push(...getSelectContent(astDom, selectAst));
+  console.log(selectAst,"selectAst")
   selected = false;
 };
 
 const mousemove = (/** @type {any} */ e) => {
     selected = true;
 };
-
-const dblclick = (/** @type {any} */ e) => {
-  getSelectContent(astDom);
-}
 
 
 onMounted(() => {
@@ -72,7 +70,6 @@ onMounted(() => {
 
   editMain.addEventListener("mousedown", mousedown);
   window.addEventListener("mouseup", mouseup);
-  editMain.addEventListener("dblclick", dblclick);
   
   editMain.addEventListener("compositionstart", startAgentFn);
   editMain.addEventListener("compositionend", endAgentFn);
@@ -84,7 +81,6 @@ onUnmounted(() => {
   
   window.removeEventListener("mouseup", mouseup);
   editMain.removeEventListener("mousedown", mousedown);
-  editMain.removeEventListener("dblclick", dblclick);
 });
 
 </script>

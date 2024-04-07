@@ -196,7 +196,7 @@ const getTextContent = (/** @type {{ innerText: string; nodeValue: string; }} */
  * @param {*} elVDom 
  */
 const replaceSpecify = (elVDom) => {
-    let hasParagraphElem = hasParagraph(elVDom);
+    let hasParagraphElem = hasTagName(elVDom, "p");
     if (elVDom.parent && elVDom.parent.tag == "div") {
         replacePToDIVElement(elVDom);
     } else if (hasParagraphElem) {
@@ -210,15 +210,20 @@ const replaceSpecify = (elVDom) => {
     }
 };
 // 当前当前文本是否有段落
-// @ts-ignore
-const hasParagraph = (/** @type {{ parent: { tag: string; }; }} */ vDom) => {
+/**
+ * 
+ * @param {*} vDom 
+ * @param {*} tagName 
+ * @returns {*}
+ */
+const hasTagName = (vDom, tagName) => {
     if (!vDom.parent) {
         return false;
-    } else if (vDom.parent.tag == 'p') {
+    } else if (vDom.parent.tag == tagName) {
         return true;
-    } else if (vDom.parent.tag != 'p') {
+    } else if (vDom.parent.tag != tagName) {
         // @ts-ignore
-        return hasParagraph(vDom.parent);
+        return hasTagName(vDom.parent, tagName);
     }
 };
 // 将DIV标签替换成P
@@ -277,7 +282,7 @@ const updateJsonParentEl = (oldJson, newJson) => {
             updateJsonParentEl(oldJson.parent, newJson.parent)
         }
     }
-}
+};
 
 // 添加段落标签
 const addParagraph = (/** @type {{ parent: { tag: string; }; el: { cloneNode: (arg0: boolean) => any; }; }} */ elVDom) => {
@@ -409,7 +414,7 @@ export const jsonStrToAst = (str) => {
             return "";
         });
         let nodeType;
-        
+
         /** @type {any} */
         let initObject = {
             nodeType: 1,
@@ -506,25 +511,31 @@ const isSelfClosing = (tag) => {
 /**
  * 
  * @param {*} astDom 
+ * @param {*} selectAst
  */
-export const getSelectContent = (astDom) => {
+export const getSelectContent = (astDom, selectAst) => {
     /**
      * @type {*}
      */
     let selects = window.getSelection();
     let startTextEl = selects.anchorNode;
-    let startOffset = startTextEl.length - selects.anchorOffset;
+    let anchorOffset= selects.anchorOffset;
+    let focusOffset= selects.focusOffset;
+    let startOffset = anchorOffset;
     let endTextEl = selects.focusNode;
-    let endOffset = selects.focusOffset;
+    let endOffset = focusOffset;
+    if(startTextEl == endTextEl && anchorOffset == focusOffset) {return []};
 
     // 选择
-    if (startTextEl == astDom.el) { return; }
+    if (startTextEl == astDom.el) { return []; };
+    resetSelectPosition(selectAst);
+
     // @ts-ignore
     let startDeepArr = getDeepArr(astDom.el, startTextEl);
     let endDeepArr = getDeepArr(astDom.el, endTextEl);
 
-    let selectAst = updateAstSelect(astDom, startDeepArr, startOffset, endDeepArr, endOffset);
-    return selectAst;
+    return updateAstSelect(astDom, startDeepArr, startOffset, endDeepArr, endOffset);
+    
 };
 
 /**
@@ -538,13 +549,18 @@ export const getSelectContent = (astDom) => {
 const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffset) => {
     let startElem = getSelectAst(astDom, startDeepArr);
     let endElem = getSelectAst(astDom, endDeepArr);
-    let direction, selectLeaf = [];
+    let direction = "", selectLeaf = [], position;
+    
     /**
      * @type {any}
      */
     let selectAst = [];
     // 移动方向 结束位置大小起始位置 也就是向下选择
     endDeepArr.some((/** @type {number} */ el, /** @type {string | number} */ idx) => {
+        if(idx == endDeepArr.length || direction){
+            direction = "down";
+            return true;
+        }
         if (el > startDeepArr[idx]) {
             direction = "down";
             return true;
@@ -555,7 +571,7 @@ const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffse
     });
 
     let startAst = getMiddleSelectAst(startDeepArr, startElem, direction, startOffset, "start");
-    let endAst = getMiddleSelectAst(endDeepArr, endElem, direction == "up" ? "down" : "up", endOffset, "end");
+    let endAst = getMiddleSelectAst(endDeepArr, endElem, (direction == "up" ? "down" : "up"), endOffset, "end");
 
     if (startElem.position[1] == endElem.position[1]) {
         startAst.forEach((el, idx) => {
@@ -577,6 +593,7 @@ const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffse
             selectAst = selectAst.concat(getChildTreeAst([], paragraphLists[i]));
         }
     };
+
     return selectAst;
 };
 /**
@@ -590,8 +607,6 @@ const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffse
 const getMiddleSelectAst = (deepArr, childAstVDom, direction, offset, position) => {
     let deepArrLen = deepArr.length;
     let deepCopyArr = Array.from(deepArr);
-
-
     /**
      * @type {any[]}
      */
@@ -603,14 +618,32 @@ const getMiddleSelectAst = (deepArr, childAstVDom, direction, offset, position) 
         let deepCopyArrLen = deepCopyArr.length;
         if (deepCopyArrLen == (deepArrLen - 1)) {
             if (childLen > 1) {
+                let selectAst;
                 returnSelectAst = returnSelectAst.concat(childrens);
                 if (direction == "up") {
-                    childrens[childrens.length - 1].selected = position == "start" ? [0, childAstVDom.children.length - offset] : [offset, childAstVDom.children.length];
+                    selectAst = returnSelectAst[returnSelectAst.length - 1];
+                    selectAst.selected = position == "start" ? [0, offset] : [offset, childAstVDom.children.length];
                 } else {
-                    childrens[0].selected = position == "start" ? [0, childAstVDom.children.length - offset] : [offset, childAstVDom.children.length];
+                    selectAst = returnSelectAst[0];
+                    selectAst.selected = position == "start" ? [offset, childAstVDom.children.length] : [0, offset];
                 }
             } else {
-                childAstVDom.selected = position == "start" ? [0, childAstVDom.children.length - offset] : [offset, childAstVDom.children.length];
+                if (childAstVDom.selected) {
+                    let selectedArr = childAstVDom.selected;
+                    if(direction == "up"){
+                        selectedArr[1] = offset;
+                    }else{
+                        selectedArr[0] = offset;
+                    };
+                    selectedArr.sort();
+                    if(selectedArr[0] > selectedArr[1]){
+                        let origin = selectedArr[1];
+                        selectedArr[1] = selectedArr[0];
+                        selectedArr[0] = origin;
+                    }
+                } else {
+                    childAstVDom.selected = direction == "up"  ? [0, offset] : [offset, childAstVDom.children.length];
+                }
                 returnSelectAst.push(childAstVDom.parent);
             };
         } else if (childLen > 1) {
@@ -619,7 +652,7 @@ const getMiddleSelectAst = (deepArr, childAstVDom, direction, offset, position) 
             childrens.map && childrens.map((/** @type {any} */ el, /** @type {any} */ idxChild) => {
                 if (direction == "up" && idx < idxChild) return;
                 if (direction == "down" && idx > idxChild) return;
-                if (idxChild !== idx) {
+                if (idxChild != idx) {
                     returnSelectAst = returnSelectAst.concat(getChildTreeAst([], el));
                 }
             });
@@ -644,7 +677,6 @@ const getChildTreeAst = (collectArr, astDom) => {
             collectArr = getChildTreeAst(collectArr, el);
         });
     }
-
     return collectArr;
 }
 
@@ -671,16 +703,43 @@ const clearAstSelect = () => {
 
 };
 
-export const resetSelectPosition = () => {
+/**
+ * 
+ * @param {*} selectAst 
+ */
+export const resetSelectPosition = (selectAst) => {
+    let select = selectAst.pop();
+    while(select) {
+        if(select.selected) { 
+            select.selected = null
+        
+        };
+        deepClearSelected(select.children);
+        select = selectAst.pop();
+    };
 };
+
+/**
+ * 
+ * @param {*} childrens 
+ */
+const deepClearSelected = (childrens) => {
+    if(Array.isArray(childrens)){
+        childrens.forEach((elem, idx) => {
+            if(elem.selected) { elem.selected = null };
+            if(elem.children){
+                deepClearSelected(elem.children);
+            }
+        })
+    }
+}
 
 // 加粗选中文本
 /**
  * 
- * @param {*} astDom 
+ * @param {*} selectAst 
  */
-export const bold = (astDom) => {
-    let selectAst = getSelectContent(astDom);
+export const bold = (selectAst) => {
     boldText(selectAst);
 };
 
@@ -693,20 +752,59 @@ const boldText = (selectAst) => {
     // @ts-ignore
     selectAst.map && selectAst.map((elem) => {
         if (elem.nodeType == "text") {
-            if (elem.parent.tag == "strong") {
+            if (hasTagName(elem, "strong")) {
                 return;
             };
             let strong = createElement("strong");
-
-            console.log(elem.parent.selected, "elem.parent.selected")
-
-            replaceChild(elem.parent.el, strong, elem.el);
-            appendChild(strong, elem.el);
+            let select = elem.selected;
+            let textNode = elem.el;
+            if (select) {
+                if (select[1] != elem.children.length && select[0] == 0) {
+                    let splitText = elem.el.splitText(select[1]);
+                    createSpanFillText(splitText, "after");
+                    textNode = elem.el;
+                } else if (select[1] == elem.children.length) {
+                    textNode = elem.el.splitText(select[0]);
+                    createSpanFillText(elem.el, "insert");
+                } else {
+                    let splitLast = elem.el.splitText(select[1])
+                    createSpanFillText(splitLast, "after");
+                    textNode = elem.el.splitText(select[0]);
+                    createSpanFillText(elem.el, "insert");
+                }
+            }
+            replaceChild(elem.parent.el, strong, textNode);
+            appendChild(strong, textNode);
         } else {
             boldText(elem.children);
         }
     })
 };
+
+const inertElement = (/** @type {any} */ parentNode, /** @type {any} */ inertNode) => {
+    parentNode.before(inertNode);
+}
+
+const afterElement = (/** @type {any} */ parentNode, /** @type {any} */ afterNode) => {
+    if(parentNode.nextSibling){
+        parentNode.nextSibling.before(afterNode);
+    }else{
+        parentNode.parentNode.appendChild(afterNode);
+    }
+}
+
+
+const createSpanFillText = (/** @type {any} */ fillText, /** @type {any} */ direction) => {
+    if(fillText.textContent == "" || fillText.tagName && fillText.tagName.toLocaleLowerCase() == "br") return ;
+    let span = createElement("span");
+    let parentNode = fillText.parentNode;
+    span.appendChild(fillText);
+    if(direction == "after"){
+        afterElement(parentNode, span);
+    }else{
+        inertElement(parentNode, span);
+    }
+}
 
 /**
  * 
@@ -787,11 +885,10 @@ const getDeepArr = (root, findPositionEl, deepArr = []) => {
             break;
         }
     };
+    
+    deepArr.unshift(childIdx);
     if (findPositionEl.parentNode != root) {
-        deepArr.unshift(childIdx);
         getDeepArr(root, findPositionEl.parentNode, deepArr);
-    } else {
-        deepArr.unshift(childIdx);
     };
     return deepArr;
 };
