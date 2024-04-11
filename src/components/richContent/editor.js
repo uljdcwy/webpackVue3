@@ -1,8 +1,13 @@
 // 获取DOM的JSON树
-// @ts-ignore
-export const getDomJson = (rootDom = document.body, deepArr = []) => {
-    // @ts-ignore
-    return breadthCycle(deepArr, rootDom, null);
+/**
+ * 
+ * @param {*} rootDom 
+ * @param {*} deepArr 
+ * @param {*} idx
+ * @returns 
+ */
+export const getDomJson = (rootDom = document.body, deepArr = [], idx = 0) => {
+    return breadthCycle(deepArr, rootDom, null, "", idx);
 };
 // 字符串化JSON
 export const stringJson = (/** @type {{ children: any; attrs: { [x: string]: string; }; tag: any; }} */ json) => {
@@ -26,57 +31,46 @@ export const stringJson = (/** @type {{ children: any; attrs: { [x: string]: str
     }
 };
 // 更新
-export const patch = (/** @type {any[]} */ oldVdom, /** @type {any[]} */ newVdom) => {
+/**
+ * 
+ * @param {*} oldVdom 
+ * @param {*} newVdom 
+ * @param {*} rootIdx 
+ * @returns 
+ */
+export const patch = (oldVdom, newVdom, rootIdx = 0) => {
     // 比较旧的VDOM与新的VDOM将有差异的收集到数组，后更新数组数据，在初次比较时更新特殊标签的处理
-    // @ts-ignore
     updateChildrenSpecifyNode(newVdom)
-    // @ts-ignore
     let hasChildren = Array.isArray(newVdom && newVdom.children);
     if (oldVdom && newVdom) {
-        // @ts-ignore
         let oldP = oldVdom.parent;
-        // @ts-ignore
         let newP = newVdom.parent;
 
-        // @ts-ignore
         patchAttrs(oldVdom, newVdom);
 
-        // @ts-ignore
         if (oldP && newP) {
-            // @ts-ignore
             if (oldVdom.tag != newVdom.tag) {
-                // @ts-ignore
                 patchJson(oldVdom, newVdom);
-                // @ts-ignore
             } else if (!hasChildren && newVdom.children != oldVdom.children) {
-                // @ts-ignore
                 patchJson(oldVdom, newVdom);
-                // @ts-ignore
             } else if (oldVdom.children.length != newVdom.children.length) {
-                // @ts-ignore
                 patchJson(oldVdom, newVdom);
             };
         };
         // diff oldVdom or newVdom update
-        // @ts-ignore
-        hasChildren && newVdom.children.forEach((/** @type {any} */ el, /** @type {any} */ idx) => {
-            // @ts-ignore
-            let status = patch(oldVdom.children[idx], el);
-            console.log(status,"status")
+        hasChildren && newVdom.children.forEach((/** @type {*} */ el, /** @type {*} */ idx) => {
+            let status = patch(oldVdom.children[idx], el, idx);
             if (status == "add") {
-                // @ts-ignore
                 oldVdom.children = Array.isArray(oldVdom.children) ? oldVdom.children : [];
-                // @ts-ignore
                 oldVdom.children.push(el);
             } else if (status == "remove") {
-                // @ts-ignore
                 oldVdom.children[idx] = null;
             }
         });
-        // @ts-ignore
         oldVdom.children && oldVdom.children.filter && (oldVdom.children = oldVdom.children.filter((e) => e));
     } else if (!oldVdom && newVdom) {
-        deepUpdateChildrenSpacifyNode(newVdom);
+        mergeRootChildren(newVdom, false, rootIdx);
+        // deepUpdateChildrenSpacifyNode(newVdom);
         // update newVdom to oldVdom
         return 'add';
     } else if (oldVdom && !newVdom) {
@@ -85,17 +79,22 @@ export const patch = (/** @type {any[]} */ oldVdom, /** @type {any[]} */ newVdom
     }
 };
 
-const updateChildrenSpecifyNode = (/** @type {{ nodeType: string; }} */ newVdom) => {
+/**
+ * 
+ * @param {*} newVdom 
+ */
+const updateChildrenSpecifyNode = ( newVdom) => {
     newVdom && newVdom.nodeType == "text" && newVdom && replaceSpecify(newVdom);
 };
-
-// @ts-ignore
+/**
+ * 
+ * @param {*} newVDom 
+ */
 const deepUpdateChildrenSpacifyNode = (newVDom) => {
-    // @ts-ignore
-    newVDom.children && newVDom.children.forEach((elem, idx) => {
-        if(Array.isArray(elem.children)){
+    newVDom.children && newVDom.children.forEach((/** @type {*} */ elem, /** @type {any} */ idx) => {
+        if (Array.isArray(elem.children)) {
             deepUpdateChildrenSpacifyNode(elem);
-        }else{
+        } else {
             updateChildrenSpecifyNode(elem);
         }
     })
@@ -107,6 +106,9 @@ const getDiff = (/** @type {any} */ diffArr, /** @type {any} */ oldVdom, /** @ty
 };
 
 // 节点类型
+/**
+ * @type {*}
+ */
 const nodeTypes = {
     "1": "tag",
     "3": "text",
@@ -156,19 +158,32 @@ const getAttrs = (el, nodeType) => {
     return oAttr;
 };
 // 深度循环
-const deepLoop = (/** @type {string | any[] | NodeListOf<ChildNode>} */ domEls, /** @type {any[] | undefined} */ root, /** @type {{ nodeType: any; tag: string | undefined; el: HTMLElement; key: string; position: any[]; children: never[]; parent: undefined; attrs: any; selected: never[]; } | undefined} */ parent, /** @type {any[] | undefined} */ deepArr) => {
+/**
+ * 
+ * @param {*} domEls 
+ * @param {*} root 
+ * @param {*} parent 
+ * @param {*} deepArr 
+ */
+const deepLoop = ( domEls, root, parent, deepArr) => {
     let elsLen = domEls.length;
     for (let i = 0; i < elsLen; i++) {
-        // @ts-ignore
         breadthCycle(deepArr, domEls[i], root, parent, i);
     }
 };
 // 广度循环
-// @ts-ignore
-const breadthCycle = (deepArr = [], /** @type {HTMLElement} */ domEl, root = [], /** @type {undefined} */ parent, breadthIdx = 0) => {
+/**
+ * 
+ * @param {*} deepArr 
+ * @param {*} domEl 
+ * @param {*} root 
+ * @param {*} parent 
+ * @param {*} breadthIdx 
+ * @returns 
+ */
+const breadthCycle = (deepArr = [], domEl, root = [], parent, breadthIdx = 0) => {
     const childrens = domEl.childNodes;
     let deepPositionArr = [...deepArr].concat(breadthIdx);
-    // @ts-ignore
     const nodeType = nodeTypes[domEl.nodeType];
     let elVDom = {
         nodeType: nodeType,
@@ -184,7 +199,6 @@ const breadthCycle = (deepArr = [], /** @type {HTMLElement} */ domEl, root = [],
 
     if (childrens.length > 0) {
         deepArr.push(breadthIdx);
-        // @ts-ignore
         deepLoop(childrens, elVDom.children, elVDom, deepArr);
         deepArr.pop();
     } else {
@@ -192,19 +206,30 @@ const breadthCycle = (deepArr = [], /** @type {HTMLElement} */ domEl, root = [],
         elVDom.children = getTextContent(domEl, nodeType);
         // replaceSpecify(elVDom);
     };
-    // @ts-ignore
     root = root && root.push(elVDom) || elVDom;
     return root
 };
 
 // 小写字符串
-const toLocalLow = (/** @type {string} */ str, /** @type {string} */ nodeType) => {
+/**
+ * 
+ * @param {*} str 
+ * @param {*} nodeType 
+ * @returns 
+ */
+const toLocalLow = (str, nodeType) => {
     if (nodeType == "tag") {
         return str.toLocaleLowerCase()
     }
 };
 // 获取文本内容
-const getTextContent = (/** @type {{ innerText: string; nodeValue: string; }} */ domEl, /** @type {any} */ nodeType) => {
+/**
+ * 
+ * @param {*} domEl 
+ * @param {*} nodeType 
+ * @returns 
+ */
+const getTextContent = (domEl, nodeType) => {
     let child = "";
     switch (nodeType) {
         case 'tag':
@@ -225,35 +250,126 @@ const replaceSpecify = (elVDom) => {
     let hasParagraphElem = hasTagName(elVDom, "p");
     let pTag = elVDom.parent && elVDom.parent.tag;
     if (pTag == "div") {
-        if(hasParagraphElem){
-            console.log("替换时有P标签")
+        if (hasParagraphElem) {
         }
         replacePToDIVElement(elVDom);
     } else if (hasParagraphElem) {
-        if (!isRichTag(pTag)) {
-            // @ts-ignore
+        if (!isRichLeafTag(pTag)) {
             replaceSpanToTextElement(elVDom);
         }
     } else if (!hasParagraphElem) {
-        // @ts-ignore
         addParagraph(elVDom);
     }
 };
-// 合并根节点下的子节点并将子点节内容分成三级，一级段落，一级span 一级文本
+// 合并根节点下的子节点并将子点节内容分成三级，一级段落，一级span 一级文本 拖动或粘帖进来的时候
 /**
  * 
- * @param {*} textVdom 
+ * @param {*} Vdom 
+ * @param {*} preVdom 
  */
-const mergeRootChildren = (textVdom) => {
-    // 向上递归
-    // textVdom.
+const mergeRootChildren = (Vdom, preVdom = false, defaultIndex = 0) => {
+    let vDomParent = Vdom.parent;
+    if (vDomParent && vDomParent.parent && !preVdom) {
+        mergeRootChildren(vDomParent, preVdom)
+    };
+
+    if (!preVdom) {
+        if(vDomParent && !vDomParent.parent) {
+            let rootChildrens = vDomParent.children;
+            rootChildrens.forEach((/** @type {any} */ elem, /** @type {number} */ idx) => {
+                if (Vdom == elem) {
+                    if (!idx) {
+                        preVdom = "first";
+                    } else {
+                        preVdom = rootChildrens[idx - 1];
+                    }
+                }
+            });
+        }
+    };
+    if (!preVdom) return;
+
+    /**
+     * @type {*}
+     */
+    let root,rootBlock;
+
+    if (preVdom == "first") {
+        rootBlock = createElement("p");
+        root = createElement("span");
+        appendChild(rootBlock, root);
+        replaceChild(Vdom.el.parentNode, rootBlock, Vdom.el);
+    
+    } else if (preVdom.tag) {
+        rootBlock = isRichLeafTag(preVdom.tag) ? createElement("p") : createElement(preVdom.tag);
+        root = createElement("span");
+        appendChild(rootBlock, root);
+        replaceChild(Vdom.el.parentNode, rootBlock, Vdom.el);
+    } else {
+        root = preVdom;
+        if (Vdom.nodeType == "text"){
+            // appendChild(preVdom, Vdom.el);
+            addTextContent(preVdom, Vdom.el);
+        } 
+    };
+    let childres = Vdom.children;
+    if (preVdom.tag && isInlineElem(preVdom)) {
+        root = getCurrentBlockTextParentElement(root);
+        // 在某个条件下也可以指向上一个文本元素
+    } else if(1){
+
+    };
+
+    // 收集内容并添加到前一个内容的元素中 或 创建前一个内容的子元素，并压入前一个元素中
+    if (Array.isArray(childres)) {
+        childres.forEach((/** @type {any} */ elem, /** @type {any} */ idx) => {
+            mergeRootChildren(elem, root);
+        });
+        Vdom.children = [];
+    };
+
+    if(preVdom.tag || preVdom == "first"){
+        const jsonToDiv = getDomJson(rootBlock, Vdom.parent.position, defaultIndex);
+        patchAttrs(Vdom, jsonToDiv);
+        patchJson(Vdom, jsonToDiv);
+    }
 };
+
+/**
+ * 
+ * @param {*} nodeElement 
+ * @param {*} TextNode 
+ */
+const addTextContent = (nodeElement, TextNode) => {
+    nodeElement.textContent = nodeElement.textContent + TextNode.textContent;
+    return nodeElement.textContent;
+}
+// 获取当前代码块中的最低子元素标签
+/**
+ * 
+ * @param {*} preVdom 
+ * @returns {*}
+ */
+const getCurrentBlockTextParentElement = (preVdom) => {
+    let childrens = preVdom.children;
+    if (Array.isArray(childrens)) {
+        return getCurrentBlockTextParentElement(childrens[childrens.length - 1]);
+    } else {
+        return preVdom.parent.el;
+    }
+
+}
 // 查看是否是行级元素否则默认为块级元素
-const isInlineElem = () => {
-
+/**
+ * 
+ * @param {*} Vdom 
+ * @returns {*}
+ */
+const isInlineElem = (Vdom) => {
+    return false;
 };
 
-const richArr = ["i", "strong", "span", "p"];
+const richLeafArr = ["i", "strong", "span"];
 
 // 判断是否是富文本的指定标签
 /**
@@ -261,9 +377,20 @@ const richArr = ["i", "strong", "span", "p"];
  * @param {*} tagName 
  * @returns 
  */
-const isRichTag = (tagName) => {
-    return richArr.indexOf(tagName) > -1;
+const isRichLeafTag = (tagName) => {
+    return richLeafArr.indexOf(tagName) > -1;
 };
+
+const richRootArr = ["p"];
+
+/**
+ * 
+ * @param {*} tagName 
+ * @returns 
+ */
+const isRichRootTag = (tagName) => {
+    return richRootArr.indexOf(tagName) > -1;
+}
 // 当前当前文本是否有段落
 /**
  * 
@@ -277,7 +404,6 @@ const hasTagName = (vDom, tagName) => {
     } else if (vDom.parent.tag == tagName) {
         return true;
     } else if (vDom.parent.tag != tagName) {
-        // @ts-ignore
         return hasTagName(vDom.parent, tagName);
     }
 };
@@ -292,12 +418,10 @@ const replacePToDIVElement = (/** @type {{ parent?: any; el?: any; attrs?: any; 
             resetDivAttrs(divVdom.el);
             replaceChild(divVdom.el, p, elVDom.el)
             appendChild(span, elVDom.el);
-            // @ts-ignore
             const jsonToDiv = getDomJson(p, elVDom.parent.position);
-            // @ts-ignore
             patchAttrs(jsonToDiv, elVDom);
             patchJson(elVDom, jsonToDiv);
-            if(!divVdom.parent){moveCursorToEnd(p);};
+            if (!divVdom.parent) { moveCursorToEnd(p); };
         }
         return;
     };
@@ -308,7 +432,7 @@ const replacePToDIVElement = (/** @type {{ parent?: any; el?: any; attrs?: any; 
     const jsonToDiv = getDomJson(p, divVdom.parent.position);
     patchAttrs(jsonToDiv, divVdom);
     patchJson(divVdom, jsonToDiv);
-    if(!divVdom.parent){moveCursorToEnd(p);};
+    if (!divVdom.parent) { moveCursorToEnd(p); };
 };
 /**
  * 
@@ -316,24 +440,23 @@ const replacePToDIVElement = (/** @type {{ parent?: any; el?: any; attrs?: any; 
  */
 const resetDivAttrs = (divEl) => {
     let attrs = divEl.attributes;
-    for(let attr of attrs){
-        let attrName = attr.split("=")[0];
-        divEl.removeAttribute(attrName);
+    for (let attr of attrs) {
+        let attrName = attr.split && attr.split("=")[0];
+        if (attrName) divEl.removeAttribute(attrName);
     }
 };
 
-const patchJson = (/** @type {{ tag?: any; parent?: { tag: string; } | { el: Node; }; el?: any; children?: any; }} */ oldJson, /** @type {any[]} */ newJson) => {
-    // @ts-ignore
+/**
+ * 
+ * @param {*} oldJson 
+ * @param {*} newJson 
+ */
+const patchJson = ( oldJson, newJson) => {
     oldJson.tag = newJson.tag;
-    // @ts-ignore
     oldJson.nodeType = newJson.nodeType;
-    // @ts-ignore
     oldJson.position = newJson.position;
-    // @ts-ignore
     oldJson.el = newJson.el;
-    // @ts-ignore
     oldJson.children = newJson.children;
-    // @ts-ignore
     // newJson.parent && newJson.parent.el && oldJson.parent.el && (oldJson.parent.el = newJson.parent.el);
     updateJsonParentEl(oldJson, newJson);
 };
@@ -353,20 +476,21 @@ const updateJsonParentEl = (oldJson, newJson) => {
 };
 
 // 添加段落标签
-const addParagraph = (/** @type {{ parent: { tag: string; }; el: { cloneNode: (arg0: boolean) => any; }; }} */ elVDom) => {
+/**
+ * 
+ * @param {*} elVDom 
+ * @returns 
+ */
+const addParagraph = (elVDom) => {
     if (!elVDom.parent) return;
     const p = createElement("p");
     let getDomCopy;
     if (elVDom.parent.tag == "span") {
         const parentVDOM = elVDom.parent;
-        // @ts-ignore
         if (!parentVDOM.parent) return;
-        // @ts-ignore
         getDomCopy = cloneNode(parentVDOM.el, true);
         appendChild(p, getDomCopy);
-        // @ts-ignore
         let appendJson = getDomJson(p, parentVDOM.parent.position);
-        // @ts-ignore
         replaceChild(parentVDOM.parent.el, p, parentVDOM.el)
         patchJson(parentVDOM, appendJson);
     } else {
@@ -375,29 +499,34 @@ const addParagraph = (/** @type {{ parent: { tag: string; }; el: { cloneNode: (a
         getDomCopy = cloneNode(elVDom.el, true);
         appendChild(p, span);
         appendChild(span, getDomCopy);
-        // @ts-ignore
         let appendJson = getDomJson(p, elVDom.parent.position);
-        // @ts-ignore
         replaceChild(parentVDOM.el, p, elVDom.el);
         patchJson(elVDom, appendJson);
     };
     moveCursorToEnd(p);
 };
 // 将没有span包住的文本元素替换成SPAN包住的文本元素
-const replaceSpanToTextElement = (/** @type {{ el: { cloneNode: (arg0: boolean) => any; }; parent: { el: Node; }; }} */ elVDom) => {
+/**
+ * 
+ * @param {*} elVDom 
+ */
+const replaceSpanToTextElement = (elVDom) => {
     const span = createElement("span");
     const cloneText = cloneNode(elVDom.el, true);
     appendChild(span, cloneText);
-    // @ts-ignore
     replaceChild(elVDom.parent.el, span, elVDom.el)
-    // @ts-ignore
     const replaceJson = getDomJson(span, elVDom.parent.position);
     patchJson(elVDom, replaceJson);
     moveCursorToEnd(elVDom.parent.el);
 };
 // 更新属性
-const patchAttrs = (/** @type {any[]} */ oldVdom, /** @type {{ attrs: any; }} */ newVdom) => {
-    // @ts-ignore
+/**
+ * 
+ * @param {*} oldVdom 
+ * @param {*} newVdom 
+ * @returns 
+ */
+const patchAttrs = (oldVdom, newVdom) => {
     let oldAttr = oldVdom.attrs;
     let newAttr = newVdom.attrs;
     let resetUndefined;
@@ -409,7 +538,6 @@ const patchAttrs = (/** @type {any[]} */ oldVdom, /** @type {{ attrs: any; }} */
     for (let key in oldAttr) {
         if (newAttr[key] !== resetUndefined && oldAttr[key] != newAttr[key]) {
             oldAttr[key] = newAttr[key];
-            // @ts-ignore
             oldVdom.el.setAttribute(key, newAttr[key]);
             delete newAttr[key];
         } else if (oldAttr[key] == newAttr[key]) {
@@ -417,19 +545,22 @@ const patchAttrs = (/** @type {any[]} */ oldVdom, /** @type {{ attrs: any; }} */
             continue;
         } else {
             delete oldAttr[key];
-            // @ts-ignore
             oldVdom.el.removeAttribute(key);
         }
     };
     for (let key in newAttr) {
         oldAttr[key] = newAttr[key];
-        // @ts-ignore
         oldVdom.el.setAttribute(key, newAttr[key]);
     }
 };
 // 到动光标到当前元素的最后方
-const moveCursorToEnd = (/** @type {Node} */ element) => {
+/**
+ * 
+ * @param {*} element 
+ */
+const moveCursorToEnd = (element) => {
     var range = document.createRange();
+    /** @type {*} */
     var selection = window.getSelection();
 
     // 将 Range 设置为编辑元素的最后
@@ -437,13 +568,10 @@ const moveCursorToEnd = (/** @type {Node} */ element) => {
     range.collapse(false);
 
     // 清除当前 Selection 并将 Range 添加到 Selection 中
-    // @ts-ignore
     selection.removeAllRanges();
-    // @ts-ignore
     selection.addRange(range);
 
     // 设置焦点到编辑元素
-    // @ts-ignore
     element.focus();
 };
 
@@ -548,8 +676,7 @@ export const jsonStrToAst = (str) => {
 */
 const mountToEl = function (/** @type {string} */ idName) {
     let idElement = document.getElementById(idName);
-    this.tagStack[0].children.map((/** @type {{ el: any; }} */ el) => {
-        // @ts-ignore
+    this.tagStack[0].children.map((/** @type {*} */ el) => {
         appendChild(idElement, el.el);
     })
 };
@@ -587,23 +714,22 @@ export const getSelectContent = (astDom, selectAst) => {
      */
     let selects = window.getSelection();
     let startTextEl = selects.anchorNode;
-    let anchorOffset= selects.anchorOffset;
-    let focusOffset= selects.focusOffset;
+    let anchorOffset = selects.anchorOffset;
+    let focusOffset = selects.focusOffset;
     let startOffset = anchorOffset;
     let endTextEl = selects.focusNode;
     let endOffset = focusOffset;
-    if(startTextEl == endTextEl && anchorOffset == focusOffset) {return []};
+    if (startTextEl == endTextEl && anchorOffset == focusOffset) { return [] };
 
     // 选择
     if (startTextEl == astDom.el) { return []; };
     resetSelectPosition(selectAst);
 
-    // @ts-ignore
     let startDeepArr = getDeepArr(astDom.el, startTextEl);
     let endDeepArr = getDeepArr(astDom.el, endTextEl);
+    let selectAstContent = updateAstSelect(astDom, startDeepArr, startOffset, endDeepArr, endOffset);
+    return selectAstContent
 
-    return updateAstSelect(astDom, startDeepArr, startOffset, endDeepArr, endOffset);
-    
 };
 
 /**
@@ -618,17 +744,17 @@ const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffse
     let startElem = getSelectAst(astDom, startDeepArr);
     let endElem = getSelectAst(astDom, endDeepArr);
     let direction = "", selectLeaf = [], position;
-    
+
     /**
      * @type {any}
      */
     let selectAst = [];
     // 移动方向 结束位置大小起始位置 也就是向下选择
     endDeepArr.some((/** @type {number} */ el, /** @type {string | number} */ idx) => {
-        if(idx == (endDeepArr.length - 1) && !direction){
+        if (idx == (endDeepArr.length - 1) && !direction) {
             direction = "down";
             return true;
-        }else if (el > startDeepArr[idx]) {
+        } else if (el > startDeepArr[idx]) {
             direction = "down";
             return true;
         } else if (el < startDeepArr[idx]) {
@@ -638,7 +764,6 @@ const updateAstSelect = (astDom, startDeepArr, startOffset, endDeepArr, endOffse
     });
     let startAst = getMiddleSelectAst(startDeepArr, startElem, direction, startOffset, "start");
     let endAst = getMiddleSelectAst(endDeepArr, endElem, (direction == "up" ? "down" : "up"), endOffset, "end");
-
     if (startElem.position[1] == endElem.position[1]) {
         startAst.forEach((el, idx) => {
             if (endAst.indexOf(el) < 0) {
@@ -696,19 +821,19 @@ const getMiddleSelectAst = (deepArr, childAstVDom, direction, offset, position) 
             } else {
                 if (childAstVDom.selected) {
                     let selectedArr = childAstVDom.selected;
-                    if(direction == "up"){
+                    if (direction == "up") {
                         selectedArr[1] = offset;
-                    }else{
+                    } else {
                         selectedArr[0] = offset;
                     };
                     selectedArr.sort();
-                    if(selectedArr[0] > selectedArr[1]){
+                    if (selectedArr[0] > selectedArr[1]) {
                         let origin = selectedArr[1];
                         selectedArr[1] = selectedArr[0];
                         selectedArr[0] = origin;
                     }
                 } else {
-                    childAstVDom.selected = direction == "up"  ? [0, offset] : [offset, childAstVDom.children.length];
+                    childAstVDom.selected = direction == "up" ? [0, offset] : [offset, childAstVDom.children.length];
                 }
                 returnSelectAst.push(childAstVDom.parent);
             };
@@ -771,10 +896,10 @@ const getSelectAst = (astDom, deepArr) => {
  */
 export const resetSelectPosition = (selectAst) => {
     let select = selectAst.pop();
-    while(select) {
-        if(select.selected) { 
+    while (select) {
+        if (select.selected) {
             select.selected = null
-        
+
         };
         deepClearSelected(select.children);
         select = selectAst.pop();
@@ -786,10 +911,10 @@ export const resetSelectPosition = (selectAst) => {
  * @param {*} childrens 
  */
 const deepClearSelected = (childrens) => {
-    if(Array.isArray(childrens)){
+    if (Array.isArray(childrens)) {
         childrens.forEach((elem, idx) => {
-            if(elem.selected) { elem.selected = null };
-            if(elem.children){
+            if (elem.selected) { elem.selected = null };
+            if (elem.children) {
                 deepClearSelected(elem.children);
             }
         })
@@ -811,8 +936,7 @@ export const bold = (selectAst) => {
  * @param {*} selectAst 
  */
 const boldText = (selectAst) => {
-    // @ts-ignore
-    selectAst.map && selectAst.map((elem) => {
+    selectAst.map && selectAst.map((/** @type {*} */ elem) => {
         if (elem.nodeType == "text") {
             if (hasTagName(elem, "strong")) {
                 return;
@@ -848,22 +972,22 @@ const inertElement = (/** @type {any} */ parentNode, /** @type {any} */ inertNod
 };
 
 const afterElement = (/** @type {any} */ parentNode, /** @type {any} */ afterNode) => {
-    if(parentNode.nextSibling){
+    if (parentNode.nextSibling) {
         parentNode.nextSibling.before(afterNode);
-    }else{
-        parentNode.parentNode.appendChild(afterNode);
+    } else {
+        appendChild(parentNode.parentNode, afterNode);
     }
 };
 
 
 const createSpanFillText = (/** @type {any} */ fillText, /** @type {any} */ direction) => {
-    if(fillText.textContent == "" || fillText.tagName && fillText.tagName.toLocaleLowerCase() == "br") return ;
+    if (fillText.textContent == "" || fillText.tagName && fillText.tagName.toLocaleLowerCase() == "br") return;
     let span = createElement("span");
     let parentNode = fillText.parentNode;
-    span.appendChild(fillText);
-    if(direction == "after"){
+    appendChild(span, fillText);
+    if (direction == "after") {
         afterElement(parentNode, span);
-    }else{
+    } else {
         inertElement(parentNode, span);
     }
 };
@@ -875,15 +999,6 @@ const createSpanFillText = (/** @type {any} */ fillText, /** @type {any} */ dire
  */
 const createElement = (elName) => {
     return document.createElement(elName);
-};
-
-/**
- * 
- * @param {*} parentNode 
- * @param {*} childNode 
- */
-const append = (parentNode, childNode) => {
-    parentNode.append(childNode)
 };
 
 /**
@@ -947,9 +1062,10 @@ const getDeepArr = (root, findPositionEl, deepArr = []) => {
             break;
         }
     };
-    
+
     deepArr.unshift(childIdx);
-    if (findPositionEl.parentNode != root) {
+    if (findPositionEl.parentNode 
+        != root) {
         getDeepArr(root, findPositionEl.parentNode, deepArr);
     };
     return deepArr;

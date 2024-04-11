@@ -61,6 +61,7 @@ const mouseup = (e) => {
   };
   editMain.removeEventListener("mousemove", mousemove);
   selectAst.push(...getSelectContent(astDom, selectAst));
+  console.log(selectAst, "selectAst")
   selected = false;
   return false;
 
@@ -79,7 +80,9 @@ const dragend = (e) => {
   setTimeout(() => {
     // @ts-ignore
     patch(astDom, getDomJson(editMain));
+    console.log(astDom,"astDom")
   });
+
 }
 
 const dragenter = () => {
