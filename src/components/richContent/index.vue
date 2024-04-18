@@ -7,7 +7,7 @@
 
 <script setup>
 import { effect, onMounted, onUnmounted } from 'vue';
-import { getDomJson, patch, getSelectContent, bold } from "./editor.js";
+import { getDomJson, patch, getSelectContent, bold, getImage, formatPaste, clearSelectContent } from "./editor.js";
 /** @type { any } */
 let editMain;
 let agentStart = false;
@@ -19,10 +19,17 @@ let astDom;
 /**@type {*} */
 const selectAst = [];
 const getEditorJson = (/** @type {any} */ e) => {
+  console.log(e,"e")
+  if(e.ctrlKey && e.keyCode == "65"){
+    selectAst.push(...getSelectContent(astDom, selectAst));
+  }
   if (agentStart) return;
   setTimeout(() => {
     // @ts-ignore
-    patch(astDom, getDomJson(editMain));
+    patch({
+      oldVdom: astDom,
+      newVdom: getDomJson(editMain)
+    });
   })
 };
 
@@ -31,7 +38,10 @@ const boldSelects = () => {
     selectAst.push(...getSelectContent(astDom, selectAst));
   }
   bold(selectAst);
-  patch(astDom, getDomJson(editMain));
+  patch({
+    oldVdom: astDom,
+    newVdom: getDomJson(editMain)
+  });
 }
 
 const startAgentFn = () => {
@@ -56,16 +66,34 @@ const mousedown = (/** @type {any} */ e) => {
  * @param {*} e 
  */
 const mouseup = (e) => {
+  editMain.removeEventListener("mousemove", mousemove);
   if (dragStatus || !selected) {
     return;
   };
-  editMain.removeEventListener("mousemove", mousemove);
   selectAst.push(...getSelectContent(astDom, selectAst));
-  console.log(selectAst, "selectAst")
   selected = false;
   return false;
-
 };
+
+/**
+ * 
+ * @param {*} event 
+ */
+const paste = (event) => {
+  event.preventDefault();
+  clearSelectContent(selectAst);
+  // @ts-ignore
+  let paste = (event.clipboardData || window.clipboardData).getData("text");
+
+  if (paste && typeof paste == "string") {
+    let textElement = formatPaste(paste, astDom);
+    astDom = getDomJson(editMain);
+  } else {
+    let file = getImage(event);
+  }
+  return false;
+}
+
 
 const mousemove = (/** @type {any} */ e) => {
   selected = true;
@@ -78,9 +106,15 @@ const mousemove = (/** @type {any} */ e) => {
 const dragend = (e) => {
   dragStatus = false;
   setTimeout(() => {
+    let newAst = getDomJson(editMain);
     // @ts-ignore
-    patch(astDom, getDomJson(editMain));
-    console.log(astDom,"astDom")
+    patch({
+      oldVdom: astDom,
+      newVdom: newAst,
+      dragEnter: true
+    });
+    astDom = getDomJson(editMain);
+    console.log(newAst,"newAst",astDom)
   });
 
 }
@@ -103,6 +137,9 @@ onMounted(() => {
   editMain.addEventListener("drop", dragend);
   editMain.addEventListener("dragleave", dragleave);
 
+
+  editMain.addEventListener("paste", paste);
+
   editMain.addEventListener("mousedown", mousedown);
   window.addEventListener("mouseup", mouseup);
 
@@ -114,6 +151,7 @@ onUnmounted(() => {
   editMain.removeEventListener("compositionstart", startAgentFn);
   editMain.removeEventListener("compositionend", endAgentFn);
 
+  editMain.removeEventListener("paste", paste);
 
   editMain.removeEventListener("dragenter", dragenter);
   editMain.removeEventListener("drop", dragend);
