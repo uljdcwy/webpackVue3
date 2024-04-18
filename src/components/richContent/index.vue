@@ -7,7 +7,7 @@
 
 <script setup>
 import { effect, onMounted, onUnmounted } from 'vue';
-import { getDomJson, patch, getSelectContent, bold, getImage, formatPaste, clearSelectContent } from "./editor.js";
+import { getDomJson, patch, getSelectContent, bold, getCurrentMouseElem, formatPaste, clearSelectContent } from "./editor.js";
 /** @type { any } */
 let editMain;
 let agentStart = false;
@@ -19,8 +19,7 @@ let astDom;
 /**@type {*} */
 const selectAst = [];
 const getEditorJson = (/** @type {any} */ e) => {
-  console.log(e,"e")
-  if(e.ctrlKey && e.keyCode == "65"){
+  if (e.ctrlKey && e.keyCode == "65") {
     selectAst.push(...getSelectContent(astDom, selectAst));
   }
   if (agentStart) return;
@@ -80,18 +79,19 @@ const mouseup = (e) => {
  * @param {*} event 
  */
 const paste = (event) => {
-  event.preventDefault();
-  clearSelectContent(selectAst);
-  // @ts-ignore
-  let paste = (event.clipboardData || window.clipboardData).getData("text");
+  updateEnter();
+  // event.preventDefault();
+  // clearSelectContent(selectAst);
+  // // @ts-ignore
+  // let paste = (event.clipboardData || window.clipboardData).getData("text");
 
-  if (paste && typeof paste == "string") {
-    let textElement = formatPaste(paste, astDom);
-    astDom = getDomJson(editMain);
-  } else {
-    let file = getImage(event);
-  }
-  return false;
+  // if (paste && typeof paste == "string") {
+  //   let textElement = formatPaste(paste, astDom);
+  //   astDom = getDomJson(editMain);
+  // } else {
+  //   let file = getImage(event);
+  // }
+  // return false;
 }
 
 
@@ -105,18 +105,23 @@ const mousemove = (/** @type {any} */ e) => {
  */
 const dragend = (e) => {
   dragStatus = false;
+  updateEnter();
+}
+
+
+const updateEnter = () => {
+  const deepTagArr = getCurrentMouseElem(astDom);
   setTimeout(() => {
     let newAst = getDomJson(editMain);
     // @ts-ignore
     patch({
       oldVdom: astDom,
       newVdom: newAst,
-      dragEnter: true
+      dragEnter: true,
+      deepTagArr: deepTagArr
     });
     astDom = getDomJson(editMain);
-    console.log(newAst,"newAst",astDom)
   });
-
 }
 
 const dragenter = () => {
