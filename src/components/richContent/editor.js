@@ -1010,6 +1010,7 @@ const cloneNode = (oldElem, status) => {
  * @param {*} childNode 
  */
 const appendChild = (parentNode, childNode) => {
+    console.log(parentNode,"parentNode", childNode)
     return parentNode.appendChild(childNode);
 };
 
@@ -1069,7 +1070,7 @@ export const getCurrentMouseElem = (astDom) => {
     if(!astDom.children) return ;
     let selects = winGetSelection();
     let rootDom = astDom.el;
-    let deepArr, pasetVdom, 
+    let deepArr, pasetVdom,pack,
     /**@type {*} */
     tagArr;
     if (astDom.el != selects.anchorNode) {
@@ -1078,7 +1079,7 @@ export const getCurrentMouseElem = (astDom) => {
         pasetVdom = getSelectAst(astDom, deepArr);
         getDeepTagArr(pasetVdom, tagArr)
     }
-    return tagArr;
+    return tagArr[0] ? tagArr : pack;
 }
 
 /**
@@ -1216,6 +1217,7 @@ const mergeRootChildren = (Vdom, preVdom = false, defaultIndex = 0, deepTagArr) 
             rootBlock = defaultNode[0];
             leafElem = defaultNode[1];
             let rootVdom = getRootDom(Vdom);
+            console.log(deepTagArr, "deepTagArr", rootBlock, "rootBlock")
             appendChild(rootVdom.el, rootBlock);
         }
     };
